@@ -2,5 +2,4 @@ jupyter-book
 matplotlib
 numpy
 ghp-import
-pandas
-kaleido
+pydantic

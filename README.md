@@ -1,6 +1,9 @@
-# MolSSI Workshop
+# Python Type Hints, Dataclasses, and Pydantic - MolSSI Hands-on Tutorial
 
-This is a Jupyter book template for molssi workshops
+Do more with structured and named data than putting everything into a Dictionary. 
+Learn about Python type hints for arguments and variables to tell users what to expect. 
+Structure data into Dataclasses for functional named data handlers. 
+Leverage validation and the powerful third party tool pydantic to handle complex schema and automatic validation.
 
 ## Usage
 

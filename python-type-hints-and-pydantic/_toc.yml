@@ -1,0 +1,5 @@
+format: jb-book
+root: chapters/setup
+chapters:
+- file: chapters/StartingCodeAndObjectives
+- file: chapters/TypeHintsInPython
