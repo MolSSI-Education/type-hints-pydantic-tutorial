@@ -3,3 +3,5 @@ root: chapters/setup
 chapters:
 - file: chapters/StartingCodeAndObjectives
 - file: chapters/TypeHintsInPython
+- file: chapters/DataclassInPython
+- file: chapters/ManualDataValidation
