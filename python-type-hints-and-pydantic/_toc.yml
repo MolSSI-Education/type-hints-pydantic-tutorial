@@ -5,3 +5,5 @@ chapters:
 - file: chapters/TypeHintsInPython
 - file: chapters/DataclassInPython
 - file: chapters/ManualDataValidation
+- file: chapters/IntroToPydantic
+- file: chapters/ValidatingDataBeyondTypes
