@@ -1,0 +1,1028 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Introcuction to Pydantic &#8212; Python Type Hints, Dataclasses, and Pydantic</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Validating Data Beyond Types" href="ValidatingDataBeyondTypes.html" />
+    <link rel="prev" title="Manual Data Validation" href="ManualDataValidation.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+<script async="" src="https://www.google-analytics.com/analytics.js"></script>
+<script>
+                        window.ga = window.ga || function () {
+                            (ga.q = ga.q || []).push(arguments) };
+                        ga.l = +new Date;
+                        ga('create', 'UA-169902961-1', 'auto');
+                        ga('set', 'anonymizeIp', true);
+                        ga('send', 'pageview');
+                    </script>
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+<!-- Checkboxes to toggle the left sidebar -->
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
+<label class="overlay overlay-navbar" for="__navigation">
+    <div class="visually-hidden">Toggle navigation sidebar</div>
+</label>
+<!-- Checkboxes to toggle the in-page toc -->
+<input type="checkbox" class="sidebar-toggle" name="__page-toc" id="__page-toc" aria-label="Toggle in-page Table of Contents">
+<label class="overlay overlay-pagetoc" for="__page-toc">
+    <div class="visually-hidden">Toggle in-page Table of Contents</div>
+</label>
+<!-- Headers at the top -->
+<div class="announcement header-item noprint"></div>
+<div class="header header-item noprint"></div>
+
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<!-- Sidebar -->
+<div class="bd-sidebar noprint" id="site-navigation">
+    <div class="bd-sidebar__content">
+        <div class="bd-sidebar__top"><div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="../index.html">
+      
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
+      
+      
+      <img src="../_static/molssi_main_logo.png" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">Python Type Hints, Dataclasses, and Pydantic</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="setup.html">
+                    Objectives and Setup
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="StartingCodeAndObjectives.html">
+   Starting Code and Objectives
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="TypeHintsInPython.html">
+   Type Hints in Python
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="DataclassInPython.html">
+   Dataclasses In Python
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ManualDataValidation.html">
+   Manual Data Validation
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Introcuction to Pydantic
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ValidatingDataBeyondTypes.html">
+   Validating Data Beyond Types
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="NestedDataModels.html">
+   Nested Data Models
+  </a>
+ </li>
+</ul>
+
+    </div>
+</nav></div>
+        <div class="bd-sidebar__bottom">
+             <!-- To handle the deprecated key -->
+            
+            <div class="navbar_extra_footer">
+            Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+            </div>
+            
+        </div>
+    </div>
+    <div id="rtd-footer-container"></div>
+</div>
+
+
+          
+
+
+          
+<!-- A tiny helper pixel to detect if we've scrolled -->
+<div class="sbt-scroll-pixel-helper"></div>
+<!-- Main content -->
+<div class="col py-0 content-container">
+    
+    <div class="header-article row sticky-top noprint">
+        
+
+
+
+<div class="col py-1 d-flex header-article-main">
+    <div class="header-article__left">
+        
+        <label for="__navigation"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="right"
+title="Toggle navigation"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-bars"></i>
+  </span>
+
+</label>
+
+        
+    </div>
+    <div class="header-article__right">
+<div class="menu-dropdown menu-dropdown-launch-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Launch interactive content">
+      <i class="fas fa-rocket"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="https://mybinder.org/v2/gh/MolSSI-Education/type-hints-pydantic-tutorial/main?urlpath=tree/python-type-hints-and-pydantic/chapters/IntroToPydantic.ipynb"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Launch on Binder"
+>
+  
+
+<span class="headerbtn__icon-container">
+  
+    <img src="../_static/images/logo_binder.svg">
+  </span>
+<span class="headerbtn__text-container">Binder</span>
+</a>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+
+<button onclick="toggleFullScreen()"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="bottom"
+title="Fullscreen mode"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+<div class="menu-dropdown menu-dropdown-repository-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Source repositories">
+      <i class="fab fa-github"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="https://github.com/MolSSI-Education/type-hints-pydantic-tutorial"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Source repository"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="headerbtn__text-container">repository</span>
+</a>
+
+      </li>
+      
+      <li>
+        <a href="https://github.com/MolSSI-Education/type-hints-pydantic-tutorial/issues/new?title=Issue%20on%20page%20%2Fchapters/IntroToPydantic.html&body=Your%20issue%20content%20here."
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Open an issue"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="headerbtn__text-container">open issue</span>
+</a>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+
+<div class="menu-dropdown menu-dropdown-download-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Download this page">
+      <i class="fas fa-download"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="../_sources/chapters/IntroToPydantic.ipynb"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Download source file"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="headerbtn__text-container">.ipynb</span>
+</a>
+
+      </li>
+      
+      <li>
+        
+<button onclick="printPdf(this)"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="left"
+title="Print to PDF"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="headerbtn__text-container">.pdf</span>
+</button>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+<label for="__page-toc"
+  class="headerbtn headerbtn-page-toc"
+  
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-list"></i>
+  </span>
+
+</label>
+
+    </div>
+</div>
+
+<!-- Table of contents -->
+<div class="col-md-3 bd-toc show noprint">
+    <div class="tocsection onthispage pt-5 pb-3">
+        <i class="fas fa-list"></i> Contents
+    </div>
+    <nav id="bd-toc-nav" aria-label="Page">
+        <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#pydantic-s-main-object-basemodel">
+   Pydantic’s Main Object: BaseModel
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#reading-the-validation-error">
+     Reading the Validation error
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#data-coersion">
+   Data Coersion
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#preparing-for-custom-validation">
+   Preparing for Custom Validation
+  </a>
+ </li>
+</ul>
+
+    </nav>
+</div>
+    </div>
+    <div class="article row">
+        <div class="col pl-md-3 pl-lg-5 content-container">
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>Introcuction to Pydantic</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#pydantic-s-main-object-basemodel">
+   Pydantic’s Main Object: BaseModel
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#reading-the-validation-error">
+     Reading the Validation error
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#data-coersion">
+   Data Coersion
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#preparing-for-custom-validation">
+   Preparing for Custom Validation
+  </a>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            <main id="main-content" role="main">
+                
+              <div>
+                
+  <section class="tex2jax_ignore mathjax_ignore" id="introcuction-to-pydantic">
+<h1>Introcuction to Pydantic<a class="headerlink" href="#introcuction-to-pydantic" title="Permalink to this headline">#</a></h1>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Starting File: CHAPTER_3_WAFFLES
+This chapter will start from the CHAPTER_3_WAFFLES and end on the CHAPTER_4_WAFFLES.</p>
+</div>
+<p>Validating data is hard and time consuming to do by hand. The last chapter showed just how difficult it can be to do even simple validation. Furthermore, all of the type hints we’ve written and the <code class="docutils literal notranslate"><span class="pre">dataclass</span></code> decorator have been helpful for visually making the code more legible, but otherwise have not been really programtically helpful in doing validation.</p>
+<p>You’ll be introduced to a powerful non-native library called <em>pydantic</em> in this chapter. A data validation and settings management tool which leverages existing Python type hints to handle validation for you. <em>pydantic</em> is not the only possible soultion out there for validation of Python data and schema, but it is a natural extension of the type hints and <code class="docutils literal notranslate"><span class="pre">dataclass</span></code> we’ve already discussed.</p>
+<div class="note admonition">
+<p class="admonition-title">Check Out Pydantic!</p>
+<p>We will not be covering all the capabilities of <em>pydantic</em> here, and we highly encourage you to visit <a class="reference external" href="https://pydantic-docs.helpmanual.io/">the pydantic docs</a> to learn about all the powerful and easy-to-execute things <em>pydantic</em> can do.</p>
+</div>
+<div class="note admonition">
+<p class="admonition-title">Compatibility with Python 3.8 and below</p>
+<p>If you have Python 3.8 or below, you will need to import container type objects such as <code class="docutils literal notranslate"><span class="pre">List</span></code>, <code class="docutils literal notranslate"><span class="pre">Tuple</span></code>, <code class="docutils literal notranslate"><span class="pre">Dict</span></code>, etc. from the <code class="docutils literal notranslate"><span class="pre">typing</span></code> library instead of their native types of <code class="docutils literal notranslate"><span class="pre">list</span></code>, <code class="docutils literal notranslate"><span class="pre">tuple</span></code>, <code class="docutils literal notranslate"><span class="pre">dict</span></code>, etc. This chapter will assume Python 3.9 or greater, however, both approaches will work in &gt;=Python 3.9 and have 1:1 replacements of the same name.</p>
+</div>
+<section id="pydantic-s-main-object-basemodel">
+<h2>Pydantic’s Main Object: BaseModel<a class="headerlink" href="#pydantic-s-main-object-basemodel" title="Permalink to this headline">#</a></h2>
+<p><em>pydantic</em> operates by modifying a class which looks and behaves similar to a <code class="docutils literal notranslate"><span class="pre">dataclass</span></code> object. However, it instead subclasses the <em>pydantic</em> object called <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code> to do so. Let’s start with our final <code class="docutils literal notranslate"><span class="pre">Molecule</span></code> object from CHAPTER_3_WAFFLES.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+
+<span class="c1"># Type Helpers</span>
+<span class="n">fi</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="nb">int</span><span class="p">]</span>
+<span class="n">lfi</span> <span class="o">=</span> <span class="nb">list</span><span class="p">[</span><span class="n">fi</span><span class="p">]</span>
+<span class="n">tfi</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">fi</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+<span class="n">inner</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">lfi</span><span class="p">,</span> <span class="n">tfi</span><span class="p">]</span>
+<span class="n">lo</span> <span class="o">=</span> <span class="nb">list</span><span class="p">[</span><span class="n">inner</span><span class="p">]</span>
+<span class="n">tupo</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">inner</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Molecule</span><span class="p">:</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">charge</span><span class="p">:</span> <span class="n">fi</span>
+    <span class="n">symbols</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span>
+    <span class="n">coordinates</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">lo</span><span class="p">,</span> <span class="n">tupo</span><span class="p">]</span>
+    
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># We&#39;ll validate the inputs here.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;name&#39; must be a str, was </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">charge</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">charge</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;charge&#39; must be a float or int, was </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">charge</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span>
+            <span class="k">for</span> <span class="n">content</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="p">:</span>  <span class="c1"># Loop over elements</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>  <span class="c1"># Check content</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">content</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">exec</span><span class="p">:</span>  <span class="c1"># Trap not iterable item</span>
+            <span class="c1"># This will throw if you can&#39;t iterate over self.symbols</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;symbols&#39; must be a list or tuple of string, was </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exec</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exec</span><span class="p">:</span>  <span class="c1"># Trap the content error</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Each element of &#39;symbols&#39; must be a string, was </span><span class="si">{</span><span class="n">exec</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> of type </span><span class="si">{</span><span class="n">exec</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exec</span>
+            
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">coordinates</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span>
+            <span class="k">for</span> <span class="n">inner</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="p">:</span>  <span class="c1"># Loop over elements</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">inner</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inner</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+                        <span class="k">raise</span> <span class="ne">TypeError</span>
+                    <span class="k">for</span> <span class="n">content</span> <span class="ow">in</span> <span class="n">inner</span><span class="p">:</span>  <span class="c1"># Loop over elements</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>  <span class="c1"># Check content</span>
+                            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">content</span><span class="p">))</span>
+                <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">exec</span><span class="p">:</span>  <span class="c1"># Trap not iterable item</span>
+                        <span class="c1"># This will throw if you can&#39;t iterate over self.symbols</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;coordinates&#39; inner elements must be a list or tuple of float/int, was </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">inner</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exec</span>
+                <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exec</span><span class="p">:</span>  <span class="c1"># Trap the content error</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Each inner element of &#39;coordinates&#39; must be a string, was </span><span class="si">{</span><span class="n">exec</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> of type </span><span class="si">{</span><span class="n">exec</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exec</span>
+        <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">exec</span><span class="p">:</span>  <span class="c1"># Trap not iterable item</span>
+                <span class="c1"># This will throw if you can&#39;t iterate over self.symbols</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;coordinates&#39; must be a list or tuple of int/float, was </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">inner</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exec</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exec</span><span class="p">:</span>  <span class="c1"># Trap the content error</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;coordinates&#39; must be a list or tuple of int/float, however the following error was thrown: </span><span class="si">{</span><span class="n">exec</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exec</span>
+        
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">num_atoms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="p">)</span>
+        
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;name: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="se">\n</span><span class="s2">charge: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">charge</span><span class="si">}</span><span class="se">\n</span><span class="s2">symbols: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="si">}</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mol_data</span> <span class="o">=</span> <span class="p">{</span>  <span class="c1"># Good data</span>
+    <span class="s2">&quot;coordinates&quot;</span><span class="p">:</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]],</span> 
+    <span class="s2">&quot;symbols&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="s2">&quot;O&quot;</span><span class="p">],</span> 
+    <span class="s2">&quot;charge&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> 
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;water&quot;</span>
+<span class="p">}</span>
+
+<span class="n">bad_name</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="mi">789</span><span class="p">}</span>  <span class="c1"># Name is not str</span>
+<span class="n">bad_charge</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;charge&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]}</span>  <span class="c1"># Charge is not int or float</span>
+<span class="n">noniter_symbols</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;symbols&quot;</span><span class="p">:</span> <span class="mi">1234567890</span><span class="p">}</span>  <span class="c1"># Symbols is an int</span>
+<span class="n">nonlist_symbols</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;symbols&quot;</span><span class="p">:</span> <span class="s1">&#39;[&quot;H&quot;, &quot;H&quot;, &quot;O&quot;]&#39;</span><span class="p">}</span>  <span class="c1"># Symbols is a string (notably is a string-ified list)</span>
+<span class="n">tuple_symbols</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;symbols&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="s2">&quot;O&quot;</span><span class="p">)}</span>  <span class="c1"># Symbols as a tuple?</span>
+<span class="n">bad_coords</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;coordinates&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">,</span> <span class="s2">&quot;3&quot;</span><span class="p">]}</span>  <span class="c1"># Coords is a single list of string</span>
+<span class="n">bad_symbols_and_cords</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;symbols&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="s2">&quot;O&quot;</span><span class="p">],</span>
+                         <span class="s2">&quot;coordinates&quot;</span><span class="p">:</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">]]</span>
+                        <span class="p">}</span>  <span class="c1"># Coordinates top-level list is not the same length as symbols</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>This was a fair amount of work to get it to this point from the original version. However, it has the problems of lots of manually written validation code, not actually doing anything with the type hints, and very quickly bloating up. Let’s fix all of these problems one at a time.</p>
+<p>To start, lets convert our <code class="docutils literal notranslate"><span class="pre">Molecule</span></code> from a <code class="docutils literal notranslate"><span class="pre">dataclass</span></code> to a <em>pydantic</em> <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code> by importing <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code>, subclassing <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code> into our <code class="docutils literal notranslate"><span class="pre">Molecule</span></code>, and removing the <code class="docutils literal notranslate"><span class="pre">dataclass</span></code> decorator. At this point we don’t even need the <code class="docutils literal notranslate"><span class="pre">dataclasses</span></code> import, so lets remove it as well.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+
+<span class="c1"># Type Helpers</span>
+<span class="n">fi</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="nb">int</span><span class="p">]</span>
+<span class="n">lfi</span> <span class="o">=</span> <span class="nb">list</span><span class="p">[</span><span class="n">fi</span><span class="p">]</span>
+<span class="n">tfi</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">fi</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+<span class="n">inner</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">lfi</span><span class="p">,</span> <span class="n">tfi</span><span class="p">]</span>
+<span class="n">lo</span> <span class="o">=</span> <span class="nb">list</span><span class="p">[</span><span class="n">inner</span><span class="p">]</span>
+<span class="n">tupo</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">inner</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+
+<span class="k">class</span> <span class="nc">Molecule</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">charge</span><span class="p">:</span> <span class="n">fi</span>
+    <span class="n">symbols</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span>
+    <span class="n">coordinates</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">lo</span><span class="p">,</span> <span class="n">tupo</span><span class="p">]</span>
+    
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># We&#39;ll validate the inputs here.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;name&#39; must be a str, was </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">charge</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">charge</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;charge&#39; must be a float or int, was </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">charge</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span>
+            <span class="k">for</span> <span class="n">content</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="p">:</span>  <span class="c1"># Loop over elements</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>  <span class="c1"># Check content</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">content</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">exec</span><span class="p">:</span>  <span class="c1"># Trap not iterable item</span>
+            <span class="c1"># This will throw if you can&#39;t iterate over self.symbols</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;symbols&#39; must be a list or tuple of string, was </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exec</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exec</span><span class="p">:</span>  <span class="c1"># Trap the content error</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Each element of &#39;symbols&#39; must be a string, was </span><span class="si">{</span><span class="n">exec</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> of type </span><span class="si">{</span><span class="n">exec</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exec</span>
+            
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">coordinates</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span>
+            <span class="k">for</span> <span class="n">inner</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="p">:</span>  <span class="c1"># Loop over elements</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">inner</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inner</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+                        <span class="k">raise</span> <span class="ne">TypeError</span>
+                    <span class="k">for</span> <span class="n">content</span> <span class="ow">in</span> <span class="n">inner</span><span class="p">:</span>  <span class="c1"># Loop over elements</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>  <span class="c1"># Check content</span>
+                            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">content</span><span class="p">))</span>
+                <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">exec</span><span class="p">:</span>  <span class="c1"># Trap not iterable item</span>
+                        <span class="c1"># This will throw if you can&#39;t iterate over self.symbols</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;coordinates&#39; inner elements must be a list or tuple of float/int, was </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">inner</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exec</span>
+                <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exec</span><span class="p">:</span>  <span class="c1"># Trap the content error</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Each inner element of &#39;coordinates&#39; must be a string, was </span><span class="si">{</span><span class="n">exec</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> of type </span><span class="si">{</span><span class="n">exec</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exec</span>
+        <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">exec</span><span class="p">:</span>  <span class="c1"># Trap not iterable item</span>
+                <span class="c1"># This will throw if you can&#39;t iterate over self.symbols</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;coordinates&#39; must be a list or tuple of int/float, was </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">inner</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exec</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exec</span><span class="p">:</span>  <span class="c1"># Trap the content error</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;coordinates&#39; must be a list or tuple of int/float, however the following error was thrown: </span><span class="si">{</span><span class="n">exec</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exec</span>
+        
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">num_atoms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="p">)</span>
+        
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;name: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="se">\n</span><span class="s2">charge: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">charge</span><span class="si">}</span><span class="se">\n</span><span class="s2">symbols: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="si">}</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Even though we have removed <code class="docutils literal notranslate"><span class="pre">dataclass</span></code> decorator from our code now, <em>pydantic</em> still structures its inputs much in the same way. <code class="docutils literal notranslate"><span class="pre">__init__</span></code> is handled from the class itself: assigning Class Attributes to Instance Attributes on call (and many other things, but that’s beyond the scope of this workshop). Also like <code class="docutils literal notranslate"><span class="pre">dataclass</span></code>, you should not implement an <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method as <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code>.</p>
+<p>One main difference between how <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code> and <code class="docutils literal notranslate"><span class="pre">dataclass</span></code> behave on initilization is that <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code> does not accept arguments on a 1-to-1 match of listed Class Attributes. Anticipation of this change in behavior is one of the reasons we have been calling our <code class="docutils literal notranslate"><span class="pre">Molecule</span></code> by providing keyword arguments instead of positional arguments (and because its good practice for the reasons discussed in CHAPTER_2_WAFFLES?)</p>
+<div class="note admonition">
+<p class="admonition-title">Dataclasses can work with Pydantic if you really want to</p>
+<p>Dataclasses and Pydantic are not mutually exclusive. Pydantic <a class="reference external" href="https://pydantic-docs.helpmanual.io/usage/dataclasses/">provides a dataclass decorator</a> to nearly perfect mimic the native dataclass, but with all the extra validation pydantic provides.</p>
+</div>
+<p>Let’s see what happens if we try to call this calss with no other modifications.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">water</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="o">**</span><span class="n">mol_data</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Huzzah! It worked! But why? We have removed the <code class="docutils literal notranslate"><span class="pre">dataclass</span></code> decorator, but none of <em>our</em> validation code ran. <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code> does not have a specialized single function to handle validation (we’ll cover custom validation later), so the <code class="docutils literal notranslate"><span class="pre">__post_init__</span></code> function does not run; that was a special method of the <code class="docutils literal notranslate"><span class="pre">dataclass</span></code>. In fact, lets just delete the entire <code class="docutils literal notranslate"><span class="pre">__post_init__</span></code> method as we won’t be needing it anymore. Let’s also delete the <code class="docutils literal notranslate"><span class="pre">__str__</span></code> method as <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code> provides its own.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+
+<span class="c1"># Type Helpers</span>
+<span class="n">fi</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="nb">int</span><span class="p">]</span>
+<span class="n">lfi</span> <span class="o">=</span> <span class="nb">list</span><span class="p">[</span><span class="n">fi</span><span class="p">]</span>
+<span class="n">tfi</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">fi</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+<span class="n">inner</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">lfi</span><span class="p">,</span> <span class="n">tfi</span><span class="p">]</span>
+<span class="n">lo</span> <span class="o">=</span> <span class="nb">list</span><span class="p">[</span><span class="n">inner</span><span class="p">]</span>
+<span class="n">tupo</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">inner</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+
+<span class="k">class</span> <span class="nc">Molecule</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">charge</span><span class="p">:</span> <span class="n">fi</span>
+    <span class="n">symbols</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span>
+    <span class="n">coordinates</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">lo</span><span class="p">,</span> <span class="n">tupo</span><span class="p">]</span>
+    
+        
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">num_atoms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>That looks simpler, so lets run our model through and actually take a look at the output from <code class="docutils literal notranslate"><span class="pre">print</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">water</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="o">**</span><span class="n">mol_data</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">water</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>name=&#39;water&#39; charge=0.0 symbols=[&#39;H&#39;, &#39;H&#39;, &#39;O&#39;] coordinates=[[0.0, 0.0, 0.0]]
+</pre></div>
+</div>
+</div>
+</div>
+<p>You can see that <em>pydantic</em> provides is own comple representation of the data structure, including all its attributes. The model also allows accessing attributes like you would any class attribute as well.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">water</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">water</span><span class="o">.</span><span class="n">coordinates</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>water
+[[0.0, 0.0, 0.0]]
+</pre></div>
+</div>
+</div>
+</div>
+<p><em>pydantic</em> also provides a few built-in methods for quick exporting of models to other data structures like dictionaries and JSON strings.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">water</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;name&#39;: &#39;water&#39;,
+ &#39;charge&#39;: 0.0,
+ &#39;symbols&#39;: [&#39;H&#39;, &#39;H&#39;, &#39;O&#39;],
+ &#39;coordinates&#39;: [[0.0, 0.0, 0.0]]}
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">water</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&#39;{&quot;name&quot;: &quot;water&quot;, &quot;charge&quot;: 0.0, &quot;symbols&quot;: [&quot;H&quot;, &quot;H&quot;, &quot;O&quot;], &quot;coordinates&quot;: [[0.0, 0.0, 0.0]]}&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<p>Here is where <em>pydantic</em> helps us. Because this is a <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code>, our type hints are no longer <em>hints</em>, they are <em>mandates</em>. Let’s show that by feeding in invalid data.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mangle</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">mol_data</span><span class="p">,</span> <span class="o">**</span><span class="n">bad_name</span><span class="p">,</span> <span class="o">**</span><span class="n">bad_charge</span><span class="p">,</span> <span class="o">**</span><span class="n">bad_coords</span><span class="p">}</span>
+<span class="n">water</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="o">**</span><span class="n">mangle</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ValidationError</span><span class="g g-Whitespace">                           </span>Traceback (most recent call last)
+<span class="nn">Input In [20],</span> in <span class="ni">&lt;cell line: 2&gt;</span><span class="nt">()</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">mangle</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">mol_data</span><span class="p">,</span> <span class="o">**</span><span class="n">bad_name</span><span class="p">,</span> <span class="o">**</span><span class="n">bad_charge</span><span class="p">,</span> <span class="o">**</span><span class="n">bad_coords</span><span class="p">}</span>
+<span class="ne">----&gt; </span><span class="mi">2</span> <span class="n">water</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="o">**</span><span class="n">mangle</span><span class="p">)</span>
+
+<span class="nn">File ~/miniconda3/envs/pyd-tut/lib/python3.10/site-packages/pydantic/main.py:341,</span> in <span class="ni">pydantic.main.BaseModel.__init__</span><span class="nt">()</span>
+
+<span class="ne">ValidationError</span>: 14 validation errors for Molecule
+<span class="n">charge</span>
+  <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">a</span> <span class="n">valid</span> <span class="nb">float</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">type_error</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+<span class="n">charge</span>
+  <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">a</span> <span class="n">valid</span> <span class="n">integer</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">type_error</span><span class="o">.</span><span class="n">integer</span><span class="p">)</span>
+<span class="n">coordinates</span> <span class="o">-&gt;</span> <span class="mi">0</span>
+  <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">a</span> <span class="n">valid</span> <span class="nb">list</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">type_error</span><span class="o">.</span><span class="n">list</span><span class="p">)</span>
+<span class="n">coordinates</span> <span class="o">-&gt;</span> <span class="mi">0</span>
+  <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">a</span> <span class="n">valid</span> <span class="nb">tuple</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">type_error</span><span class="o">.</span><span class="n">tuple</span><span class="p">)</span>
+<span class="n">coordinates</span> <span class="o">-&gt;</span> <span class="mi">1</span>
+  <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">a</span> <span class="n">valid</span> <span class="nb">list</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">type_error</span><span class="o">.</span><span class="n">list</span><span class="p">)</span>
+<span class="n">coordinates</span> <span class="o">-&gt;</span> <span class="mi">1</span>
+  <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">a</span> <span class="n">valid</span> <span class="nb">tuple</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">type_error</span><span class="o">.</span><span class="n">tuple</span><span class="p">)</span>
+<span class="n">coordinates</span> <span class="o">-&gt;</span> <span class="mi">2</span>
+  <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">a</span> <span class="n">valid</span> <span class="nb">list</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">type_error</span><span class="o">.</span><span class="n">list</span><span class="p">)</span>
+<span class="n">coordinates</span> <span class="o">-&gt;</span> <span class="mi">2</span>
+  <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">a</span> <span class="n">valid</span> <span class="nb">tuple</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">type_error</span><span class="o">.</span><span class="n">tuple</span><span class="p">)</span>
+<span class="n">coordinates</span> <span class="o">-&gt;</span> <span class="mi">0</span>
+  <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">a</span> <span class="n">valid</span> <span class="nb">list</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">type_error</span><span class="o">.</span><span class="n">list</span><span class="p">)</span>
+<span class="n">coordinates</span> <span class="o">-&gt;</span> <span class="mi">0</span>
+  <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">a</span> <span class="n">valid</span> <span class="nb">tuple</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">type_error</span><span class="o">.</span><span class="n">tuple</span><span class="p">)</span>
+<span class="n">coordinates</span> <span class="o">-&gt;</span> <span class="mi">1</span>
+  <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">a</span> <span class="n">valid</span> <span class="nb">list</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">type_error</span><span class="o">.</span><span class="n">list</span><span class="p">)</span>
+<span class="n">coordinates</span> <span class="o">-&gt;</span> <span class="mi">1</span>
+  <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">a</span> <span class="n">valid</span> <span class="nb">tuple</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">type_error</span><span class="o">.</span><span class="n">tuple</span><span class="p">)</span>
+<span class="n">coordinates</span> <span class="o">-&gt;</span> <span class="mi">2</span>
+  <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">a</span> <span class="n">valid</span> <span class="nb">list</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">type_error</span><span class="o">.</span><span class="n">list</span><span class="p">)</span>
+<span class="n">coordinates</span> <span class="o">-&gt;</span> <span class="mi">2</span>
+  <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">a</span> <span class="n">valid</span> <span class="nb">tuple</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">type_error</span><span class="o">.</span><span class="n">tuple</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>A new type of error has been thrown. The <code class="docutils literal notranslate"><span class="pre">ValidationError</span></code> is a custom error that <em>pydantic</em> will throw when you try to insert data which does not adhere to the typing assigned to it via the type annotation.</p>
+<div class="note admonition">
+<p class="admonition-title">Type Hints No More!</p>
+<p>We will be calling the <em>pydantic</em>’s use of type “type annotations” because, although they are still technically a “type hint,” they are no longer hints.</p>
+</div>
+<p><em>pydantic</em> reads the type annotations assigned to the variables, and then validates the incoming arguments against those types. Because we made sure we were thorough enough with our type hints last chapter, our type annotations correctly capture the correct data.</p>
+<p>We also now have simultanious validation of multiple entries. In CHAPTER_3_WAFFLES, our validation code would throw the first error it found, without validating everything else. Here, <em>pydantic</em> is validating everything all at once, and raising it at the end.</p>
+<p>Reading the <code class="docutils literal notranslate"><span class="pre">ValidationError</span></code> output takes some getting used to, but once you recognize it, you can understand.</p>
+<section id="reading-the-validation-error">
+<h3>Reading the Validation error<a class="headerlink" href="#reading-the-validation-error" title="Permalink to this headline">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">charge</span>
+  <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">a</span> <span class="n">valid</span> <span class="nb">float</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">type_error</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+<span class="n">charge</span>
+  <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">a</span> <span class="n">valid</span> <span class="n">integer</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">type_error</span><span class="o">.</span><span class="n">integer</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here <code class="docutils literal notranslate"><span class="pre">charge</span></code> is the attribute and its <code class="docutils literal notranslate"><span class="pre">value</span></code> is not a valid type of <code class="docutils literal notranslate"><span class="pre">float</span></code>. On the next line, <code class="docutils literal notranslate"><span class="pre">charge</span></code> is also an error because its not an <code class="docutils literal notranslate"><span class="pre">int</span></code>. <em>pydantic</em> treats <code class="docutils literal notranslate"><span class="pre">Union</span></code> types as an either or and validates them sepratley, accepting whichever one comes first.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">coordinates</span> <span class="o">-&gt;</span> <span class="mi">0</span>
+  <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">a</span> <span class="n">valid</span> <span class="nb">list</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">type_error</span><span class="o">.</span><span class="n">list</span><span class="p">)</span>
+<span class="n">coordinates</span> <span class="o">-&gt;</span> <span class="mi">1</span>
+  <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">a</span> <span class="n">valid</span> <span class="nb">list</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">type_error</span><span class="o">.</span><span class="n">list</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">coordinates</span></code> is the attribute that did not recieve valid data. <code class="docutils literal notranslate"><span class="pre">-&gt;</span> <span class="pre">0</span></code> indicates that at index <code class="docutils literal notranslate"><span class="pre">0</span></code> of <code class="docutils literal notranslate"><span class="pre">coordinates</span></code>, the validator was expecting a <code class="docutils literal notranslate"><span class="pre">list</span></code> but did not get one. <code class="docutils literal notranslate"><span class="pre">-&gt;</span> <span class="pre">1</span></code> on the next entry specifies index <code class="docutils literal notranslate"><span class="pre">1</span></code> of <code class="docutils literal notranslate"><span class="pre">coordinates</span></code> was also not a <code class="docutils literal notranslate"><span class="pre">list</span></code>.</p>
+</section>
+</section>
+<section id="data-coersion">
+<h2>Data Coersion<a class="headerlink" href="#data-coersion" title="Permalink to this headline">#</a></h2>
+<p><em>pydantic</em> has already helped us simplify our code by providing type checking, but let’s simplify further by reducing our type annotation complexity and seeing what <em>pydantic</em> does to some invalid types.</p>
+<p>For starters, lets assume <code class="docutils literal notranslate"><span class="pre">charge</span></code> can only be a float. Right now <code class="docutils literal notranslate"><span class="pre">charge</span></code> accepts <code class="docutils literal notranslate"><span class="pre">float</span></code> or <code class="docutils literal notranslate"><span class="pre">int</span></code>, and because it does, we can see that <em>pydantic</em> SHOULD show a different output depending on what type we give it.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">int_charge</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">mol_data</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s2">&quot;charge&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}}</span>
+<span class="n">float_charge</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">mol_data</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s2">&quot;charge&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">}}</span>  <span class="c1"># Value that can&#39;t be int.</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">int_charge</span><span class="p">[</span><span class="s2">&quot;charge&quot;</span><span class="p">]))</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">float_charge</span><span class="p">[</span><span class="s2">&quot;charge&quot;</span><span class="p">]))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;class &#39;int&#39;&gt;
+&lt;class &#39;float&#39;&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">int_water</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="o">**</span><span class="n">int_charge</span><span class="p">)</span>
+<span class="n">float_water</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="o">**</span><span class="n">float_charge</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Integer water has value </span><span class="si">{</span><span class="n">int_water</span><span class="o">.</span><span class="n">charge</span><span class="si">}</span><span class="s2"> and type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">int_water</span><span class="o">.</span><span class="n">charge</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Float water has value </span><span class="si">{</span><span class="n">float_water</span><span class="o">.</span><span class="n">charge</span><span class="si">}</span><span class="s2"> and type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">float_water</span><span class="o">.</span><span class="n">charge</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Integer water has value 0.0 and type &lt;class &#39;float&#39;&gt;
+Float water has value -1.5 and type &lt;class &#39;float&#39;&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<p>Uh-oh. What happened? We expcted to get an <code class="docutils literal notranslate"><span class="pre">int</span></code> out of the <code class="docutils literal notranslate"><span class="pre">int_water</span></code> object, but instead got a <code class="docutils literal notranslate"><span class="pre">float</span></code>. The reason for this is <em>pydantic</em> does what is called “data coercion” based on the the type annotations you provide.</p>
+<p>Data coercion is the process of molding and shaping data to adhere to certain rules. In this case, the <code class="docutils literal notranslate"><span class="pre">int</span></code> was coerced by casting it to a <code class="docutils literal notranslate"><span class="pre">float</span></code> before being stored. The question you may ask is “why did <em>pydantic</em> do that if it can accept both <code class="docutils literal notranslate"><span class="pre">float</span></code> or <code class="docutils literal notranslate"><span class="pre">int</span></code>?” And the answer has to do with the <em>order</em> we provided the type annotations. Take a look at our first type helpers.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Type Helpers</span>
+<span class="n">fi</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="nb">int</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We specfied that <code class="docutils literal notranslate"><span class="pre">float</span></code> was first and <code class="docutils literal notranslate"><span class="pre">int</span></code> was second. From a pure set theory standpoint, order should not mater, but <em>pydantic</em> does respect the order of its types. Down at a code level, <em>pydantic</em> is doing a few things. Here is a simplified list</p>
+<ol class="simple">
+<li><p>Handle pre-validators (covered later WAFFLES)</p></li>
+<li><p>Attempt to coerce data through first type annotation encoutered</p></li>
+<li><p>Accept coersion if no error is thrown</p></li>
+<li><p>Try next type annotation if present</p></li>
+<li><p>Repeat 2-4 until resolved or error thrown with no resolution</p></li>
+<li><p>Handle user validators (covered later WAFFLES)</p></li>
+</ol>
+<p>Because we specified <code class="docutils literal notranslate"><span class="pre">float</span></code> first, the <code class="docutils literal notranslate"><span class="pre">int</span></code> was cast to a <code class="docutils literal notranslate"><span class="pre">float</span></code> and accepted. We could reverse the order and try again to see what happens:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">IntThenFloatMolecule</span><span class="p">(</span><span class="n">Molecule</span><span class="p">):</span>  <span class="c1"># Subclass our defined model to inherit attributes</span>
+    <span class="n">charge</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">int_water</span> <span class="o">=</span> <span class="n">IntThenFloatMolecule</span><span class="p">(</span><span class="o">**</span><span class="n">int_charge</span><span class="p">)</span>
+<span class="n">float_water</span> <span class="o">=</span> <span class="n">IntThenFloatMolecule</span><span class="p">(</span><span class="o">**</span><span class="n">float_charge</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Integer water has value </span><span class="si">{</span><span class="n">int_water</span><span class="o">.</span><span class="n">charge</span><span class="si">}</span><span class="s2"> and type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">int_water</span><span class="o">.</span><span class="n">charge</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Float water has value </span><span class="si">{</span><span class="n">float_water</span><span class="o">.</span><span class="n">charge</span><span class="si">}</span><span class="s2"> and type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">float_water</span><span class="o">.</span><span class="n">charge</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Integer water has value 0 and type &lt;class &#39;int&#39;&gt;
+Float water has value -1 and type &lt;class &#39;int&#39;&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<p>We have now lost information from the coercion. However, <em>pydantic</em> did exactly what it was told. The lesson here is that it is better to be permissive where possible. Since <code class="docutils literal notranslate"><span class="pre">float</span></code> will ensure we don’t have data loss for a field which can accept both.</p>
+<div class="note admonition">
+<p class="admonition-title">Don’t like something? Config it</p>
+<p>Pydantic’s BaseModels are highly configurable through a class you can create in any model called Config. Some configurations will be shown later, but you can always <a class="reference external" href="https://pydantic-docs.helpmanual.io/usage/model_config/">check the pydantic Config docs</a> for more things you can do. Changing this specific <code>Union</code> behavior is a setting called “Smart Union”.</p>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+
+<span class="c1"># Type Helpers</span>
+<span class="n">fi</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="nb">int</span><span class="p">]</span>
+<span class="n">lfi</span> <span class="o">=</span> <span class="nb">list</span><span class="p">[</span><span class="n">fi</span><span class="p">]</span>
+<span class="n">tfi</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">fi</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+<span class="n">inner</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">lfi</span><span class="p">,</span> <span class="n">tfi</span><span class="p">]</span>
+<span class="n">lo</span> <span class="o">=</span> <span class="nb">list</span><span class="p">[</span><span class="n">inner</span><span class="p">]</span>
+<span class="n">tupo</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">inner</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+
+<span class="k">class</span> <span class="nc">Molecule</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">charge</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">symbols</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">coordinates</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">lo</span><span class="p">,</span> <span class="n">tupo</span><span class="p">]</span>
+    
+        
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">num_atoms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We’ve simplfied some of our type hints now. One of the other changes we’ve made is setting <code class="docutils literal notranslate"><span class="pre">symbols</span></code> to a list of string instead of accepting either <code class="docutils literal notranslate"><span class="pre">list</span></code> or <code class="docutils literal notranslate"><span class="pre">tuple</span></code>.</p>
+<div class="exercise">
+<p class="exercise-title"> Practice simplifying type annotations with coersion
+    <p>What would the simplified type annotation of <code>coordinates</code> be?</p>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution:</p>
+<p>Either one of the following</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">coordinates</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span>
+<span class="n">coordinates</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span>
+</pre></div>
+</div>
+</div>
+<div class="dropdown admonition">
+<p class="admonition-title">Incorrect Answer:</p>
+<p>This option is wrong because it will cast floats to integers by default, which is bad unless you are on a discrete grid of coordinates.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">coordinates</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span>
+</pre></div>
+</div>
+</div>
+</div></section>
+<section id="preparing-for-custom-validation">
+<h2>Preparing for Custom Validation<a class="headerlink" href="#preparing-for-custom-validation" title="Permalink to this headline">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+
+<span class="k">class</span> <span class="nc">Molecule</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">charge</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">symbols</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">coordinates</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">num_atoms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Above is our final code for this chapter and is the code in CHAPTER_4_WAFFLES. We’ve converted our original code to a type validated model which is easy to read. We did this by leverging the power of the <em>pydantic</em> module, but through the process of understanding type hints, and then <code class="docutils literal notranslate"><span class="pre">dataclasses</span></code> native to Python.</p>
+<p>Next chapter we’ll cover doing so much more with <em>pydantic</em> (and yet still so little of what it can), focusing on writting validator’s beyond simple type checks.</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./chapters"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+            </main>
+            <footer class="footer-article noprint">
+                
+    <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="ManualDataValidation.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">Manual Data Validation</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="ValidatingDataBeyondTypes.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Validating Data Beyond Types</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+            </footer>
+        </div>
+    </div>
+    <div class="footer-content row">
+        <footer class="col footer"><p>
+  
+    By Levi Naden of The Molecular Sciences Software Institute<br/>
+  
+      &copy; Copyright 2022.<br/>
+</p>
+        </footer>
+    </div>
+    
+</div>
+
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+
+
+  </body>
+</html>

@@ -1,0 +1,953 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Nested Data Models &#8212; Python Type Hints, Dataclasses, and Pydantic</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Validating Data Beyond Types" href="ValidatingDataBeyondTypes.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+<script async="" src="https://www.google-analytics.com/analytics.js"></script>
+<script>
+                        window.ga = window.ga || function () {
+                            (ga.q = ga.q || []).push(arguments) };
+                        ga.l = +new Date;
+                        ga('create', 'UA-169902961-1', 'auto');
+                        ga('set', 'anonymizeIp', true);
+                        ga('send', 'pageview');
+                    </script>
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+<!-- Checkboxes to toggle the left sidebar -->
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
+<label class="overlay overlay-navbar" for="__navigation">
+    <div class="visually-hidden">Toggle navigation sidebar</div>
+</label>
+<!-- Checkboxes to toggle the in-page toc -->
+<input type="checkbox" class="sidebar-toggle" name="__page-toc" id="__page-toc" aria-label="Toggle in-page Table of Contents">
+<label class="overlay overlay-pagetoc" for="__page-toc">
+    <div class="visually-hidden">Toggle in-page Table of Contents</div>
+</label>
+<!-- Headers at the top -->
+<div class="announcement header-item noprint"></div>
+<div class="header header-item noprint"></div>
+
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<!-- Sidebar -->
+<div class="bd-sidebar noprint" id="site-navigation">
+    <div class="bd-sidebar__content">
+        <div class="bd-sidebar__top"><div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="../index.html">
+      
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
+      
+      
+      <img src="../_static/molssi_main_logo.png" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">Python Type Hints, Dataclasses, and Pydantic</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="setup.html">
+                    Objectives and Setup
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="StartingCodeAndObjectives.html">
+   Starting Code and Objectives
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="TypeHintsInPython.html">
+   Type Hints in Python
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="DataclassInPython.html">
+   Dataclasses In Python
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ManualDataValidation.html">
+   Manual Data Validation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="IntroToPydantic.html">
+   Introcuction to Pydantic
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ValidatingDataBeyondTypes.html">
+   Validating Data Beyond Types
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Nested Data Models
+  </a>
+ </li>
+</ul>
+
+    </div>
+</nav></div>
+        <div class="bd-sidebar__bottom">
+             <!-- To handle the deprecated key -->
+            
+            <div class="navbar_extra_footer">
+            Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+            </div>
+            
+        </div>
+    </div>
+    <div id="rtd-footer-container"></div>
+</div>
+
+
+          
+
+
+          
+<!-- A tiny helper pixel to detect if we've scrolled -->
+<div class="sbt-scroll-pixel-helper"></div>
+<!-- Main content -->
+<div class="col py-0 content-container">
+    
+    <div class="header-article row sticky-top noprint">
+        
+
+
+
+<div class="col py-1 d-flex header-article-main">
+    <div class="header-article__left">
+        
+        <label for="__navigation"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="right"
+title="Toggle navigation"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-bars"></i>
+  </span>
+
+</label>
+
+        
+    </div>
+    <div class="header-article__right">
+<div class="menu-dropdown menu-dropdown-launch-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Launch interactive content">
+      <i class="fas fa-rocket"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="https://mybinder.org/v2/gh/MolSSI-Education/type-hints-pydantic-tutorial/main?urlpath=tree/python-type-hints-and-pydantic/chapters/NestedDataModels.ipynb"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Launch on Binder"
+>
+  
+
+<span class="headerbtn__icon-container">
+  
+    <img src="../_static/images/logo_binder.svg">
+  </span>
+<span class="headerbtn__text-container">Binder</span>
+</a>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+
+<button onclick="toggleFullScreen()"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="bottom"
+title="Fullscreen mode"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+<div class="menu-dropdown menu-dropdown-repository-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Source repositories">
+      <i class="fab fa-github"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="https://github.com/MolSSI-Education/type-hints-pydantic-tutorial"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Source repository"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="headerbtn__text-container">repository</span>
+</a>
+
+      </li>
+      
+      <li>
+        <a href="https://github.com/MolSSI-Education/type-hints-pydantic-tutorial/issues/new?title=Issue%20on%20page%20%2Fchapters/NestedDataModels.html&body=Your%20issue%20content%20here."
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Open an issue"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="headerbtn__text-container">open issue</span>
+</a>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+
+<div class="menu-dropdown menu-dropdown-download-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Download this page">
+      <i class="fas fa-download"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="../_sources/chapters/NestedDataModels.ipynb"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Download source file"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="headerbtn__text-container">.ipynb</span>
+</a>
+
+      </li>
+      
+      <li>
+        
+<button onclick="printPdf(this)"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="left"
+title="Print to PDF"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="headerbtn__text-container">.pdf</span>
+</button>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+<label for="__page-toc"
+  class="headerbtn headerbtn-page-toc"
+  
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-list"></i>
+  </span>
+
+</label>
+
+    </div>
+</div>
+
+<!-- Table of contents -->
+<div class="col-md-3 bd-toc show noprint">
+    <div class="tocsection onthispage pt-5 pb-3">
+        <i class="fas fa-list"></i> Contents
+    </div>
+    <nav id="bd-toc-nav" aria-label="Page">
+        <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#nested-models-just-dictionaries-with-some-structure">
+   Nested Models: Just Dictionaries with Some Structure
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#defining-optional-entries">
+     Defining Optional Entries
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#understanding-the-dict-type">
+     Understanding the
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       dict
+      </span>
+     </code>
+     Type
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#nested-models-the-pydantic-way">
+   Nested Models: The Pydantic Way
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#validating-strings-on-patterns-regular-expressions">
+   Validating Strings on Patterns: Regular Expressions
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#final-code-bringing-it-all-together">
+   Final Code: Bringing it All Together.
+  </a>
+ </li>
+</ul>
+
+    </nav>
+</div>
+    </div>
+    <div class="article row">
+        <div class="col pl-md-3 pl-lg-5 content-container">
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>Nested Data Models</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#nested-models-just-dictionaries-with-some-structure">
+   Nested Models: Just Dictionaries with Some Structure
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#defining-optional-entries">
+     Defining Optional Entries
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#understanding-the-dict-type">
+     Understanding the
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       dict
+      </span>
+     </code>
+     Type
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#nested-models-the-pydantic-way">
+   Nested Models: The Pydantic Way
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#validating-strings-on-patterns-regular-expressions">
+   Validating Strings on Patterns: Regular Expressions
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#final-code-bringing-it-all-together">
+   Final Code: Bringing it All Together.
+  </a>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            <main id="main-content" role="main">
+                
+              <div>
+                
+  <section class="tex2jax_ignore mathjax_ignore" id="nested-data-models">
+<h1>Nested Data Models<a class="headerlink" href="#nested-data-models" title="Permalink to this headline">#</a></h1>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Starting File: CHAPTER_5_WAFFLES
+This chapter will start from the CHAPTER_5_WAFFLES and end on the CHAPTER_6_WAFFLES.</p>
+</div>
+<p>Data models are often more than flat objects. Many data structures and models can be precived as a series of nested dictionaries, or “models within models.” We could validate those by hand, but <em>pydantic</em> provides the tools to handle that for us.</p>
+<p>This chapter, we’ll be covering nesting models within each other. We’ll also be touching on a very powerfull tool for validating strings called Regular Expressions, or “regex.”</p>
+<div class="note admonition">
+<p class="admonition-title">Check Out Pydantic</p>
+<p>We will not be covering all the capabilities of <em>pydantic</em> here, and we highly encourage you to visit <a class="reference external" href="https://pydantic-docs.helpmanual.io/">the pydantic docs</a> to learn about all the powerful and easy-to-execute things <em>pydantic</em> can do.</p>
+</div>
+<div class="note admonition">
+<p class="admonition-title">Compatibility with Python 3.8 and below</p>
+<p>If you have Python 3.8 or below, you will need to import container type objects such as <code class="docutils literal notranslate"><span class="pre">List</span></code>, <code class="docutils literal notranslate"><span class="pre">Tuple</span></code>, <code class="docutils literal notranslate"><span class="pre">Dict</span></code>, etc. from the <code class="docutils literal notranslate"><span class="pre">typing</span></code> library instead of their native types of <code class="docutils literal notranslate"><span class="pre">list</span></code>, <code class="docutils literal notranslate"><span class="pre">tuple</span></code>, <code class="docutils literal notranslate"><span class="pre">dict</span></code>, etc. This chapter will assume Python 3.9 or greater, however, both approaches will work in &gt;=Python 3.9 and have 1:1 replacements of the same name.</p>
+</div>
+<section id="nested-models-just-dictionaries-with-some-structure">
+<h2>Nested Models: Just Dictionaries with Some Structure<a class="headerlink" href="#nested-models-just-dictionaries-with-some-structure" title="Permalink to this headline">#</a></h2>
+<p>Let’s start by taking a look at our <code class="docutils literal notranslate"><span class="pre">Molecule</span></code> object once more and looking at some sample data.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">validator</span>
+
+<span class="k">class</span> <span class="nc">Molecule</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">charge</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">symbols</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">coordinates</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+        
+    <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
+        <span class="n">arbitrary_types_allowed</span> <span class="o">=</span> <span class="kc">True</span>
+    
+    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">,</span> <span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">coord_to_numpy</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">coords</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">coords</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not cast </span><span class="si">{</span><span class="n">coords</span><span class="si">}</span><span class="s2"> to numpy array&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">coords</span>
+        
+    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">coords_length_of_symbols</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+        <span class="n">symbols</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;symbols&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">symbols</span><span class="p">)</span> <span class="o">!=</span> <span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">or</span> <span class="p">(</span><span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Coordinates must be of shape [Number Symbols, 3], was </span><span class="si">{</span><span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">coords</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">num_atoms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mol_data</span> <span class="o">=</span> <span class="p">{</span>  <span class="c1"># Good data</span>
+    <span class="s2">&quot;coordinates&quot;</span><span class="p">:</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]],</span> 
+    <span class="s2">&quot;symbols&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="s2">&quot;O&quot;</span><span class="p">],</span> 
+    <span class="s2">&quot;charge&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> 
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;water&quot;</span>
+<span class="p">}</span>
+
+<span class="n">bad_name</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="mi">789</span><span class="p">}</span>  <span class="c1"># Name is not str</span>
+<span class="n">bad_charge</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;charge&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]}</span>  <span class="c1"># Charge is not int or float</span>
+<span class="n">noniter_symbols</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;symbols&quot;</span><span class="p">:</span> <span class="mi">1234567890</span><span class="p">}</span>  <span class="c1"># Symbols is an int</span>
+<span class="n">nonlist_symbols</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;symbols&quot;</span><span class="p">:</span> <span class="s1">&#39;[&quot;H&quot;, &quot;H&quot;, &quot;O&quot;]&#39;</span><span class="p">}</span>  <span class="c1"># Symbols is a string (notably is a string-ified list)</span>
+<span class="n">tuple_symbols</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;symbols&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="s2">&quot;O&quot;</span><span class="p">)}</span>  <span class="c1"># Symbols as a tuple?</span>
+<span class="n">bad_coords</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;coordinates&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">,</span> <span class="s2">&quot;3&quot;</span><span class="p">]}</span>  <span class="c1"># Coords is a single list of string</span>
+<span class="n">inner_coords_not3d</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;coordinates&quot;</span><span class="p">:</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]]}</span>
+<span class="n">bad_symbols_and_cords</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;symbols&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="s2">&quot;O&quot;</span><span class="p">],</span>
+                         <span class="s2">&quot;coordinates&quot;</span><span class="p">:</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">]]</span>
+                        <span class="p">}</span>  <span class="c1"># Coordinates top-level list is not the same length as symbols</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>What exactly is our model? Our model is a <code class="docutils literal notranslate"><span class="pre">dict</span></code> with specific keys <code class="docutils literal notranslate"><span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">charge</span></code>, <code class="docutils literal notranslate"><span class="pre">symbols</span></code>, and <code class="docutils literal notranslate"><span class="pre">coordinates</span></code>; all of which have some restrictions in the form of type annotations. What if we had another model for additional information that needed to be kept together, and those data do not make sense to transfer to a flat list of other attributes? An example of this would be contributor-like metadata; the origonator or provider of the data in question.</p>
+<p>Let’s make one up. Say the information follows these rules:</p>
+<ul class="simple">
+<li><p>A name of the contributor</p></li>
+<li><p>A contact email or homepage</p></li>
+<li><p>An optional organization.</p></li>
+<li><p>The contributor as a whole is optional too.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">contributor</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;I. Taylor Researcher&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;https://molssi.org&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;Organization&quot;</span><span class="p">:</span> <span class="s2">&quot;The Molecular Sciences Software Institute&quot;</span>
+              <span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>That looks like a good contributor of our <code class="docutils literal notranslate"><span class="pre">mol_data</span></code>. How would we add this entry to the <code class="docutils literal notranslate"><span class="pre">Molecule</span></code>? First let’s understand what an “optional” entry is.</p>
+<section id="defining-optional-entries">
+<h3>Defining Optional Entries<a class="headerlink" href="#defining-optional-entries" title="Permalink to this headline">#</a></h3>
+<p>For type hints/annotations, “optional” translates to “default <code class="docutils literal notranslate"><span class="pre">None</span></code>”. This can be specified in one of two main ways, three if you are on Python 3.10 or greater.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span>
+
+<span class="n">contributor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span>
+<span class="n">contributor</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">contributor</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span>  <span class="c1"># Python 3.10+ only</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>First thing to note is the <code class="docutils literal notranslate"><span class="pre">Any</span></code> object from <code class="docutils literal notranslate"><span class="pre">typing</span></code>. This can be used to mean exactly that, <em>any</em> data are valid here. We’ll replace it with our actual model in a moment. Let’s go over the wys to specify optional entries now with the understanding that all three of these mean and do the <em>exact</em> same thing.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Optional[Any]</span></code> borrows the <code class="docutils literal notranslate"><span class="pre">Optional</span></code> object from the <code class="docutils literal notranslate"><span class="pre">typing</span></code> library.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Any</span> <span class="pre">=</span> <span class="pre">None</span></code> sets a default value of <code class="docutils literal notranslate"><span class="pre">None</span></code>, which also implies optional. This method can be used in tandem with any other type and not <code class="docutils literal notranslate"><span class="pre">None</span></code> to set a default value. E.g. <code class="docutils literal notranslate"><span class="pre">variable:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">12</span></code> would indicate an <code class="docutils literal notranslate"><span class="pre">int</span></code> type hint, and default value of <code class="docutils literal notranslate"><span class="pre">12</span></code> if its not set in the input data.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Any</span> <span class="pre">|</span> <span class="pre">None</span></code> employs the set operators with Python to treat this as “any OR none”. This is also equal to <code class="docutils literal notranslate"><span class="pre">Union[Any,None]</span></code>. This only works in Python 3.10 or greater and it should be noted this will be the prefered way to specify <code class="docutils literal notranslate"><span class="pre">Union</span></code> in the future, removing the need to import it at all.</p>
+</section>
+<section id="understanding-the-dict-type">
+<h3>Understanding the <code class="docutils literal notranslate"><span class="pre">dict</span></code> Type<a class="headerlink" href="#understanding-the-dict-type" title="Permalink to this headline">#</a></h3>
+<p>At the end of the day, all models are just glorified dictionaries with conditions on what is and is not allowed. You can specify a <code class="docutils literal notranslate"><span class="pre">dict</span></code> type which up to 2 arguments for its type hints: keys and values, in that order. Although the Python dictionary supports any immutable type for a dictionary key, <em>pydantic</em> models accept only strings by default (this can be changed).</p>
+<p>If we take our <code class="docutils literal notranslate"><span class="pre">contributor</span></code> rules, we could define this sub model like such:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ValidEmail</span><span class="p">(</span><span class="nb">str</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="k">class</span> <span class="nc">ValidHTML</span><span class="p">(</span><span class="nb">str</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+<span class="n">contributor</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span>
+    <span class="nb">str</span><span class="p">,</span>  <span class="c1"># Key Type Annotation</span>
+    <span class="n">Union</span><span class="p">[</span>  <span class="c1"># Value Type Annotation</span>
+        <span class="n">ValidEmail</span><span class="p">,</span> <span class="n">ValidHTML</span><span class="p">,</span> <span class="nb">str</span>  <span class="c1"># Different accepted string types, overly permissive</span>
+    <span class="p">],</span>  
+<span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Optional</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We would need to fill in the rest of the validator data for <code class="docutils literal notranslate"><span class="pre">ValidURL</span></code> and <code class="docutils literal notranslate"><span class="pre">ValidHTML</span></code>, write some rather rigourus validation to ensure there are only the correct keys, and ensure the values all adhere to the other rules above, but it can be done. In fact, the values <code class="docutils literal notranslate"><span class="pre">Union</span></code> is overly permissive.</p>
+<div class="exercise">
+<p class="exercise-title"> Why is the values <code>Union</code> overly permisive?</p>
+<p>As written, the <code>Union</code> will not actually correctly prevent bad URLs or bad emails, why?</p>
+<div class="dropdown admonition">
+<p class="admonition-title">Solution:</p>
+<p>Because <em>pydantic</em> runs its validators in order until one succeeds or all fail, any string will correctly validate once it hits the <code>str</code> type annotation at the very end.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="nested-models-the-pydantic-way">
+<h2>Nested Models: The Pydantic Way<a class="headerlink" href="#nested-models-the-pydantic-way" title="Permalink to this headline">#</a></h2>
+<p>Manually writting validators for structured models within our models made simple with <em>pydantic</em>. Because our <code class="docutils literal notranslate"><span class="pre">contributor</span></code> is just another model, we can treat it as such, and inject it in any other <em>pydantic</em> model.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">validator</span>
+
+<span class="k">class</span> <span class="nc">Contributor</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">url</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">Organization</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Set default that makes it optional</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>There it is, our very basic model. Because this is just another <em>pydantic</em> model, we can also write validators that will run for just this model. We’ll revist that concept in a moment though, and lets inject this model into our exiting <em>pydantic</em> model for <code class="docutils literal notranslate"><span class="pre">Molecule</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">validator</span>
+
+<span class="k">class</span> <span class="nc">Molecule</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">charge</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">symbols</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">coordinates</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">contributor</span><span class="p">:</span> <span class="n">Contributor</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># &lt;--- New, nested, optional model</span>
+        
+    <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
+        <span class="n">arbitrary_types_allowed</span> <span class="o">=</span> <span class="kc">True</span>
+    
+    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">,</span> <span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">coord_to_numpy</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">coords</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">coords</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not cast </span><span class="si">{</span><span class="n">coords</span><span class="si">}</span><span class="s2"> to numpy array&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">coords</span>
+        
+    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">coords_length_of_symbols</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+        <span class="n">symbols</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;symbols&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">symbols</span><span class="p">)</span> <span class="o">!=</span> <span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">or</span> <span class="p">(</span><span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Coordinates must be of shape [Number Symbols, 3], was </span><span class="si">{</span><span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">coords</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">num_atoms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>That one line has now added the entire construct of the <code class="docutils literal notranslate"><span class="pre">Contributor</span></code> model to the <code class="docutils literal notranslate"><span class="pre">Molecule</span></code>. The name of the submodel does NOT have to match the name of the attribute its representing. <em>Pydantic</em> will handle passing off the nested dictionary of input data to the nested model and construct it according to its own rules.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">water</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="o">**</span><span class="n">mol_data</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">water</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>name=&#39;water&#39; charge=0.0 symbols=[&#39;H&#39;, &#39;H&#39;, &#39;O&#39;] coordinates=array([[0, 0, 0],
+       [1, 1, 1],
+       [2, 2, 2]]) contributor=None
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mol_data_with_contrib</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">mol_data</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s2">&quot;contributor&quot;</span><span class="p">:</span> <span class="n">contributor</span><span class="p">}}</span>
+<span class="n">water_with_contributor</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="o">**</span><span class="n">mol_data_with_contrib</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">water_with_contributor</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>name=&#39;water&#39; charge=0.0 symbols=[&#39;H&#39;, &#39;H&#39;, &#39;O&#39;] coordinates=array([[0, 0, 0],
+       [1, 1, 1],
+       [2, 2, 2]]) contributor=Contributor(name=&#39;I. Taylor Researcher&#39;, url=&#39;https://molssi.org&#39;, Organization=&#39;The Molecular Sciences Software Institute&#39;)
+</pre></div>
+</div>
+</div>
+</div>
+<p>And that’s the basic of nested models. Aribtrary levels of nesting and peicewise addition of models can be constructed and inherted to make rich data structures.</p>
+<p>We still have the mater of making sure the URL is a valid url or email link, and for that we’ll need to touch on Regular Expressions.</p>
+</section>
+<section id="validating-strings-on-patterns-regular-expressions">
+<h2>Validating Strings on Patterns: Regular Expressions<a class="headerlink" href="#validating-strings-on-patterns-regular-expressions" title="Permalink to this headline">#</a></h2>
+<p>Strings, all strings, have patterns in them. Those patterns can be descibed with a specialized pattern recognition language called <a class="reference external" href="https://en.wikipedia.org/wiki/Regular_expression">Regular Expressions or “regex”</a>. A full understanding of regex is NOT required nor expected for this workshop. However, we feel its important to touch on as the more data validation you do, especially on strings, the more likely it will be that you need regex at some point.</p>
+<p>Let’s write a validator for email. We’re looking for something that looks like <code class="docutils literal notranslate"><span class="pre">mailto:someemail&#64;fake-location.org</span></code>. And maybe the <code class="docutils literal notranslate"><span class="pre">mailto:</span></code> part is optional. We start by creating our validator by subclassing <code class="docutils literal notranslate"><span class="pre">str</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">re</span>
+
+<span class="k">class</span> <span class="nc">MailTo</span><span class="p">(</span><span class="nb">str</span><span class="p">):</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">__get_validators__</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">validator</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">valid_str</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">valid_email</span><span class="p">]:</span>
+            <span class="k">yield</span> <span class="n">validator</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">valid_str</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Not a valid mailto Email format&quot;</span><span class="p">)</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">v</span>
+    
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">valid_email</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(mailto:)?[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+&quot;</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;mailto URL is not a valid mailto or email link&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">v</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>This is the custom validator form of the supplementary material in the last chapter REF_THIS_WAFFLES. If you did not go through that section, don’t worry. The short of it is this is the form for making a custom type and providing built-in validation methods for <em>pydantic</em> to access. Each of the <code class="docutils literal notranslate"><span class="pre">valid_X</span></code> functions have ben set up to run as different things which have to be validated for something of typr <code class="docutils literal notranslate"><span class="pre">MailTo</span></code> to be considered valid. The important part to focus on here is the <code class="docutils literal notranslate"><span class="pre">valid_email</span></code> function and the <code class="docutils literal notranslate"><span class="pre">re.match</span></code> method.</p>
+<p><code class="docutils literal notranslate"><span class="pre">re</span></code> is a built-in Python library for doing regex. The <code class="docutils literal notranslate"><span class="pre">match(pattern,</span> <span class="pre">string_to_find_match)</span></code> function looks for the <code class="docutils literal notranslate"><span class="pre">pattern</span></code> from the first character of <code class="docutils literal notranslate"><span class="pre">string_to_find_match</span></code>. Our pattern can be broken down into the following way:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>r&quot;              &lt;-- Literal String, bypasses alot of special characters like #
+(               &lt;-- Grouping
+    mailto:     &lt;-- exactly this, no special characters here
+)?              &lt;-- ? Optional, operating on Grouping
+[               &lt;-- Single character matching any of the characters within
+    a-z         &lt;-- any lowercase a to z character
+    A-Z         &lt;-- any uppercase A to Z character
+    0-9         &lt;-- any number 0 to 9
+    ._%+-       &lt;-- any of these characters, special regex meaning supressed inside []
+]+              &lt;-- + at least one instance, repeated as many times, operating on single character match = &quot;these characters at least once&quot;
+@               &lt;-- literal @ sign 
+[a-zA-Z0-9.-]+  &lt;-- Single character match, of this pattern, at least one of
+\.              &lt;-- literal &quot;.&quot; because \ supresses wildcard nature of . in regex
+[a-zA-Z]+       &lt;-- Single character match, of this pattern, at least one of
+&quot;               &lt;-- End pattern
+
+</pre></div>
+</div>
+<p>We’re not expecting this to be memoriezed, just to understand that there is a pattern that is being looked for. We can now set this pattern as one of the valid paremters of the <code class="docutils literal notranslate"><span class="pre">url</span></code> entry in the <code class="docutils literal notranslate"><span class="pre">contributor</span></code> model.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">validator</span>
+
+<span class="k">class</span> <span class="nc">Contributor</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">url</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">MailTo</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
+    <span class="n">Organization</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Set default that makes it optional</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>So why did we show this if we were only going to pass in <code class="docutils literal notranslate"><span class="pre">str</span></code> as the second <code class="docutils literal notranslate"><span class="pre">Union</span></code> option? We wanted to show this regex pattern as <em>pydantic</em> provides a number of helper “types” which function very similar to our custom <code class="docutils literal notranslate"><span class="pre">MailTo</span></code> class that can be used to shortcut writting manual validators. Their names often say exactly what they do. Some examples include:</p>
+<ul class="simple">
+<li><p>StrictInt</p></li>
+<li><p>PositiveFloat</p></li>
+<li><p>AnyUrl</p></li>
+<li><p>stricturl</p></li>
+<li><p>IPvAnyAddress</p></li>
+<li><p>and many more</p></li>
+</ul>
+<p>They also have constrained types which you can use to set some boundaries without having to code them yourself. Natively, we can use the <code class="docutils literal notranslate"><span class="pre">AnyUrl</span></code> to save us having to write our own regex validator for matching URLs.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">validator</span><span class="p">,</span> <span class="n">AnyUrl</span>
+
+<span class="k">class</span> <span class="nc">Contributor</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">url</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">MailTo</span><span class="p">,</span> <span class="n">AnyUrl</span><span class="p">]</span>
+    <span class="n">Organization</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Set default that makes it optional</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="exercise">
+<p class="exercise-title"> Challenge: URL Regex Validator
+    <p>Write a custom match string for a URL regex pattern</p>
+<div class="warning admonition">
+<p class="admonition-title">Do not do this yourself</p>
+<p>There are many correct answers. All of them are extremly difficult regex strings. Put some thought into your answer, understanding that its best to look up an answer (feel free to do this), or borrow from someone else; with attribution. We did this for this challenge as well.</p>
+</div>
+<div class="dropdown admonition">
+<p class="admonition-title">Answer:</p>
+<p>With credit: <a class="reference external" href="https://gist.github.com/gruber/8891611#file-liberal-regex-pattern-for-web-urls-L8">https://gist.github.com/gruber/8891611#file-liberal-regex-pattern-for-web-urls-L8</a></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;(?i)\b((?:https?:(?:/{1,3}|[a-z0-9%])|[a-z0-9.\-]+[.](?:com|net|org|edu|gov|mil|aero|asia|biz|cat|coop|info|int|jobs|mobi|museum|name|post|pro|tel|travel|xxx|ac|ad|ae|af|ag|ai|al|am|an|ao|aq|ar|as|at|au|aw|ax|az|ba|bb|bd|be|bf|bg|bh|bi|bj|bm|bn|bo|br|bs|bt|bv|bw|by|bz|ca|cc|cd|cf|cg|ch|ci|ck|cl|cm|cn|co|cr|cs|cu|cv|cx|cy|cz|dd|de|dj|dk|dm|do|dz|ec|ee|eg|eh|er|es|et|eu|fi|fj|fk|fm|fo|fr|ga|gb|gd|ge|gf|gg|gh|gi|gl|gm|gn|gp|gq|gr|gs|gt|gu|gw|gy|hk|hm|hn|hr|ht|hu|id|ie|il|im|in|io|iq|ir|is|it|je|jm|jo|jp|ke|kg|kh|ki|km|kn|kp|kr|kw|ky|kz|la|lb|lc|li|lk|lr|ls|lt|lu|lv|ly|ma|mc|md|me|mg|mh|mk|ml|mm|mn|mo|mp|mq|mr|ms|mt|mu|mv|mw|mx|my|mz|na|nc|ne|nf|ng|ni|nl|no|np|nr|nu|nz|om|pa|pe|pf|pg|ph|pk|pl|pm|pn|pr|ps|pt|pw|py|qa|re|ro|rs|ru|rw|sa|sb|sc|sd|se|sg|sh|si|sj|Ja|sk|sl|sm|sn|so|sr|ss|st|su|sv|sx|sy|sz|tc|td|tf|tg|th|tj|tk|tl|tm|tn|to|tp|tr|tt|tv|tw|tz|ua|ug|uk|us|uy|uz|va|vc|ve|vg|vi|vn|vu|wf|ws|ye|yt|yu|za|zm|zw)/)(?:[^\s()&lt;&gt;{}\[\]]+|\([^\s()]*?\([^\s()]+\)[^\s()]*?\)|\([^\s]+?\))+(?:\([^\s()]*?\([^\s()]+\)[^\s()]*?\)|\([^\s]+?\)|[^\s`!()\[\]{};:&#39;&quot;.,&lt;&gt;?«»“”‘’])|(?:(?&lt;!@)[a-z0-9]+(?:[.\-][a-z0-9]+)*[.](?:com|net|org|edu|gov|mil|aero|asia|biz|cat|coop|info|int|jobs|mobi|museum|name|post|pro|tel|travel|xxx|ac|ad|ae|af|ag|ai|al|am|an|ao|aq|ar|as|at|au|aw|ax|az|ba|bb|bd|be|bf|bg|bh|bi|bj|bm|bn|bo|br|bs|bt|bv|bw|by|bz|ca|cc|cd|cf|cg|ch|ci|ck|cl|cm|cn|co|cr|cs|cu|cv|cx|cy|cz|dd|de|dj|dk|dm|do|dz|ec|ee|eg|eh|er|es|et|eu|fi|fj|fk|fm|fo|fr|ga|gb|gd|ge|gf|gg|gh|gi|gl|gm|gn|gp|gq|gr|gs|gt|gu|gw|gy|hk|hm|hn|hr|ht|hu|id|ie|il|im|in|io|iq|ir|is|it|je|jm|jo|jp|ke|kg|kh|ki|km|kn|kp|kr|kw|ky|kz|la|lb|lc|li|lk|lr|ls|lt|lu|lv|ly|ma|mc|md|me|mg|mh|mk|ml|mm|mn|mo|mp|mq|mr|ms|mt|mu|mv|mw|mx|my|mz|na|nc|ne|nf|ng|ni|nl|no|np|nr|nu|nz|om|pa|pe|pf|pg|ph|pk|pl|pm|pn|pr|ps|pt|pw|py|qa|re|ro|rs|ru|rw|sa|sb|sc|sd|se|sg|sh|si|sj|Ja|sk|sl|sm|sn|so|sr|ss|st|su|sv|sx|sy|sz|tc|td|tf|tg|th|tj|tk|tl|tm|tn|to|tp|tr|tt|tv|tw|tz|ua|ug|uk|us|uy|uz|va|vc|ve|vg|vi|vn|vu|wf|ws|ye|yt|yu|za|zm|zw)\b/?(?!@)))&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+</div>
+</div></section>
+<section id="final-code-bringing-it-all-together">
+<h2>Final Code: Bringing it All Together.<a class="headerlink" href="#final-code-bringing-it-all-together" title="Permalink to this headline">#</a></h2>
+<p>Let’s combine everything we’ve built into one final block of code</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">validator</span><span class="p">,</span> <span class="n">AnyUrl</span>
+
+
+<span class="k">class</span> <span class="nc">MailTo</span><span class="p">(</span><span class="nb">str</span><span class="p">):</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">__get_validators__</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">validator</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">valid_str</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">valid_email</span><span class="p">]:</span>
+            <span class="k">yield</span> <span class="n">validator</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">valid_str</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Not a valid mailto Email format&quot;</span><span class="p">)</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">v</span>
+    
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">valid_email</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(mailto:)?[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+&quot;</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;mailto URL is not a valid mailto or email link&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">v</span>
+
+    
+<span class="k">class</span> <span class="nc">Contributor</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">url</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">MailTo</span><span class="p">,</span> <span class="n">AnyUrl</span><span class="p">]</span>
+    <span class="n">Organization</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Set default that makes it optional</span>
+
+
+<span class="k">class</span> <span class="nc">Molecule</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">charge</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">symbols</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">coordinates</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">contributor</span><span class="p">:</span> <span class="n">Contributor</span> <span class="o">=</span> <span class="kc">None</span>
+        
+    <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
+        <span class="n">arbitrary_types_allowed</span> <span class="o">=</span> <span class="kc">True</span>
+    
+    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">,</span> <span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">coord_to_numpy</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">coords</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">coords</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not cast </span><span class="si">{</span><span class="n">coords</span><span class="si">}</span><span class="s2"> to numpy array&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">coords</span>
+        
+    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">coords_length_of_symbols</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+        <span class="n">symbols</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;symbols&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">symbols</span><span class="p">)</span> <span class="o">!=</span> <span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">or</span> <span class="p">(</span><span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Coordinates must be of shape [Number Symbols, 3], was </span><span class="si">{</span><span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">coords</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">num_atoms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Congratulations! You’ve now written a robust data model with automatic type annotations, validation, and complex structure including nested models.</p>
+<p>Our <code class="docutils literal notranslate"><span class="pre">Molecule</span></code> has come a long way from being a simple data class with no validation. We learned how to annotate the arguments with built-in Python type hints. We converted our data structure to a Python <code class="docutils literal notranslate"><span class="pre">dataclass</span></code> to simplify repettitive code and make our structure easier to understand. The data were validated through manual checks which we learned could be programmatically handled. <em>Pydantic</em> was brought in to turn our type hints into type annotations and automatically check typing, both Python-native and external/custom types like NumPy arrays. Finally we created nested models to permit arbitrary complexity and a better understanding of what tools are available for validating data.</p>
+<p>Finally, we encourage you to go through and visit all the external links in these chapters, especially for <em>pydantic</em>. This workshop only touched on basic <em>pydantic</em> usage, and there is so much more you can do with auto-validating models.</p>
+<p>We hope you’ve found this workshop helpful and we welcome any comments, feedback, spotted issues, improvements, or suggestions on the material through the GitHub (link as a dropdown at the top.)</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./chapters"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+            </main>
+            <footer class="footer-article noprint">
+                
+    <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="ValidatingDataBeyondTypes.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">Validating Data Beyond Types</p>
+        </div>
+    </a>
+</div>
+            </footer>
+        </div>
+    </div>
+    <div class="footer-content row">
+        <footer class="col footer"><p>
+  
+    By Levi Naden of The Molecular Sciences Software Institute<br/>
+  
+      &copy; Copyright 2022.<br/>
+</p>
+        </footer>
+    </div>
+    
+</div>
+
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+
+
+  </body>
+</html>
