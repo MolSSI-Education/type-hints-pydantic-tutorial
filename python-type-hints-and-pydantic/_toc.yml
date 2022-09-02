@@ -7,3 +7,4 @@ chapters:
 - file: chapters/ManualDataValidation
 - file: chapters/IntroToPydantic
 - file: chapters/ValidatingDataBeyondTypes
+- file: chapters/NestedDataModels
