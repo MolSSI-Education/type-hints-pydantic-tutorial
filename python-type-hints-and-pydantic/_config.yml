@@ -1,8 +1,8 @@
 # Book settings
 # Learn more at https://jupyterbook.org/customize/config.html
 
-title: MolSSI Jupyter Book
-author: The Molecular Sciences Software Institute
+title: Python Type Hints, Dataclasses, and Pydantic
+author: Levi Naden of The Molecular Sciences Software Institute
 logo: images/molssi_main_logo.png
 
 # Force re-execution of notebooks on each build.
