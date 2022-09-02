@@ -1,0 +1,10 @@
+format: jb-book
+root: chapters/setup
+chapters:
+- file: chapters/StartingCodeAndObjectives
+- file: chapters/TypeHintsInPython
+- file: chapters/DataclassInPython
+- file: chapters/ManualDataValidation
+- file: chapters/IntroToPydantic
+- file: chapters/ValidatingDataBeyondTypes
+- file: chapters/NestedDataModels
