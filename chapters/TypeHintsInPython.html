@@ -148,7 +148,7 @@ const thebe_selector_output = ".output, .cell_output"
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="IntroToPydantic.html">
-   Introcuction to Pydantic
+   Introduction to Pydantic
   </a>
  </li>
  <li class="toctree-l1">
@@ -463,13 +463,12 @@ title="Print to PDF"
               <div>
                 
   <section class="tex2jax_ignore mathjax_ignore" id="type-hints-in-python">
-<h1>Type Hints in Python<a class="headerlink" href="#type-hints-in-python" title="Permalink to this headline">#</a></h1>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p>Starting File: BASE_FILE_WAFFLES
-This chapter will start from the BASE_FILE_WAFFLES and end on the CHAPTER_1_WAFFLES.</p>
+<span id="ch01"></span><h1>Type Hints in Python<a class="headerlink" href="#type-hints-in-python" title="Permalink to this headline">#</a></h1>
+<div class="important admonition">
+<p class="admonition-title">Starting File: <code>00_base_molecule.py</code></p>
+<p>This chapter will start from the <code>00_base_molecule.py</code> and end on the <code>01_typed_molecule.py</code>.</p>
 </div>
-<p>Python allows the abillty to annotate variables and outputs through the power of “Type Hints.” These augment the arguments and optionally the functional returns provide additional data about what types are expected for a particular argument.</p>
+<p>Python allows the ability to annotate variables and outputs through the power of “Type Hints.” These augment the arguments and optionally the functional returns provide additional data about what types are expected for a particular argument.</p>
 <div class="note admonition">
 <p class="admonition-title">Additional Reading</p>
 <p>Learn more about Type Hints and Typing <a class="reference external" href="https://docs.python.org/3/library/typing.html">from Python’s docs themselves</a></p>
@@ -492,7 +491,7 @@ This chapter will start from the BASE_FILE_WAFFLES and end on the CHAPTER_1_WAFF
 </div>
 <section id="inserting-your-first-type-hints">
 <h2>Inserting Your First Type Hints<a class="headerlink" href="#inserting-your-first-type-hints" title="Permalink to this headline">#</a></h2>
-<p>Let’s start from our base <code class="docutils literal notranslate"><span class="pre">Molecule</span></code> again, posted above. We know what types of variables we want each of these arguments to accept, and so lets provide type hints to do this.</p>
+<p>Let’s start from our base <code class="docutils literal notranslate"><span class="pre">Molecule</span></code> again, posted above. We know what types of variables we want each of these arguments to accept, and so let’s provide type hints to do this.</p>
 <p>A type hint is done by adding a <code class="docutils literal notranslate"><span class="pre">:</span> <span class="pre">type</span></code> after a variable in the <em>arguments</em> fields, replacing <code class="docutils literal notranslate"><span class="pre">type</span></code> with whatever Python type you expect. So if we wanted to annotate <code class="docutils literal notranslate"><span class="pre">name</span></code> to be a string type, we would write it like (truncated example):</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -502,7 +501,7 @@ This chapter will start from the BASE_FILE_WAFFLES and end on the CHAPTER_1_WAFF
 </div>
 </div>
 </div>
-<p>Now we have augmented the <code class="docutils literal notranslate"><span class="pre">name</span></code> argument to say say this is a should should be a <code class="docutils literal notranslate"><span class="pre">string</span></code> type. Note that we only provided the type hint to the argument, not to the assignment of <code class="docutils literal notranslate"><span class="pre">self.name</span> <span class="pre">=</span> <span class="pre">name</span></code> because that code is internal and not interacted with by a user or by other code. Similarly, if we were to call this code, we don’t provide the type hint on the call, only the deffinition.</p>
+<p>Now we have augmented the <code class="docutils literal notranslate"><span class="pre">name</span></code> argument to say this is a should should be a <code class="docutils literal notranslate"><span class="pre">string</span></code> type. Note that we only provided the type hint to the argument, not to the assignment of <code class="docutils literal notranslate"><span class="pre">self.name</span> <span class="pre">=</span> <span class="pre">name</span></code> because that code is internal and not interacted with by a user or by other code. Similarly, if we were to call this code, we don’t provide the type hint on the call, only the definition.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Molecule</span><span class="p">:</span>
@@ -534,7 +533,7 @@ This chapter will start from the BASE_FILE_WAFFLES and end on the CHAPTER_1_WAFF
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span>  <span class="n">Input</span> <span class="n">In</span> <span class="p">[</span><span class="mi">6</span><span class="p">]</span>
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span>  <span class="n">Input</span> <span class="n">In</span> <span class="p">[</span><span class="mi">5</span><span class="p">]</span>
     <span class="n">water</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="s2">&quot;water&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="s2">&quot;O&quot;</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
                             <span class="o">^</span>
 <span class="ne">SyntaxError</span>: invalid syntax
@@ -542,7 +541,7 @@ This chapter will start from the BASE_FILE_WAFFLES and end on the CHAPTER_1_WAFF
 </div>
 </div>
 </div>
-<p>Now lets assign a type hint to <code class="docutils literal notranslate"><span class="pre">charge</span></code>. Just like with <code class="docutils literal notranslate"><span class="pre">name</span></code>, we expect <code class="docutils literal notranslate"><span class="pre">charge</span></code> to only be certain types. We won’t worry about units in this workshop and instead stick to dimensionless or implicit units. We didn’t specify if this charge is per-atom or net charge, so we don’t know if this needs to be of type <code class="docutils literal notranslate"><span class="pre">int</span></code> or type <code class="docutils literal notranslate"><span class="pre">float</span></code>. In the name of being safe, lets assume we want to assign <code class="docutils literal notranslate"><span class="pre">float</span></code> as a type hint to <code class="docutils literal notranslate"><span class="pre">charge</span></code>. Try it now.</p>
+<p>Now let’s assign a type hint to <code class="docutils literal notranslate"><span class="pre">charge</span></code>. Just like with <code class="docutils literal notranslate"><span class="pre">name</span></code>, we expect <code class="docutils literal notranslate"><span class="pre">charge</span></code> to only be certain types. We won’t worry about units in this workshop and instead stick to dimensionless or implicit units. We didn’t specify if this charge is per-atom or net charge, so we don’t know if this needs to be of type <code class="docutils literal notranslate"><span class="pre">int</span></code> or type <code class="docutils literal notranslate"><span class="pre">float</span></code>. In the name of being safe, let’s assume we want to assign <code class="docutils literal notranslate"><span class="pre">float</span></code> as a type hint to <code class="docutils literal notranslate"><span class="pre">charge</span></code>. Try it now.</p>
 <div class="exercise">
     <p class="exercise-title">Check Your Understanding</p>
     <p>Just as we assigned the type hint <code>str</code> to <code>name</code>. What would the <code>def __init__</code> constructor look like if we  assigned the type hint <code>float</code> to <code>charge</code>?</p>
@@ -558,7 +557,7 @@ This chapter will start from the BASE_FILE_WAFFLES and end on the CHAPTER_1_WAFF
 <p>We showed how to assign a single accepted type to <code class="docutils literal notranslate"><span class="pre">charge</span></code> by giving it a <code class="docutils literal notranslate"><span class="pre">float</span></code> type hint, but we also discussed how the type might also be an integer, depending on use case. So, somebody could pass an integer that would also be accepted. How do we represent multiple valid types through type hints?</p>
 <section id="naive-compound-type-hints-and-why-they-don-t-work">
 <h3>Naive compound type hints and why they don’t work.<a class="headerlink" href="#naive-compound-type-hints-and-why-they-don-t-work" title="Permalink to this headline">#</a></h3>
-<p>The naive represnetation would be to simply extend the type hints like we might a normal set of arguments as such.</p>
+<p>The naive representation would be to simply extend the type hints like we might a normal set of arguments as such.</p>
 <p>What we can’t just do, and because this this, represents an extension of the arguments and obviously if we put in here that would overload of the end type that is native to python</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -568,8 +567,7 @@ This chapter will start from the BASE_FILE_WAFFLES and end on the CHAPTER_1_WAFF
 </div>
 </div>
 </div>
-<p>Which doesn’t throw an error, but isn’t correct. <code class="docutils literal notranslate"><span class="pre">float</span></code> is still the type hint to <code class="docutils literal notranslate"><span class="pre">charge</span></code>, but <code class="docutils literal notranslate"><span class="pre">int</span></code> is now the name of a variabl
-e assigned as an argument and would overload of the <code class="docutils literal notranslate"><span class="pre">int</span></code> type that is native to Python. We can check that with the <code class="docutils literal notranslate"><span class="pre">inspect</span></code> library.</p>
+<p>Which doesn’t throw an error, but isn’t correct. <code class="docutils literal notranslate"><span class="pre">float</span></code> is still the type hint to <code class="docutils literal notranslate"><span class="pre">charge</span></code>, but <code class="docutils literal notranslate"><span class="pre">int</span></code> is now the name of a variable assigned as an argument and would overload the <code class="docutils literal notranslate"><span class="pre">int</span></code> type that is native to Python. We can check that with the <code class="docutils literal notranslate"><span class="pre">inspect</span></code> library.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">getfullargspec</span>
@@ -584,7 +582,7 @@ e assigned as an argument and would overload of the <code class="docutils litera
 </div>
 </div>
 <p>Where <code class="docutils literal notranslate"><span class="pre">int</span></code> is now an argument variable, and trying to use the native <code class="docutils literal notranslate"><span class="pre">int</span></code> function/type inside that function would not work as expected.</p>
-<p>Another idea for grouping arguments is to group them in something like a list or tuple. This does not technically fail, but as the name “type <em>hint</em>” implies, you’re only writting hints, not functional code (we’ll revisit this in CHAPTER_PYDANTIC_WAFFLES). So long as you don’t write anything syntactically wrong, the hint will be accepted. Here’s a couple examples of syntacticallly correct but incomprehensible type hints.</p>
+<p>Another idea for grouping arguments is to group them in something like a list or tuple. This does not technically fail, but as the name “type <em>hint</em>” implies, you’re only writing hints, not functional code (we’ll revisit this in <a class="reference internal" href="IntroToPydantic.html#ch04"><span class="std std-ref">Introduction to Pydantic</span></a>). So long as you don’t write anything syntactically wrong, the hint will be accepted. Here’s a couple examples of syntactically correct but incomprehensible type hints.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">charge</span><span class="p">:</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="n">symbols</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">):</span>
@@ -609,7 +607,7 @@ e assigned as an argument and would overload of the <code class="docutils litera
 </div>
 </div>
 </div>
-<p>This <code class="docutils literal notranslate"><span class="pre">Union</span></code> (and other classes from <code class="docutils literal notranslate"><span class="pre">typing</span></code>) is a special class of defining generic types which we do NOT call with parenthesies, <code class="docutils literal notranslate"><span class="pre">()</span></code>. Instead, these generic containers wrap their arguments in square brackets, <code class="docutils literal notranslate"><span class="pre">[]</span></code>, with multiple arguments separated by commas. Lets apply that now to the <code class="docutils literal notranslate"><span class="pre">charge</span></code> so it is now the union of <code class="docutils literal notranslate"><span class="pre">float</span></code> and <code class="docutils literal notranslate"><span class="pre">int</span></code>.</p>
+<p>This <code class="docutils literal notranslate"><span class="pre">Union</span></code> (and other classes from <code class="docutils literal notranslate"><span class="pre">typing</span></code>) is a special class of defining generic types which we do NOT call with parentheses, <code class="docutils literal notranslate"><span class="pre">()</span></code>. Instead, these generic containers wrap their arguments in square brackets, <code class="docutils literal notranslate"><span class="pre">[]</span></code>, with multiple arguments separated by commas. Let’s apply that now to the <code class="docutils literal notranslate"><span class="pre">charge</span></code> so it is now the union of <code class="docutils literal notranslate"><span class="pre">float</span></code> and <code class="docutils literal notranslate"><span class="pre">int</span></code>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Molecule</span><span class="p">:</span>
@@ -626,7 +624,7 @@ e assigned as an argument and would overload of the <code class="docutils litera
 </div>
 </div>
 </div>
-<p>Great! Let’s move on to <code class="docutils literal notranslate"><span class="pre">symbols</span></code>? <code class="docutils literal notranslate"><span class="pre">symbols</span></code> is not a simple type where it’s a singular immutable type words like a <code class="docutils literal notranslate"><span class="pre">str</span></code>, <code class="docutils literal notranslate"><span class="pre">float</span></code> or <code class="docutils literal notranslate"><span class="pre">int</span></code>; it is instead a sequence, specifically a <code class="docutils literal notranslate"><span class="pre">list</span></code>.</p>
+<p>Great! Let’s move on to <code class="docutils literal notranslate"><span class="pre">symbols</span></code> which will be more complicated. <code class="docutils literal notranslate"><span class="pre">symbols</span></code> is not a simple type where it’s a singular immutable static object like a <code class="docutils literal notranslate"><span class="pre">str</span></code>, <code class="docutils literal notranslate"><span class="pre">float</span></code> or <code class="docutils literal notranslate"><span class="pre">int</span></code>; it is instead a sequence, specifically a <code class="docutils literal notranslate"><span class="pre">list</span></code>.</p>
 <div class="important admonition">
 <p class="admonition-title">Differences between &gt;=Python 3.9 and before.</p>
 <p>Before Python 3.9, you could not use the native types of list, tuple, dict, set, etc. to specify type hints of those types, you had to import equivalently named, but capitalized, classes from the <code class="docutils literal notranslate"><span class="pre">typing</span></code> module.</p>
@@ -674,12 +672,12 @@ e assigned as an argument and would overload of the <code class="docutils litera
 </div>
 </div>
 <p>Just like with <code class="docutils literal notranslate"><span class="pre">Union</span></code>, when we use <code class="docutils literal notranslate"><span class="pre">list</span></code> as a type hint, we provide the arguments in square brackets <code class="docutils literal notranslate"><span class="pre">[]</span></code>. We have now specified that <code class="docutils literal notranslate"><span class="pre">symbols</span></code> is a “list of strings”, and that list can be of any length.</p>
-<p>There is an important point to make about the difference between <code class="docutils literal notranslate"><span class="pre">list</span></code> and <code class="docutils literal notranslate"><span class="pre">tuple</span></code> as type hint. <code class="docutils literal notranslate"><span class="pre">list</span></code> are considered mutable ojects in Python, so in our example the <code class="docutils literal notranslate"><span class="pre">list[str]</span></code> hint indicates the “list is of arbitrary length and every object is a string.” Because of this, <code class="docutils literal notranslate"><span class="pre">list</span></code> only accepts one argument to its <code class="docutils literal notranslate"><span class="pre">[]</span></code>, and adding more will throw an error.</p>
+<p>There is an important point to make about the difference between <code class="docutils literal notranslate"><span class="pre">list</span></code> and <code class="docutils literal notranslate"><span class="pre">tuple</span></code> as type hint. <code class="docutils literal notranslate"><span class="pre">list</span></code> are considered mutable objects in Python, so in our example the <code class="docutils literal notranslate"><span class="pre">list[str]</span></code> hint indicates the “list is of arbitrary length and every object is a string.” Because of this, <code class="docutils literal notranslate"><span class="pre">list</span></code> only accepts one argument to its <code class="docutils literal notranslate"><span class="pre">[]</span></code>, and adding more will throw an error.</p>
 <div class="question">
     <p class="question-title">Heads Up Question</p>
     <p> How would you specify multiple valid types for a <code>list</code> using compound types and what we've already covered?</p>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">tuple</span></code> is immutable in Python, so its length is fixed. That also means that the argument positions of <code class="docutils literal notranslate"><span class="pre">tuple</span></code>’s types hints are exact 1-to-1 matches to the elements of a <code class="docutils literal notranslate"><span class="pre">tuple</span></code>. Therefore: the number of arguments given to <code class="docutils literal notranslate"><span class="pre">tuple[...]</span></code> should match the <code class="docutils literal notranslate"><span class="pre">tuple</span></code>’s length.</p>
+<p><code class="docutils literal notranslate"><span class="pre">tuple</span></code> is immutable in Python, so its length is fixed. That also means that the argument positions of <code class="docutils literal notranslate"><span class="pre">tuple</span></code>’s type hints are exact 1-to-1 matches to the elements of a <code class="docutils literal notranslate"><span class="pre">tuple</span></code>. Therefore: the number of arguments given to <code class="docutils literal notranslate"><span class="pre">tuple[]</span></code> should match the <code class="docutils literal notranslate"><span class="pre">tuple</span></code>’s length.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">some_function</span><span class="p">(</span><span class="n">my_tuple</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]):</span>
@@ -694,17 +692,18 @@ e assigned as an argument and would overload of the <code class="docutils litera
 </div>
 </div>
 <p>This type hinting would indicate that <code class="docutils literal notranslate"><span class="pre">my_tuple</span></code> is length 3 and accepts a string, an integer, and a float; in that order.</p>
-<p>Finally, lets apply a type hint to <code class="docutils literal notranslate"><span class="pre">coordinates</span></code>, and lets actually define some dimensionality here. We noted back in CHAPTER_1_WAFFLES that the <code class="docutils literal notranslate"><span class="pre">coordinates</span></code> themselves are not the correct dimension to define multiple points in three dimensional space (without some reference). Instead, we want to specify 3 coordinates for an X,Y,Z system for each atom in the <code class="docutils literal notranslate"><span class="pre">symbols</span></code> list. The more-correct way would be to use a proper 2 dimensional shaped object like a <code class="docutils literal notranslate"><span class="pre">numpy</span></code> array, but for now let’s think only in pure Python types. What we want is a list of an X,Y,Z coordinate for each atom, wrapped inside of another list.</p>
+<p>Finally, let’s apply a type hint to <code class="docutils literal notranslate"><span class="pre">coordinates</span></code> and actually define some dimensionality here. We noted back in <a class="reference internal" href="#ch01"><span class="std std-ref">Type Hints in Python</span></a> that the <code class="docutils literal notranslate"><span class="pre">coordinates</span></code> themselves are not the correct dimension to define multiple points in three dimensional space (without some reference). Instead, we want to specify 3 coordinates for an X,Y,Z system for each atom in the <code class="docutils literal notranslate"><span class="pre">symbols</span></code> list. The more-correct way would be to use a proper 2 dimensional shaped object like a <code class="docutils literal notranslate"><span class="pre">numpy</span></code> array, but for now let’s think only in pure Python types. What we want is a list of an X,Y,Z coordinate for each atom, wrapped inside of another list.</p>
 <p>The Python types hint containers like <code class="docutils literal notranslate"><span class="pre">list</span></code>, <code class="docutils literal notranslate"><span class="pre">Union</span></code>, <code class="docutils literal notranslate"><span class="pre">tuple</span></code>, etc. can all contain other container types within, so it is perfectly valid to have something like a “list of lists”. Let’s assume that our nested lists follow this logic:</p>
 <ul class="simple">
 <li><p>The outer list loops over atoms/symbols</p></li>
-<li><p>The inner list containes the X, Y, Z coordinates of that specific atom/symbol</p></li>
+<li><p>The inner list contains the X, Y, Z coordinates of that specific atom/symbol</p></li>
 <li><p>The coordinates themselves are <code class="docutils literal notranslate"><span class="pre">float</span></code>s.</p></li>
 </ul>
 <p>Give this logic, we can create a “list of lists of floats” type hint for <code class="docutils literal notranslate"><span class="pre">coordinates</span></code>. Let’s also take this moment to actually wrap each argument on a new line for visual clarity.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+
 
 <span class="k">class</span> <span class="nc">Molecule</span><span class="p">:</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
@@ -729,6 +728,7 @@ e assigned as an argument and would overload of the <code class="docutils litera
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Python &lt;=3.8</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span>
+
 
 <span class="k">class</span> <span class="nc">Molecule</span><span class="p">:</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
@@ -785,14 +785,14 @@ e assigned as an argument and would overload of the <code class="docutils litera
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>name: typing.Union
-charge: {&#39;A&#39;, &#39;D&#39;, &#39;g&#39;, &#39;B&#39;, &#39;f&#39;, &#39;e&#39;, &#39;C&#39;}
+charge: {&#39;C&#39;, &#39;B&#39;, &#39;f&#39;, &#39;g&#39;, &#39;e&#39;, &#39;D&#39;, &#39;A&#39;}
 symbols: SOOOOOUUUPPPP!!!
 </pre></div>
 </div>
 </div>
 </div>
 <p>The IDE you are using might complain about some of the arguments because the type hinting suggests otherwise, but nothing stops you or anyone from feeding junk into the function. Sure, in a more complex code there would be a syntax error eventually, <em>maybe</em>, but on its face the hints are just that, for now.</p>
-<p>We’ve also been using this <code class="docutils literal notranslate"><span class="pre">Molecule</span></code> class to assign attributes of the same name as the arguments so we can use them later in code. This looks like a fair amount of duplicated work. Real molecule’s, and their computational representation, could have dozens or hundereds of arguments or attributes to assign, and re-writting <code class="docutils literal notranslate"><span class="pre">self.attribute</span> <span class="pre">=</span> <span class="pre">attribute</span></code>-like lines over and over is tedius.</p>
+<p>We’ve also been using this <code class="docutils literal notranslate"><span class="pre">Molecule</span></code> class to assign attributes of the same name as the arguments so we can use them later in code. This looks like a fair amount of duplicated work. Real molecule’s, and their computational representation, could have dozens or hundreds of arguments or attributes to assign, and re-writing <code class="docutils literal notranslate"><span class="pre">self.attribute</span> <span class="pre">=</span> <span class="pre">attribute</span></code>-like lines over and over is tedious.</p>
 <p>In the next chapter, we will look at a native Python class decorator we can use to help reduce the duplication effort and make our code more legible. This will also help our understanding of the structure before we move onto validation and eventually <code class="docutils literal notranslate"><span class="pre">pydantic</span></code>.</p>
 </section>
 </section>

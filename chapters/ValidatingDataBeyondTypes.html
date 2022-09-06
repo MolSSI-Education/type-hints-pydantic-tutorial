@@ -55,7 +55,7 @@ const thebe_selector_output = ".output, .cell_output"
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Nested Data Models" href="NestedDataModels.html" />
-    <link rel="prev" title="Introcuction to Pydantic" href="IntroToPydantic.html" />
+    <link rel="prev" title="Introduction to Pydantic" href="IntroToPydantic.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="None">
     
@@ -148,7 +148,7 @@ const thebe_selector_output = ".output, .cell_output"
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="IntroToPydantic.html">
-   Introcuction to Pydantic
+   Introduction to Pydantic
   </a>
  </li>
  <li class="toctree-l1 current active">
@@ -407,8 +407,8 @@ title="Print to PDF"
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#make-a-generator-function">
-     Make a generator function
+    <a class="reference internal nav-link" href="#make-an-on-demand-typer-function">
+     Make an on Demand Typer Function
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
@@ -482,8 +482,8 @@ title="Print to PDF"
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#make-a-generator-function">
-     Make a generator function
+    <a class="reference internal nav-link" href="#make-an-on-demand-typer-function">
+     Make an on Demand Typer Function
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
@@ -509,16 +509,15 @@ title="Print to PDF"
               <div>
                 
   <section class="tex2jax_ignore mathjax_ignore" id="validating-data-beyond-types">
-<h1>Validating Data Beyond Types<a class="headerlink" href="#validating-data-beyond-types" title="Permalink to this headline">#</a></h1>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p>Starting File: CHAPTER_4_WAFFLES
-This chapter will start from the CHAPTER_4_WAFFLES and end on the CHAPTER_5_WAFFLES.</p>
+<span id="ch05"></span><h1>Validating Data Beyond Types<a class="headerlink" href="#validating-data-beyond-types" title="Permalink to this headline">#</a></h1>
+<div class="important admonition">
+<p class="admonition-title">Starting File: <code>04_pydantic_molecule.py</code></p>
+<p>This chapter will start from the <code>04_pydantic_molecule.py</code> and end on the <code>05_valid_pydantic_molecule.py</code>.</p>
 </div>
-<p>Data validation goes far beyond just type. <em>Pydantic</em> has provided the basic tools for doing data validation on data types, but it also provides the tools for writting custom validators to check so much more.</p>
+<p>Data validation goes far beyond just type. <em>Pydantic</em> has provided the basic tools for doing data validation on data types, but it also provides the tools for writing custom validators to check so much more.</p>
 <p>We’ll be covering the <em>pydantic</em> <code class="docutils literal notranslate"><span class="pre">validator</span></code> decorator and applying that to our data to check structure and scientific rigor. We’ll also cover how to validate types not native to Python, such as NumPy arrays.</p>
 <div class="note admonition">
-<p class="admonition-title">Check Out Pydantic!</p>
+<p class="admonition-title">Check Out Pydantic</p>
 <p>We will not be covering all the capabilities of <em>pydantic</em> here, and we highly encourage you to visit <a class="reference external" href="https://pydantic-docs.helpmanual.io/">the pydantic docs</a> to learn about all the powerful and easy-to-execute things <em>pydantic</em> can do.</p>
 </div>
 <div class="note admonition">
@@ -527,10 +526,11 @@ This chapter will start from the CHAPTER_4_WAFFLES and end on the CHAPTER_5_WAFF
 </div>
 <section id="pydantic-s-validator-decorator">
 <h2>Pydantic’s Validator Decorator<a class="headerlink" href="#pydantic-s-validator-decorator" title="Permalink to this headline">#</a></h2>
-<p>Let’s start by looking at the state of our code prior extending the validators. As usual, lets also define our test data.</p>
+<p>Let’s start by looking at the state of our code prior to extending the validators. As usual, let’s also define our test data.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+
 
 <span class="k">class</span> <span class="nc">Molecule</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
@@ -569,7 +569,7 @@ This chapter will start from the CHAPTER_4_WAFFLES and end on the CHAPTER_5_WAFF
 </div>
 </div>
 <p>You may notice we have extended our “Good Data” here to have <code class="docutils literal notranslate"><span class="pre">coordinates</span></code> actually define the <code class="docutils literal notranslate"><span class="pre">Nx3</span></code> structure where <code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">=</span> <span class="pre">len(symbols)</span></code>. This is important for what we plan to validate.</p>
-<p><em>pydantic</em> allows you to write custom validators, in addition to the type valitators which runn automatically for a type annotation. This <code class="docutils literal notranslate"><span class="pre">validator</span></code> is pulled from the <code class="docutils literal notranslate"><span class="pre">pydantic</span></code> module just like <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code>, and is used to decorate a <em>class</em> function you write. Lets look at the most basic <code class="docutils literal notranslate"><span class="pre">validator</span></code> we can write and assign it to <code class="docutils literal notranslate"><span class="pre">coordinates</span></code>.</p>
+<p><em>pydantic</em> allows you to write custom validators, in addition to the type validators which run automatically for a type annotation. This <code class="docutils literal notranslate"><span class="pre">validator</span></code> is pulled from the <code class="docutils literal notranslate"><span class="pre">pydantic</span></code> module just like <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code>, and is used to decorate a <em>class</em> function you write. Let’s look at the most basic <code class="docutils literal notranslate"><span class="pre">validator</span></code> we can write and assign it to <code class="docutils literal notranslate"><span class="pre">coordinates</span></code>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">validator</span>
@@ -591,16 +591,16 @@ This chapter will start from the CHAPTER_4_WAFFLES and end on the CHAPTER_5_WAFF
 </div>
 </div>
 </div>
-<p>Here we have defined an additional validator which does nothing, but has the basic structure we can look at. For convience and reference, I’ve broken the aspects of <code class="docutils literal notranslate"><span class="pre">validator</span></code> into a list.</p>
+<p>Here we have defined an additional validator which does nothing, but has the basic structure we can look at. For convenience and reference, I’ve broken the aspects of the <code class="docutils literal notranslate"><span class="pre">validator</span></code> into a list.</p>
 <ul class="simple">
 <li><p>The <code class="docutils literal notranslate"><span class="pre">validator</span></code> decorator takes as arguments the <em>exact</em> name of the attributes you are validating against as a string. In this case <code class="docutils literal notranslate"><span class="pre">coordinates</span></code>. You could provide multiple string args of each attribute you want to run through the validator if you want to reuse it.</p></li>
-<li><p>The function name can be whatever you want it to be. We’ve called it <code class="docutils literal notranslate"><span class="pre">ensure_coordinates_is_3D</span></code> to be meanigful if anyone ever want to come back and see what this should be doing.</p></li>
-<li><p>The function itself is a <em>class function</em>. Similar to what happens when you use the <code class="docutils literal notranslate"><span class="pre">&#64;classmethod</span></code> decorator from native Python, this validator is intented to be called on the non-instanced class. The formal nomenclature for the first variable here is therefore <code class="docutils literal notranslate"><span class="pre">cls</span></code> and not <code class="docutils literal notranslate"><span class="pre">self</span></code>. Your IDE may complain about this, but it should be <code class="docutils literal notranslate"><span class="pre">cls</span></code>.</p></li>
-<li><p>The first argument of the function can be whatever string name you want EXCLUDING the following list: <code class="docutils literal notranslate"><span class="pre">values</span></code>, <code class="docutils literal notranslate"><span class="pre">config</span></code>, and <code class="docutils literal notranslate"><span class="pre">field</span></code> (resons discussed later in chapter too)</p></li>
-<li><p>The return MUST be the validated data to be fed into the attribute. We’ve done nothing to or variable <code class="docutils literal notranslate"><span class="pre">coords</span></code>, so we simply return it. If you fail to have a <code class="docutils literal notranslate"><span class="pre">return</span></code> statement with something, it will return <code class="docutils literal notranslate"><span class="pre">None</span></code> and that will be considered valid.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">validator</span></code> runs <em>after</em> type validation, unless specified (see later in this chapter)</p></li>
+<li><p>The function name can be whatever you want it to be. We’ve called it <code class="docutils literal notranslate"><span class="pre">ensure_coordinates_is_3D</span></code> to be meaningful if anyone ever wants to come back and see what this should be doing.</p></li>
+<li><p>The function itself is a <em>class function</em>. Similar to what happens when you use the <code class="docutils literal notranslate"><span class="pre">&#64;classmethod</span></code> decorator from native Python, this validator is intended to be called on the non-instanced class. The formal nomenclature for the first variable here is therefore <code class="docutils literal notranslate"><span class="pre">cls</span></code> and not <code class="docutils literal notranslate"><span class="pre">self</span></code>. Your IDE may complain about this, but it should be <code class="docutils literal notranslate"><span class="pre">cls</span></code>.</p></li>
+<li><p>The first argument of the function can be whatever string name you want EXCLUDING the following list: <code class="docutils literal notranslate"><span class="pre">values</span></code>, <code class="docutils literal notranslate"><span class="pre">config</span></code>, and <code class="docutils literal notranslate"><span class="pre">field</span></code> (reasons discussed later in this chapter).</p></li>
+<li><p>The return MUST be the validated data to be fed into the attribute. We’ve done nothing to our variable <code class="docutils literal notranslate"><span class="pre">coords</span></code>, so we simply return it. If you fail to have a <code class="docutils literal notranslate"><span class="pre">return</span></code> statement with something, it will return <code class="docutils literal notranslate"><span class="pre">None</span></code> and that will be considered valid.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">validator</span></code> runs <em>after</em> type validation, unless specified (see later in this chapter).</p></li>
 </ul>
-<p>That may seem like alot of rules, but most of them are boilerplate and intutitve to use. Let’s apply these items to our validator. We want to make sure the inner lists of <code class="docutils literal notranslate"><span class="pre">coordinates</span></code> are 3D, or length 3. We don’t have to worry about type checking (that was done before any custom <code class="docutils literal notranslate"><span class="pre">validator</span></code> was run), so we can just do an interation of the top list and make sure. Let’s apply that now.</p>
+<p>That may seem like lots of rules, but most of them are boilerplate and intuitive. Let’s apply these items to our validator. We want to make sure the inner lists of <code class="docutils literal notranslate"><span class="pre">coordinates</span></code> are 3D, or length 3. We don’t have to worry about type checking (that was done before any custom <code class="docutils literal notranslate"><span class="pre">validator</span></code> was run), so we can just do an iteration of the top list and make sure. Let’s apply that now.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">validator</span>
@@ -635,7 +635,7 @@ This chapter will start from the CHAPTER_4_WAFFLES and end on the CHAPTER_5_WAFF
 <div class="cell_output docutils container">
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">ValidationError</span><span class="g g-Whitespace">                           </span>Traceback (most recent call last)
-<span class="nn">Input In [29],</span> in <span class="ni">&lt;cell line: 3&gt;</span><span class="nt">()</span>
+<span class="nn">Input In [5],</span> in <span class="ni">&lt;cell line: 3&gt;</span><span class="nt">()</span>
 <span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">good_water</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="o">**</span><span class="n">mol_data</span><span class="p">)</span>
 <span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">mangled</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">mol_data</span><span class="p">,</span> <span class="o">**</span><span class="n">inner_coords_not3d</span><span class="p">}</span>
 <span class="ne">----&gt; </span><span class="mi">3</span> <span class="n">water</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="o">**</span><span class="n">mangled</span><span class="p">)</span>
@@ -649,11 +649,11 @@ This chapter will start from the CHAPTER_4_WAFFLES and end on the CHAPTER_5_WAFF
 </div>
 </div>
 </div>
-<p>Here we have checked the good data still works, and checked that the mangled data raised an error. It’s important to note the error raised by the function can be any type of error, but what came out in the error report was a <code class="docutils literal notranslate"><span class="pre">ValdationError</span></code>. We can also see the error message is what we put as the error string and <code class="docutils literal notranslate"><span class="pre">type</span></code> of error is of the type we raised. This is why its very important to have meaningfull error strings when your custom validator fails.</p>
-<p>With all that said, our validator function really does look like any other function we may call to do a quick check of data, and then some special addons to make it work with <em>pydantic</em>. There is no practical limit to the nubmer of <code class="docutils literal notranslate"><span class="pre">validator</span></code>s you have in a given class, so validate to your heart’s content.</p>
+<p>Here we have checked the good data still works, and checked that the mangled data raised an error. It’s important to note the error raised by the function can be any type of error, but what came out in the error report was a <code class="docutils literal notranslate"><span class="pre">ValidationError</span></code>. We can also see the error message is what we put as the error string and <code class="docutils literal notranslate"><span class="pre">type</span></code> of error is of the type we raised. This is why it’s very important to have meaningful error strings when your custom validator fails.</p>
+<p>With all that said, our validator function really does look like any other function we may call to do a quick check of data, and then some special addons to make it work with <em>pydantic</em>. There is no practical limit to the number of <code class="docutils literal notranslate"><span class="pre">validator</span></code>s you have in a given class, so validate to your heart’s content.</p>
 <div class="note admonition">
-<p class="admonition-title">Python Assignement Expressions “The Walrus Operator” <code>:=</code></p>
-<p>Since Python 3.8, there is a new operator for “assignment expressions” called “<a class="reference external" href="https://peps.python.org/pep-0572/">The Walrus Operator</a>” which allows variables to be assigned inside other expressions. We’ve used it here to trap the value at time of error and save space. Do not feel compelled to use this yourself, especially if its not clear what is happening.</p>
+<p class="admonition-title">Python Assignment Expressions “The Walrus Operator” <code>:=</code></p>
+<p>Since Python 3.8, there is a new operator for “assignment expressions” called “<a class="reference external" href="https://peps.python.org/pep-0572/">The Walrus Operator</a>” which allows variables to be assigned inside other expressions. We’ve used it here to trap the value at time of error and save space. Do not feel compelled to use this yourself, especially if it’s not clear what is happening.</p>
 </div>
 <div class="exercise">
 <p class="exercise-title"> Check your knowledge: Validator Basics
@@ -708,7 +708,7 @@ This chapter will start from the CHAPTER_4_WAFFLES and end on the CHAPTER_5_WAFF
 <li><p>Multiple functions can be declared to validate against the same field.</p></li>
 <li><p>We’ve added a one of the blocked argument names to our new validator: <code class="docutils literal notranslate"><span class="pre">values</span></code>.</p></li>
 </ol>
-<p>The reason the blocked argument names were given in the list of rules for <code class="docutils literal notranslate"><span class="pre">validators</span></code> is because <em>pydantic</em>’s <code class="docutils literal notranslate"><span class="pre">validator</span></code> reserves those to inject special code. The addition of <code class="docutils literal notranslate"><span class="pre">values</span></code> as an argument tells the <code class="docutils literal notranslate"><span class="pre">validator</span></code> to also retrive <em>all previously validated fields for the model</em>. In our case, that would be <code class="docutils literal notranslate"><span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">charge</span></code>, and <code class="docutils literal notranslate"><span class="pre">symbols</span></code> as those entries appeared before <code class="docutils literal notranslate"><span class="pre">coordinates</span></code> in the list of attributes. Any and all validators which would have been applied to those three entries have already been done and what we have access to is their validated records as a dictionary called <code class="docutils literal notranslate"><span class="pre">values</span></code> in the function itself. <a class="reference external" href="https://pydantic-docs.helpmanual.io/usage/validators/">See the <em>pydantic</em> docs</a> for more details about the special arguments in <code class="docutils literal notranslate"><span class="pre">validator</span></code>.</p>
+<p>The reason the blocked argument names were given in the list of rules for <code class="docutils literal notranslate"><span class="pre">validators</span></code> is because <em>pydantic</em>’s <code class="docutils literal notranslate"><span class="pre">validator</span></code> reserves those to inject special code. The addition of <code class="docutils literal notranslate"><span class="pre">values</span></code> as an argument tells the <code class="docutils literal notranslate"><span class="pre">validator</span></code> to also retrieve <em>all previously validated fields for the model</em>. In our case, that would be <code class="docutils literal notranslate"><span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">charge</span></code>, and <code class="docutils literal notranslate"><span class="pre">symbols</span></code> as those entries appeared before <code class="docutils literal notranslate"><span class="pre">coordinates</span></code> in the list of attributes. Any and all validators which would have been applied to those three entries have already been done and what we have access to is their validated records as a dictionary called <code class="docutils literal notranslate"><span class="pre">values</span></code> in the function itself. <a class="reference external" href="https://pydantic-docs.helpmanual.io/usage/validators/">See the <em>pydantic</em> docs</a> for more details about the special arguments in <code class="docutils literal notranslate"><span class="pre">validator</span></code>.</p>
 <p>Let’s see this in action</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -721,7 +721,7 @@ This chapter will start from the CHAPTER_4_WAFFLES and end on the CHAPTER_5_WAFF
 <div class="cell_output docutils container">
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">ValidationError</span><span class="g g-Whitespace">                           </span>Traceback (most recent call last)
-<span class="nn">Input In [43],</span> in <span class="ni">&lt;cell line: 3&gt;</span><span class="nt">()</span>
+<span class="nn">Input In [7],</span> in <span class="ni">&lt;cell line: 3&gt;</span><span class="nt">()</span>
 <span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">good_water</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="o">**</span><span class="n">mol_data</span><span class="p">)</span>
 <span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">mangled</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">mol_data</span><span class="p">,</span> <span class="o">**</span><span class="n">bad_symbols_and_cords</span><span class="p">}</span>
 <span class="ne">----&gt; </span><span class="mi">3</span> <span class="n">water</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="o">**</span><span class="n">mangled</span><span class="p">)</span>
@@ -738,7 +738,7 @@ This chapter will start from the CHAPTER_4_WAFFLES and end on the CHAPTER_5_WAFF
 </section>
 <section id="non-native-types-in-pydantic">
 <h2>Non-native Types in Pydantic<a class="headerlink" href="#non-native-types-in-pydantic" title="Permalink to this headline">#</a></h2>
-<p>Scientific data does not, and often should not, be confined to native Python types. One of the most common data types the Python, especially the sciences, is the NumPy Array (<code class="docutils literal notranslate"><span class="pre">ndarray</span></code> class). The most natural place for this would be <code class="docutils literal notranslate"><span class="pre">coordinates</span></code> where we want to simplfy this list of list construct. Let’s see what happens when we try to just make the type annotation a <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> and see how <em>pydantic</em> handles coersion, or how it does not.</p>
+<p>Scientific data does not, and often should not, be confined to native Python types. One of the most common data types, especially in the sciences, is the NumPy Array (<code class="docutils literal notranslate"><span class="pre">ndarray</span></code> class). The most natural place for this would be <code class="docutils literal notranslate"><span class="pre">coordinates</span></code> where we want to simplify this list of list construct. Let’s see what happens when we try to just make the type annotation a <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> and see how <em>pydantic</em> handles coercion, or how it does not.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -773,7 +773,7 @@ This chapter will start from the CHAPTER_4_WAFFLES and end on the CHAPTER_5_WAFF
 <div class="cell_output docutils container">
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">RuntimeError</span><span class="g g-Whitespace">                              </span>Traceback (most recent call last)
-<span class="nn">Input In [44],</span> in <span class="ni">&lt;cell line: 4&gt;</span><span class="nt">()</span>
+<span class="nn">Input In [8],</span> in <span class="ni">&lt;cell line: 4&gt;</span><span class="nt">()</span>
 <span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">validator</span>
 <span class="ne">----&gt; </span><span class="mi">4</span> <span class="k">class</span> <span class="nc">Molecule</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
@@ -797,13 +797,13 @@ This chapter will start from the CHAPTER_4_WAFFLES and end on the CHAPTER_5_WAFF
 </div>
 </div>
 </div>
-<p>This error was thrown because <em>pydantic</em> is coded to handle certain types of data, but it cannot handle type it was not programmed to understand. However, <em>pydantic</em> does provide a usefull erorr message to fix this.</p>
+<p>This error was thrown because <em>pydantic</em> is coded to handle certain types of data, but it cannot handle types it was not programmed to understand. However, <em>pydantic</em> does provide a useful error message to fix this.</p>
 <p>You can configure your <em>pydantic</em> models to modify their behavior by adding a class within the <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code> class explicitly called <code class="docutils literal notranslate"><span class="pre">Config</span></code>. This is not an imported object, its just a class bearing that name. Within that class, you set class attributes that serve as the options.</p>
 <div class="note admonition">
 <p class="admonition-title">More Config settings</p>
 <p>You can see all of the config settings <a class="reference external" href="https://pydantic-docs.helpmanual.io/usage/model_config/">in the <em>pydantic</em> docs</a></p>
 </div>
-<p>Our particular error is saying we need to configure our model and set <code class="docutils literal notranslate"><span class="pre">arbitrary_types_allowed</span></code>, in this case to <code class="docutils literal notranslate"><span class="pre">True</span></code>. This will tell this particular <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code> to permit types that it does not naturally understand how to handle, and assume the user/programer will handle it. Let’s see what <code class="docutils literal notranslate"><span class="pre">Molecule</span></code> looks like with this set. Note: The location of the <code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">Config</span></code> statement does not mater, and <code class="docutils literal notranslate"><span class="pre">Config</span></code> is on a per-model basis, not a global <em>pydantic</em> config.</p>
+<p>Our particular error is saying we need to configure our model and set <code class="docutils literal notranslate"><span class="pre">arbitrary_types_allowed</span></code>, in this case to <code class="docutils literal notranslate"><span class="pre">True</span></code>. This will tell this particular <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code> to permit types that it does not naturally understand how to handle, and assume the user/programer will handle it. Let’s see what <code class="docutils literal notranslate"><span class="pre">Molecule</span></code> looks like with this set. Note: The location of the <code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">Config</span></code> statement does not matter, and <code class="docutils literal notranslate"><span class="pre">Config</span></code> is on a per-model basis, not a global <em>pydantic</em> configuration.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -839,7 +839,7 @@ This chapter will start from the CHAPTER_4_WAFFLES and end on the CHAPTER_5_WAFF
 </div>
 </div>
 </div>
-<p>Our model is now configured to allow aribtrary types; no more error. Let’s see what happens when we pass in our data.</p>
+<p>Our model is now configured to allow arbitrary types; no more error. Let’s see what happens when we pass in our data.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">water</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="o">**</span><span class="n">mol_data</span><span class="p">)</span>
@@ -849,7 +849,7 @@ This chapter will start from the CHAPTER_4_WAFFLES and end on the CHAPTER_5_WAFF
 <div class="cell_output docutils container">
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">ValidationError</span><span class="g g-Whitespace">                           </span>Traceback (most recent call last)
-<span class="nn">Input In [53],</span> in <span class="ni">&lt;cell line: 1&gt;</span><span class="nt">()</span>
+<span class="nn">Input In [10],</span> in <span class="ni">&lt;cell line: 1&gt;</span><span class="nt">()</span>
 <span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">water</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="o">**</span><span class="n">mol_data</span><span class="p">)</span>
 
 <span class="nn">File ~/miniconda3/envs/pyd-tut/lib/python3.10/site-packages/pydantic/main.py:341,</span> in <span class="ni">pydantic.main.BaseModel.__init__</span><span class="nt">()</span>
@@ -861,12 +861,12 @@ This chapter will start from the CHAPTER_4_WAFFLES and end on the CHAPTER_5_WAFF
 </div>
 </div>
 </div>
-<p>We’re still getting a validation error, but its different. <em>pydantic</em> is now telling us that the data given to <code class="docutils literal notranslate"><span class="pre">coordinates</span></code> must be of type <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>. Remember there are two default levels of validation in <em>pydantic</em>: Ensure type, manually written validators. When we have <code class="docutils literal notranslate"><span class="pre">arbitrary_types_allowed</span></code> configured, any unknown type to <em>pydantic</em> is not type-checked or coerced beyond that it is the declared type. Effectivley, a glorified <code class="docutils literal notranslate"><span class="pre">isinstance</span></code> check.</p>
+<p>We’re still getting a validation error, but it’s different. <em>pydantic</em> is now telling us that the data given to <code class="docutils literal notranslate"><span class="pre">coordinates</span></code> must be of type <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>. Remember there are two default levels of validation in <em>pydantic</em>: Ensure type, manually written validators. When we have <code class="docutils literal notranslate"><span class="pre">arbitrary_types_allowed</span></code> configured, any unknown type to <em>pydantic</em> is not type-checked or coerced beyond that it is the declared type. Effectively, a glorified <code class="docutils literal notranslate"><span class="pre">isinstance</span></code> check.</p>
 <p>So to fix this, either the user has to have already cast the data to the expected type, or the developer has to preempt the type validation somehow.</p>
 </section>
 <section id="pre-validators-in-pydantic">
 <h2>Pre-Validators in Pydantic<a class="headerlink" href="#pre-validators-in-pydantic" title="Permalink to this headline">#</a></h2>
-<p>Good news! You can make <em>pydantic</em> validators that run before the type validation, effectivley adding a third layer of validation stack. These are called “pre-validators” and will run before any other level of validator. The primary use case for these validators is data coercion, and that includes casting incoming data to specific types. E.g. Casting a list of lists to a NumPy array because we have <code class="docutils literal notranslate"><span class="pre">arbitrary_types_allowed</span></code> set.</p>
+<p>Good news! You can make <em>pydantic</em> validators that run before the type validation, effectively adding a third layer of validation stack. These are called “pre-validators” and will run before any other level of validator. The primary use case for these validators is data coercion, and that includes casting incoming data to specific types. E.g. Casting a list of lists to a NumPy array because we have <code class="docutils literal notranslate"><span class="pre">arbitrary_types_allowed</span></code> set.</p>
 <p>A pre-validator is defined exactly like any other <code class="docutils literal notranslate"><span class="pre">validator</span></code>, it just has the keyword <code class="docutils literal notranslate"><span class="pre">pre=True</span></code> in its arguments. We’re going to use the validator to take the <code class="docutils literal notranslate"><span class="pre">coordinates</span></code> data in, and cast it to a NumPy array.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -933,6 +933,7 @@ This chapter will start from the CHAPTER_4_WAFFLES and end on the CHAPTER_5_WAFF
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">validator</span>
 
+
 <span class="k">class</span> <span class="nc">Molecule</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">charge</span><span class="p">:</span> <span class="nb">float</span>
@@ -981,7 +982,7 @@ This chapter will start from the CHAPTER_4_WAFFLES and end on the CHAPTER_5_WAFF
 <div class="cell_output docutils container">
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">ValidationError</span><span class="g g-Whitespace">                           </span>Traceback (most recent call last)
-<span class="nn">Input In [62],</span> in <span class="ni">&lt;cell line: 2&gt;</span><span class="nt">()</span>
+<span class="nn">Input In [15],</span> in <span class="ni">&lt;cell line: 2&gt;</span><span class="nt">()</span>
 <span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">mangle</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">mol_data</span><span class="p">,</span> <span class="o">**</span><span class="n">bad_charge</span><span class="p">,</span> <span class="o">**</span><span class="n">bad_coords</span><span class="p">}</span>
 <span class="ne">----&gt; </span><span class="mi">2</span> <span class="n">water</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="o">**</span><span class="n">mangle</span><span class="p">)</span>
 
@@ -996,14 +997,14 @@ This chapter will start from the CHAPTER_4_WAFFLES and end on the CHAPTER_5_WAFF
 </div>
 </div>
 </div>
-<p>We’ve now upgraded our <code class="docutils literal notranslate"><span class="pre">Molecule</span></code> with more advanced data validation leaning into scientific validity, added in custom types which increase our model’s usability, and configured our model to further expand our capabilities. The code is now at the Lesson Materials labeled CHAPTER_5_WAFFLES.</p>
+<p>We’ve now upgraded our <code class="docutils literal notranslate"><span class="pre">Molecule</span></code> with more advanced data validation leaning into scientific validity, added in custom types which increase our model’s usability, and configured our model to further expand our capabilities. The code is now at the Lesson Materials labeled <code class="docutils literal notranslate"><span class="pre">05_valid_pydantic_molecule.py</span></code>.</p>
 <p>Next chapter we’ll look at nesting models to allow more complicated data structures.</p>
 <p>Below is a supplementary section on how you can define custom, non-native types without <code class="docutils literal notranslate"><span class="pre">arbitrary_types_allowed</span></code>, giving you greater control over defining custom or even shorthand types.</p>
 </section>
 <section id="supplemental-defining-custom-types-with-built-in-validators">
 <h2>Supplemental: Defining Custom Types with Built-In Validators<a class="headerlink" href="#supplemental-defining-custom-types-with-built-in-validators" title="Permalink to this headline">#</a></h2>
 <p>In the example of this chapter, we showed how to combine <code class="docutils literal notranslate"><span class="pre">arbitrary_types_allowed</span></code> in <code class="docutils literal notranslate"><span class="pre">Config</span></code> with the <code class="docutils literal notranslate"><span class="pre">validator(...,</span> <span class="pre">pre=True)</span></code> to convert incoming data to the types not understood by <em>pydantic</em>. There are obvious limitations to this such as having to write a different set of validators for each Model, being limited (or at least confined) in how you can permit types through, and then having to be accepting of arbitrary types.</p>
-<p><em>pydantic</em> provides a separarte way to write your custom class validator by extending the class in question. This can be done even to extend existing known types to augment them to special conditions.</p>
+<p><em>pydantic</em> provides a separate way to write your custom class validator by extending the class in question. This can be done even to extend existing known types to augment them to special conditions.</p>
 <div class="note admonition">
 <p class="admonition-title">Pydantic example: Regular Expression Based String Extension</p>
 <p>The pydantic site has an example of <a class="reference external" href="https://pydantic-docs.helpmanual.io/usage/types/#classes-with-__get_validators__">validating a string that is a UK postcode</a> on their site, which creates a custom validator for <code>str</code> type. Check it out for more examples.</p>
@@ -1030,11 +1031,11 @@ This chapter will start from the CHAPTER_4_WAFFLES and end on the CHAPTER_5_WAFF
 </div>
 </div>
 </div>
-<p>That’s it. We’ve defined our subclass of <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> called <code class="docutils literal notranslate"><span class="pre">ValidatableArray</span></code>. We added a <code class="docutils literal notranslate"><span class="pre">classmethod</span></code> called <code class="docutils literal notranslate"><span class="pre">__get_validators__</span></code> which accepts no argument and yields a <code class="docutils literal notranslate"><span class="pre">classfunctions</span></code> to handle the validation. We only have one function here, so there is only one object to <code class="docutils literal notranslate"><span class="pre">yeild</span></code>. If there were multiple objects to yield, each object would accept the validated/coerced value from the one before it. Because these are all <code class="docutils literal notranslate"><span class="pre">classmethod</span></code>s and not called on an instance of the <code class="docutils literal notranslate"><span class="pre">ValidatableArray</span></code>, we don’t have to do anything with the validated value inside <code class="docutils literal notranslate"><span class="pre">__get_validators__</span></code>; its all handled by a routine in <em>pydantic</em>.</p>
+<p>That’s it. We’ve defined our subclass of <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> called <code class="docutils literal notranslate"><span class="pre">ValidatableArray</span></code>. We added a <code class="docutils literal notranslate"><span class="pre">classmethod</span></code> called <code class="docutils literal notranslate"><span class="pre">__get_validators__</span></code> which accepts no argument and yields a <code class="docutils literal notranslate"><span class="pre">classfunctions</span></code> to handle the validation. We only have one function here, so there is only one object to <code class="docutils literal notranslate"><span class="pre">yield</span></code>. If there were multiple objects to yield, each object would accept the validated/coerced value from the one before it. Because these are all <code class="docutils literal notranslate"><span class="pre">classmethod</span></code>s and not called on an instance of the <code class="docutils literal notranslate"><span class="pre">ValidatableArray</span></code>, we don’t have to do anything with the validated value inside <code class="docutils literal notranslate"><span class="pre">__get_validators__</span></code>; its all handled by a routine in <em>pydantic</em>.</p>
 <p>Let’s apply this to our <code class="docutils literal notranslate"><span class="pre">Molecule</span></code>.</p>
 <div class="note admonition">
 <p class="admonition-title">This won’t appear in the next chapter</p>
-<p>The main Lesson Materials will not have this modification since this is all supplemental. Next chapter will start with the CHAPTER_5_WAFFLES Lesson Materials.</p>
+<p>The main Lesson Materials will not have this modification since this is all supplemental. Next chapter will start with the <code>05_valid_pydantic_molecule.py</code> Lesson Materials.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1077,7 +1078,7 @@ This chapter will start from the CHAPTER_4_WAFFLES and end on the CHAPTER_5_WAFF
 <div class="cell_output docutils container">
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">ValidationError</span><span class="g g-Whitespace">                           </span>Traceback (most recent call last)
-<span class="nn">Input In [71],</span> in <span class="ni">&lt;cell line: 2&gt;</span><span class="nt">()</span>
+<span class="nn">Input In [19],</span> in <span class="ni">&lt;cell line: 2&gt;</span><span class="nt">()</span>
 <span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">mangle</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">mol_data</span><span class="p">,</span> <span class="o">**</span><span class="n">bad_charge</span><span class="p">,</span> <span class="o">**</span><span class="n">bad_coords</span><span class="p">}</span>
 <span class="ne">----&gt; </span><span class="mi">2</span> <span class="n">water</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="o">**</span><span class="n">mangle</span><span class="p">)</span>
 
@@ -1099,10 +1100,10 @@ This chapter will start from the CHAPTER_4_WAFFLES and end on the CHAPTER_5_WAFF
 <h2>Supplemental: Defining Custom NumPy Type AND Setting Data Type (<em>dtype</em>)<a class="headerlink" href="#supplemental-defining-custom-numpy-type-and-setting-data-type-dtype" title="Permalink to this headline">#</a></h2>
 <p>It is possible to set the NumPy array <code class="docutils literal notranslate"><span class="pre">dtype</span></code> as well as part of the type checking without having to define multiple custom types. This approach is not related to <em>pydantic</em> per se, but is a showcase of chaining several very advanced Python topics together.</p>
 <p>In the previous Supplemental, we showed how to write a subclass with <code class="docutils literal notranslate"><span class="pre">__get_validators__</span></code> to define a NumPy <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> type in <em>pydantic</em>. We cast the input data to a numpy array with the <code class="docutils literal notranslate"><span class="pre">np.asarray</span></code>. That function can also accept a <code class="docutils literal notranslate"><span class="pre">dtype=...</span></code> argument where you can specify the type of data the array will be. How would you support arbitrarily setting the <code class="docutils literal notranslate"><span class="pre">dtype</span></code>?</p>
-<p>There are several, equally acceptable and pefectly valid, approachs to this.</p>
+<p>There are several, equally acceptable and perfectly valid, approaches to this.</p>
 <section id="multiple-validators">
 <h3>Multiple Validators<a class="headerlink" href="#multiple-validators" title="Permalink to this headline">#</a></h3>
-<p>One option would be to make multiple types of of validators and call the one you need. And there are several ways to do this. The first way is to just make multiple classes.</p>
+<p>One option would be to make multiple types of validators and call the one you need. And there are several ways to do this. The first way is to just make multiple classes.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">IntArray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
@@ -1211,9 +1212,9 @@ This chapter will start from the CHAPTER_4_WAFFLES and end on the CHAPTER_5_WAFF
 </div>
 </div>
 </section>
-<section id="make-a-generator-function">
-<h3>Make a generator function<a class="headerlink" href="#make-a-generator-function" title="Permalink to this headline">#</a></h3>
-<p>One option is to just make a generator function</p>
+<section id="make-an-on-demand-typer-function">
+<h3>Make an on Demand Typer Function<a class="headerlink" href="#make-an-on-demand-typer-function" title="Permalink to this headline">#</a></h3>
+<p>One option is to just make a function create types on demand.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">BaseArray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
@@ -1267,13 +1268,13 @@ This chapter will start from the CHAPTER_4_WAFFLES and end on the CHAPTER_5_WAFF
 </section>
 <section id="metclass-for-on-the-fly-assignment">
 <h3>Metclass for on-the-fly assignment.<a class="headerlink" href="#metclass-for-on-the-fly-assignment" title="Permalink to this headline">#</a></h3>
-<p>One option MolSSI deploys in our <a class="reference external" href="https://github.com/MolSSI/QCElemental/blob/295642189fe3c4d0812142c0304d8ae9c8674d4c/qcelemental/models/types.py#L39"><code class="docutils literal notranslate"><span class="pre">QCElemental</span></code> package</a> is to use a <a class="reference external" href="https://docs.python.org/3/reference/datamodel.html#metaclasses">Python Metaclass</a> as a way to define a class generator who’s properties are set dynamically, then usable by the class.</p>
+<p>One option MolSSI deploys in our <a class="reference external" href="https://github.com/MolSSI/QCElemental/blob/295642189fe3c4d0812142c0304d8ae9c8674d4c/qcelemental/models/types.py#L39"><code class="docutils literal notranslate"><span class="pre">QCElemental</span></code> package</a> is to use a <a class="reference external" href="https://docs.python.org/3/reference/datamodel.html#metaclasses">Python Metaclass</a> as a way to define a class generator whose properties are set dynamically, then usable by the class.</p>
 <div class="warning admonition">
-<p class="admonition-title">Here there be Forbidden Magics</p>
+<p class="admonition-title">Here There be Forbidden Magics</p>
 <p>“Metaclasses are deeper magic than 99% of users should ever worry about. If you wonder whether you need them, you don’t (the people who actually need them know with certainty that they need them, and don’t need an explanation about why).”</p>
 <p>— Tim Peters, Author of <a class="reference external" href="https://peps.python.org/pep-0020/">Zen of Python, PEP 20</a></p>
 </div>
-<p>Metaclasses are usually not something you want to touch, because you don’t need to. The above methods provide a fine way to generate type hints dynamically. However, if you want to be fancy, you can use a Metaclass. The best primer I, Levi Naden, have found on Metaclasses at the time of writting this section (Fall 2022) was through <a class="reference external" href="https://stackoverflow.com/a/6581949/10364409">this Stack Overflow answer</a>.</p>
+<p>Metaclasses are usually not something you want to touch, because you don’t need to. The above methods provide a fine way to generate type hints dynamically. However, if you want to be fancy, you can use a Metaclass. The best primer I, Levi Naden, have found on Metaclasses at the time of writing this section (Fall 2022) was through <a class="reference external" href="https://stackoverflow.com/a/6581949/10364409">this Stack Overflow answer</a>.</p>
 <p>For our example, we’re going to define a base typed array, define a Metaclass which abuses the <code class="docutils literal notranslate"><span class="pre">__getindex__</span></code> to treat our <code class="docutils literal notranslate"><span class="pre">[</span> <span class="pre">]</span></code> arguments for “type hint” as a type assignment, then feed the metaclass in with that type specification as a settable parameter and generate classes on the fly.</p>
 <p>Let’s see that in code where we’ve annotated the lines everything in the last paragraph said.</p>
 <div class="cell docutils container">
@@ -1334,7 +1335,7 @@ This chapter will start from the CHAPTER_4_WAFFLES and end on the CHAPTER_5_WAFF
 </div>
 </div>
 </div>
-<p>There are also a couple downsides to this. You have to understand Metaclasses, which we showed a quote warrning against. You cannot just you a bare <code class="docutils literal notranslate"><span class="pre">Array</span></code> because then its an arbitrary type. Lastly, if you want default <code class="docutils literal notranslate"><span class="pre">dtype</span></code> handling you have to use the <code class="docutils literal notranslate"><span class="pre">TypedArray</span></code> as the type annotation or <code class="docutils literal notranslate"><span class="pre">Array[None]</span></code>, which can be a bit confusing.</p>
+<p>There are also a couple downsides to this. You have to understand Metaclasses, which we showed a quote warning against. You cannot just use a bare <code class="docutils literal notranslate"><span class="pre">Array</span></code> because then it’s an arbitrary type. Lastly, if you want default <code class="docutils literal notranslate"><span class="pre">dtype</span></code> handling you have to use the <code class="docutils literal notranslate"><span class="pre">TypedArray</span></code> as the type annotation or <code class="docutils literal notranslate"><span class="pre">Array[None]</span></code>, which can be a bit confusing.</p>
 </section>
 <section id="do-what-makes-sense-and-only-if-you-need-to">
 <h3>Do what makes sense, and only if you need to<a class="headerlink" href="#do-what-makes-sense-and-only-if-you-need-to" title="Permalink to this headline">#</a></h3>
@@ -1374,7 +1375,7 @@ This chapter will start from the CHAPTER_4_WAFFLES and end on the CHAPTER_5_WAFF
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">Introcuction to Pydantic</p>
+            <p class="prev-next-title">Introduction to Pydantic</p>
         </div>
     </a>
     <a class='right-next' id="next-link" href="NestedDataModels.html" title="next page">

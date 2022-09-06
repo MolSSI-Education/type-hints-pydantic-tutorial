@@ -147,7 +147,7 @@ const thebe_selector_output = ".output, .cell_output"
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="IntroToPydantic.html">
-   Introcuction to Pydantic
+   Introduction to Pydantic
   </a>
  </li>
  <li class="toctree-l1">
@@ -440,9 +440,9 @@ title="Print to PDF"
               <div>
                 
   <section class="tex2jax_ignore mathjax_ignore" id="objectives-and-setup">
-<h1>Objectives and Setup<a class="headerlink" href="#objectives-and-setup" title="Permalink to this headline">#</a></h1>
-<p>Python is a powerful programing language for getting things done, however, its very permissive acceptance of datum types to arguments and from data structures makes correctly programming around- and validating those data nebulous. This workshop is about annotating Python code to include information about data types for developers, users, and Integrated development Environments (IDEs) as well as validation of said data. You’ll learn about the built in Python type hints for non-enforcable annotation, wrapping data structures into programable classes called a <code class="docutils literal notranslate"><span class="pre">dataclass</span></code>, manual validation of said data, and finally leveraging a powerful external library called <a class="reference external" href="https://pydantic-docs.helpmanual.io/"><code class="docutils literal notranslate"><span class="pre">pydantic</span></code></a> to automatically validate arbitrarily complex data structures through native type hints.</p>
-<p>In this workshop we will be using Jupyter notebooks, which you will be able to set up once you have installed Anaconda, however, this code is meant to be dyanmically interacted with and run. So, feel free to follow along in your own editor or IDE.</p>
+<span id="setup"></span><h1>Objectives and Setup<a class="headerlink" href="#objectives-and-setup" title="Permalink to this headline">#</a></h1>
+<p>Python is a powerful programing language for getting things done, however, its very permissive acceptance of datum types to arguments and from data structures makes correctly programming around- and validating those data nebulous. This workshop is about annotating Python code to include information about data types for developers, users, and Integrated development Environments (IDEs) as well as validation of said data. You’ll learn about the built in Python type hints for non-enforceable annotation, wrapping data structures into programmable classes called a <code class="docutils literal notranslate"><span class="pre">dataclass</span></code>, manual validation of said data, and finally leveraging a powerful external library called <a class="reference external" href="https://pydantic-docs.helpmanual.io/"><code class="docutils literal notranslate"><span class="pre">pydantic</span></code></a> to automatically validate arbitrarily complex data structures through native type hints.</p>
+<p>In this workshop we will be using Jupyter notebooks, which you will be able to set up once you have installed Anaconda, however, this code is meant to be dynamically interacted with and run. So, feel free to follow along in your own editor or IDE.</p>
 <section id="installing-python-through-anaconda">
 <h2>Installing Python through Anaconda<a class="headerlink" href="#installing-python-through-anaconda" title="Permalink to this headline">#</a></h2>
 <p><a class="reference external" href="https://python.org/">Python</a> is a popular language for scientific computing, and great for general-purpose programming as well. Installing all of its scientific packages individually can be a bit difficult, however, so we recommend the all-in-one installer Anaconda.</p>
@@ -455,14 +455,14 @@ title="Print to PDF"
 <section id="obtain-lesson-materials">
 <h2>Obtain lesson materials<a class="headerlink" href="#obtain-lesson-materials" title="Permalink to this headline">#</a></h2>
 <ol class="simple">
-<li><p>Download the files needed for these lessons <a class="reference external" href="https://github.com/MolSSI-Education/FIX_ME_WAFFLES">here</a>.</p></li>
+<li><p>Download the files needed for these lessons <a class="reference external" href="https://github.com/Lnaden/type-hints-pydantic-tutorial/tree/main/data/lesson_materials.zip">here</a>.</p></li>
 <li><p>Create a folder called <code class="docutils literal notranslate"><span class="pre">types-and-pydantic</span></code> on your Desktop.</p></li>
 <li><p>Move the downloaded materials to the new folder.</p></li>
 <li><p>Unzip the file.</p></li>
 </ol>
 <section id="using-the-lesson-materials">
 <h3>Using the Lesson Materials<a class="headerlink" href="#using-the-lesson-materials" title="Permalink to this headline">#</a></h3>
-<p>This is meant to be a dynamic, interactive workshop where you will be building, updating, and executing code in real time. Each chapter covers certain topics which are expanded and built upon in the next chapter. You will start with the BASIC_DYNAMIC_FILE_WAFFLES (which is a copy of the BASE_FILE_WAFFLES) in CHAPTER_1_WAFFLES, and eventually construct the CHAPTER_1_CONCLUSION_FILE_WAFFLES, which you can use as reference and to see the end-goal. CHAPTER_2_WAFFLES will pick up from CHAPTER_1_CONCLUSION_FILE_WAFFLES as a base, and eventually CHAPTER_2_CONCLUSION_FILE_WAFFLES, and so on. We encourage you to make a copy of the BASE_FILE_WAFFLES to follow along with the chapters of this workshop and build up so you can see where we started.</p>
+<p>This is meant to be a dynamic, interactive workshop where you will be building, updating, and executing code in real time. Each chapter covers certain topics which are expanded and built upon in the next chapter. You will start with the <code class="docutils literal notranslate"><span class="pre">molecule.py</span></code> (which is a copy of the <code class="docutils literal notranslate"><span class="pre">00_base_molecule.py</span></code>) in <a class="reference internal" href="TypeHintsInPython.html#ch01"><span class="std std-ref">Type Hints in Python</span></a>, and eventually construct the <code class="docutils literal notranslate"><span class="pre">01_typed_molecule.py</span></code> file from the Lesson Materials, which you can use as reference and to see the end-goal. <a class="reference internal" href="DataclassInPython.html#ch02"><span class="std std-ref">Dataclasses In Python</span></a> will pick up from <code class="docutils literal notranslate"><span class="pre">01_typed_molecule.py</span></code> as a base to eventually build <code class="docutils literal notranslate"><span class="pre">02_dataclass_molecule.py</span></code>, and so on. We encourage you to use the included <code class="docutils literal notranslate"><span class="pre">molecule.py</span></code> to follow along with the chapters of this workshop and build up so you can see where we started.</p>
 <p>Your files may look different depending on how you choose to approach the problems, and that’s okay! The lesson material files are meant to serve as guides, not the sole correct answers.</p>
 </section>
 </section>

@@ -148,7 +148,7 @@ const thebe_selector_output = ".output, .cell_output"
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="IntroToPydantic.html">
-   Introcuction to Pydantic
+   Introduction to Pydantic
   </a>
  </li>
  <li class="toctree-l1">
@@ -417,13 +417,12 @@ title="Print to PDF"
               <div>
                 
   <section class="tex2jax_ignore mathjax_ignore" id="starting-code-and-objectives">
-<h1>Starting Code and Objectives<a class="headerlink" href="#starting-code-and-objectives" title="Permalink to this headline">#</a></h1>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p>Starting File: BASE_FILE_WAFFLES
-This chapter will start from the BASE_FILE_WAFFLES and end on the BASE_FILE_WAFFLES. No modifications will be made in this chapter, we’re simply looking at the structure.</p>
+<span id="ch00"></span><h1>Starting Code and Objectives<a class="headerlink" href="#starting-code-and-objectives" title="Permalink to this headline">#</a></h1>
+<div class="important admonition">
+<p class="admonition-title">Starting File: <code>00_base_molecule.py</code></p>
+<p>This chapter will start from the <code>00_base_molecule.py</code> and end on the <code>00_base_molecule.py</code>. No modifications will be made in this chapter, we’re simply looking at the structure.</p>
 </div>
-<p>This chapter will cover the basic file we will be manipulating, what it does, and what we will be doing to it. The comands we run will be very simple, but we will be manipulating the main class shown below as we build out our features and cover concepts.</p>
+<p>This chapter will cover the basic file we will be manipulating, what it does, and what we will be doing to it. The commands we run will be very simple, but we will be manipulating the main class shown below as we build out our features and cover concepts.</p>
 <section id="base-class-a-simple-molecule">
 <h2>Base Class: A Simple Molecule<a class="headerlink" href="#base-class-a-simple-molecule" title="Permalink to this headline">#</a></h2>
 <p>Below, we have the code that we’re going to be manipulating with a main class we’ve called <code class="docutils literal notranslate"><span class="pre">Molecule</span></code></p>
@@ -444,7 +443,7 @@ This chapter will start from the BASE_FILE_WAFFLES and end on the BASE_FILE_WAFF
 </div>
 </div>
 <p>What is <code class="docutils literal notranslate"><span class="pre">Molecule</span></code>? It is a very simplistic representation of a molecule that you might choose to write as you go about developing your own code especially if you’re in the molecular sciences. It’s unlikely that you will necessarily need to write this on your own as there are many external libraries you could use but for that purpose of this workshop, we’re going to be building this out.</p>
-<p>The base <code class="docutils literal notranslate"><span class="pre">Molecule</span></code> class that simply takes it as its initlilization an arbitrary <code class="docutils literal notranslate"><span class="pre">name</span></code>, a <code class="docutils literal notranslate"><span class="pre">charge</span></code>, <code class="docutils literal notranslate"><span class="pre">symbols</span></code> for the elements, and <code class="docutils literal notranslate"><span class="pre">coordinates</span></code>. Instanciation then assigns each of these arguments to a corresponding attribute of the same name. Finally, then we also add an extra attribute to provide a number of atoms.</p>
+<p>The base <code class="docutils literal notranslate"><span class="pre">Molecule</span></code> class that simply takes as its initialization an arbitrary <code class="docutils literal notranslate"><span class="pre">name</span></code>, a <code class="docutils literal notranslate"><span class="pre">charge</span></code>, <code class="docutils literal notranslate"><span class="pre">symbols</span></code> for the elements, and <code class="docutils literal notranslate"><span class="pre">coordinates</span></code>. Instanciation then assigns each of these arguments to a corresponding attribute of the same name. Finally, then we also add an extra attribute to provide a number of atoms.</p>
 <p>Let’s put our <code class="docutils literal notranslate"><span class="pre">Molecule</span></code> class to work and create a very simple Water representation.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -454,7 +453,7 @@ This chapter will start from the BASE_FILE_WAFFLES and end on the BASE_FILE_WAFF
 </div>
 </div>
 <p>The water we’ve specified has no charge; has elements <code class="docutils literal notranslate"><span class="pre">H</span></code>, <code class="docutils literal notranslate"><span class="pre">H</span></code>, and <code class="docutils literal notranslate"><span class="pre">O</span></code>; and simple coordinates centered at <code class="docutils literal notranslate"><span class="pre">(0,0,0</span></code> in a 3D space.</p>
-<p>You may note that the <code class="docutils literal notranslate"><span class="pre">coordinates</span></code> are not actually sufficeient to specify 3, three-dimensional locations, but instead define a one-dimensional location, so this could be center of mass coordinates this but this certainly isn’t atomic coordinates. We’ll come back to that later and instead just print out our <code class="docutils literal notranslate"><span class="pre">water</span></code>.</p>
+<p>You may note that the <code class="docutils literal notranslate"><span class="pre">coordinates</span></code> are not actually sufficient to specify 3, three-dimensional locations, but instead define a one-dimensional location, so this could be center of mass coordinates this but this certainly isn’t atomic coordinates. We’ll come back to that later and instead just print out our <code class="docutils literal notranslate"><span class="pre">water</span></code>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">water</span><span class="p">)</span>
@@ -473,7 +472,7 @@ symbols: [&#39;H&#39;, &#39;H&#39;, &#39;O&#39;]
 <section id="problems-of-types">
 <h2>Problems of Types<a class="headerlink" href="#problems-of-types" title="Permalink to this headline">#</a></h2>
 <p>Everything was assigned correctly and dutifully represented through the <code class="docutils literal notranslate"><span class="pre">__str__</span></code> method we wrote into the class. However, you might notice several things about this that aren’t necessarily the most clear: what type of data does this class accept?</p>
-<p>Python is what is called a “Duck Typing Language,” so arguments and variables that are assigned from those areguments just assume or adopt the type given to them without any regard if they can be syntactically used correctly. If tpyes were enforced natively in Python, it would be called as “Strict Typing Language.” Duck typing is a very powerful tool in that you can code quicker and be more flexible, but it does have downsides, especially in the scientific computing world where data and their types tend to require rigor.</p>
+<p>Python is what is called a “Duck Typing Language,” so arguments and variables that are assigned from those arguments just assume or adopt the type given to them without any regard if they can be syntactically used correctly. If types were enforced natively in Python, it would be called a “Strict Typing Language.” Duck typing is a very powerful tool in that you can code quicker and be more flexible, but it does have downsides, especially in the scientific computing world where data and their types tend to require rigor.</p>
 <p>If we wanted to provide some useful information not only you the developer, some other developer, or end users right inside the code, separate from documentation strings, we can use something called “Type Hints”</p>
 </section>
 </section>

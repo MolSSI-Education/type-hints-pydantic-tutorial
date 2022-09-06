@@ -148,7 +148,7 @@ const thebe_selector_output = ".output, .cell_output"
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="IntroToPydantic.html">
-   Introcuction to Pydantic
+   Introduction to Pydantic
   </a>
  </li>
  <li class="toctree-l1">
@@ -417,11 +417,10 @@ title="Print to PDF"
               <div>
                 
   <section class="tex2jax_ignore mathjax_ignore" id="dataclasses-in-python">
-<h1>Dataclasses In Python<a class="headerlink" href="#dataclasses-in-python" title="Permalink to this headline">#</a></h1>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p>Starting File: CHAPTER_1_CONCLUSION_FILE_WAFFLES
-This chapter will start from the CHAPTER_1_CONCLUSION_FILE_WAFFLES and end on the CHAPTER_2_WAFFLES.</p>
+<span id="ch02"></span><h1>Dataclasses In Python<a class="headerlink" href="#dataclasses-in-python" title="Permalink to this headline">#</a></h1>
+<div class="important admonition">
+<p class="admonition-title">Starting File: <code>01_typed_molecule.py</code></p>
+<p>This chapter will start from the <code>01_typed_molecule.py</code> and end on the <code>02_dataclass_molecule.py</code>.</p>
 </div>
 <p>We so far have looked at type hints in Python and how to apply them to arguments. Thus far, they have served as a tool for annotating arguments for developers, users, and IDE’s to give some clue as to what types of data can or should be provided to an argument.</p>
 <p>This chapter, we will continue with type hints, but also consider data restructuring of our sample <code class="docutils literal notranslate"><span class="pre">Molecule</span></code> class to reduce duplication of work, and make extension of these data containers (primarily) much easier.</p>
@@ -469,7 +468,7 @@ symbols: [&#39;H&#39;, &#39;H&#39;, &#39;O&#39;]
 </div>
 </div>
 </div>
-<p>We’re going to reduce the amount of effort we have to commit to writting out our <code class="docutils literal notranslate"><span class="pre">Molecule</span></code> constructor. In fact, we’re not going to write it at all! Above is the <code class="docutils literal notranslate"><span class="pre">Molecule</span></code> class as we left it last chapter, and a quick construct of <code class="docutils literal notranslate"><span class="pre">water</span></code> with its output, we’ll use that later to compare that we in fact do have the same output. Let’s get rid of the semi-duplicated code entirely now. From the native Python library <code class="docutils literal notranslate"><span class="pre">dataclasses</span></code>, we are going to import the <code class="docutils literal notranslate"><span class="pre">dataclass</span></code> object.</p>
+<p>We’re going to reduce the amount of effort we have to commit to writing out our <code class="docutils literal notranslate"><span class="pre">Molecule</span></code> constructor. In fact, we’re not going to write it at all! Above is the <code class="docutils literal notranslate"><span class="pre">Molecule</span></code> class as we left it last chapter, and a quick construct of <code class="docutils literal notranslate"><span class="pre">water</span></code> with its output, we’ll use that later to compare that we in fact do have the same output. Let’s get rid of the semi-duplicated code entirely now. From the native Python library <code class="docutils literal notranslate"><span class="pre">dataclasses</span></code>, we are going to import the <code class="docutils literal notranslate"><span class="pre">dataclass</span></code> object.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
@@ -509,7 +508,7 @@ symbols: [&#39;H&#39;, &#39;H&#39;, &#39;O&#39;]
 </div>
 </div>
 </div>
-<p>On its face, it does not look like it did anything, and that is because we still have the <code class="docutils literal notranslate"><span class="pre">__init__</span></code> defined. <code class="docutils literal notranslate"><span class="pre">&#64;dataclass</span></code> wraps the class its decorating and provides its own <code class="docutils literal notranslate"><span class="pre">__init__</span></code> statement that does not need to be written out. What its expecting is to read the <em>class attributes</em> of the defined class, and then does the attribute-to-variable assignment under its init. If you’re unfamiliar with the difference between <em>class</em> and <em>instance</em> attributes, take a look at the following code</p>
+<p>On its face, it does not look like it did anything, and that is because we still have the <code class="docutils literal notranslate"><span class="pre">__init__</span></code> defined. <code class="docutils literal notranslate"><span class="pre">&#64;dataclass</span></code> wraps the class it’s decorating and provides its own <code class="docutils literal notranslate"><span class="pre">__init__</span></code> statement that does not need to be written out. What it’s expecting is to read the <em>class attributes</em> of the defined class, and then do the attribute-to-variable assignment under its <code class="docutils literal notranslate"><span class="pre">__init__</span></code>. If you’re unfamiliar with the difference between <em>class</em> and <em>instance</em> attributes, take a look at the following code:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ShowAtters</span><span class="p">:</span>
@@ -518,18 +517,18 @@ symbols: [&#39;H&#39;, &#39;H&#39;, &#39;O&#39;]
     <span class="n">class_attr2</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>
         
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inst_attr1</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">inst_attr2</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span><span class="p">):</span>
-        <span class="c1"># Instance attributes defined either during or after initilization (of instance).</span>
+        <span class="c1"># Instance attributes defined either during or after initialization (of instance).</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">inst_attr1</span> <span class="o">=</span> <span class="n">inst_attr1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">inst_attr2</span> <span class="o">=</span> <span class="n">inst_attr2</span>
 
-<span class="c1"># Class attributes accessible without instancing the class. Instance Atrributes are not</span>
+<span class="c1"># Class attributes accessible without instantiating the class. Instance Attributes are not</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Class Attribute: </span><span class="si">{</span><span class="n">ShowAtters</span><span class="o">.</span><span class="n">class_attr2</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Instance Attribute: </span><span class="si">{</span><span class="n">ShowAtters</span><span class="o">.</span><span class="n">inst_attr2</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No instance attribute called inst_attr2&quot;</span><span class="p">)</span>
     
-<span class="c1"># After instancing, class and instances atrributes available</span>
+<span class="c1"># After instancing, class and instances attributes available</span>
 <span class="n">show</span> <span class="o">=</span> <span class="n">ShowAtters</span><span class="p">(</span><span class="s2">&quot;something&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Class Attribute: </span><span class="si">{</span><span class="n">show</span><span class="o">.</span><span class="n">class_attr2</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Instance Attribute: </span><span class="si">{</span><span class="n">show</span><span class="o">.</span><span class="n">inst_attr2</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -545,7 +544,7 @@ Instance Attribute: 6
 </div>
 </div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">dataclass</span></code> decorator reads the class atrributes and assign those attributes variables of the same name on calling the class, taking the same argument order as the attribute appears. In practice, you mainly just have to take your variable arguments and turn them into class attributes; type hints, defaults and all. This completley takes over the <code class="docutils literal notranslate"><span class="pre">__init__</span></code> process and reduces the amount of coding you need. Let’s try it now:</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">dataclass</span></code> decorator reads the class attributes and assigns those attributes variables of the same name on calling the class, taking the same argument order as the attribute appears. In practice, you mainly just have to take your variable arguments and turn them into class attributes; type hints, defaults and all. This completely takes over the <code class="docutils literal notranslate"><span class="pre">__init__</span></code> process and reduces the amount of coding you need. Let’s try it now:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
@@ -577,10 +576,14 @@ symbols: [&#39;H&#39;, &#39;H&#39;, &#39;O&#39;]
 </div>
 </div>
 </div>
-<p>Beyond the change to the initilization, everything still behaves the same as a normal class. Additional functions, properties, attributes, etc. can all be applied as normal. Lets appply that principal to bring back the <code class="docutils literal notranslate"><span class="pre">num_atoms</span></code> property, and bring our <code class="docutils literal notranslate"><span class="pre">Molecule</span></code> class to the form we want it in for the end of this chapter.</p>
+<p>Beyond the change to the initialization, everything still behaves the same as a normal class. Additional functions, properties, attributes, etc. can all be applied as normal. Let’s apply that principle to bring back the <code class="docutils literal notranslate"><span class="pre">num_atoms</span></code> property, and bring our <code class="docutils literal notranslate"><span class="pre">Molecule</span></code> class to the form we want it in for the end of this chapter.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+
+
+<span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Molecule</span><span class="p">:</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">charge</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
@@ -600,7 +603,7 @@ symbols: [&#39;H&#39;, &#39;H&#39;, &#39;O&#39;]
 </section>
 <section id="sane-input-handling">
 <h2>Sane Input Handling<a class="headerlink" href="#sane-input-handling" title="Permalink to this headline">#</a></h2>
-<p>You might consider with the <code class="docutils literal notranslate"><span class="pre">dataclass</span></code> that there is no longer as clear of the delineation between the order of arguments that you feed into the <code class="docutils literal notranslate"><span class="pre">Molecule</span></code> constructor and the order to the actual how they get assigned in the class. Yes, it does still assign it in the order arguments were provided, but there are only 4 items here, and the  order that data are received be quite ambiguous. Take the case here: representation of molecules in various file formats across different programs may not always be the same. You shouldn’t expect to always get some arbitrary <code class="docutils literal notranslate"><span class="pre">name</span></code> of the molecule as the first thing out of the file, or the first argument that comes into your program depending on  whatever source  is providing the data: a file on disk, an API call from the web, some user just typing things in a script to access your program. What happens if someone, for example, makes the first argument <code class="docutils literal notranslate"><span class="pre">charge</span></code>, the second argument a string, and reverses the 3rd and 4th arguments like so:</p>
+<p>You might consider with the <code class="docutils literal notranslate"><span class="pre">dataclass</span></code> that there is no longer as clear of the delineation between the order of arguments that you feed into the <code class="docutils literal notranslate"><span class="pre">Molecule</span></code> constructor and the order to the actual how they get assigned in the class. Yes, it does still assign it in the order arguments were provided, but there are only 4 items here, and the  order that data are received is ambiguous. Take the case here: representation of molecules in various file formats across different programs may not always be the same. You shouldn’t expect to always get some arbitrary <code class="docutils literal notranslate"><span class="pre">name</span></code> of the molecule as the first thing out of the file, or the first argument that comes into your program depending on  whatever source  is providing the data: a file on disk, an API call from the web, some user just typing things in a script to access your program. What happens if someone, for example, makes the first argument <code class="docutils literal notranslate"><span class="pre">charge</span></code>, the second argument a string, and reverses the 3rd and 4th arguments like so:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">water</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="s2">&quot;water&quot;</span><span class="p">,</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]],</span> <span class="p">[</span><span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="s2">&quot;O&quot;</span><span class="p">])</span>
@@ -616,8 +619,8 @@ symbols: [[0, 0, 0]]
 </div>
 </div>
 </div>
-<p>Technically, nothing broke here because Python looked at this and just cast everything to the matching oder of variables because of duck typing. The Python interpreter is going to assume the programmer will do something usefull with it, or will crash when it hits a syntax error.</p>
-<p>We strongly recommend you start relying on keyword arguments to your constructor for a <code class="docutils literal notranslate"><span class="pre">dataclass</span></code> to remove ambiguity. We especially recomend this as more complex data structures are encounterd; maybe there are tens or hundreds of properties you could store here (consider all the data a real molecule could contain). Just like normal keyword arguments for function deffinitions, the keyword arguments for a <code class="docutils literal notranslate"><span class="pre">dataclass</span></code> match the name of the variable defined in the class attributes.</p>
+<p>Technically, nothing broke here because Python looked at this and just cast everything to the matching order of variables because of duck typing. The Python interpreter is going to assume the programmer will do something useful with it, or will crash when it hits a syntax error.</p>
+<p>We strongly recommend you start relying on keyword arguments to your constructor for a <code class="docutils literal notranslate"><span class="pre">dataclass</span></code> to remove ambiguity. We especially recommend this as more complex data structures are encountered; maybe there are tens or hundreds of properties you could store here (consider all the data a real molecule could contain). Just like normal keyword arguments for function definitions, the keyword arguments for a <code class="docutils literal notranslate"><span class="pre">dataclass</span></code> match the name of the variable defined in the class attributes.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">water</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;water&quot;</span><span class="p">,</span> <span class="n">charge</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">symbols</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="s2">&quot;O&quot;</span><span class="p">],</span> <span class="n">coordinates</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
@@ -633,7 +636,7 @@ symbols: [&#39;H&#39;, &#39;H&#39;, &#39;O&#39;]
 </div>
 </div>
 </div>
-<p>Now it doesn’t matter what order the information is provided, everything will be assigned coorectly.</p>
+<p>Now it doesn’t matter what order the information is provided, everything will be assigned correctly.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">water</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="n">coordinates</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]],</span> <span class="n">symbols</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="s2">&quot;O&quot;</span><span class="p">],</span> <span class="n">charge</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;water&quot;</span><span class="p">)</span>
@@ -649,7 +652,7 @@ symbols: [&#39;H&#39;, &#39;H&#39;, &#39;O&#39;]
 </div>
 </div>
 </div>
-<p>The other major sane input handling conversion you should consider if providing data as a dictionary, that then passes to keyword arguments. This is a very common case as you might expect data much more frequently brought in from external sources and are loaded in as some key-value format like a Python dictionary, JSON, YAML, TOML, or any other type of data that you could possibly think of. In any case, it’s probably not as native Python types.</p>
+<p>The other major sane input handling conversion you should consider is providing data as a dictionary, that then passes to keyword arguments. This is a very common case as you might expect data much more frequently brought in from external sources and are loaded in as some key-value format like a Python dictionary, JSON, YAML, TOML, or any other type of data that you could possibly think of. In any case, it’s probably not as native Python types.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mol_data</span> <span class="o">=</span> <span class="p">{</span>

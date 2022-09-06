@@ -54,7 +54,7 @@ const thebe_selector_output = ".output, .cell_output"
     <script async="async" src="../_static/sphinx-thebe.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Introcuction to Pydantic" href="IntroToPydantic.html" />
+    <link rel="next" title="Introduction to Pydantic" href="IntroToPydantic.html" />
     <link rel="prev" title="Dataclasses In Python" href="DataclassInPython.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="None">
@@ -148,7 +148,7 @@ const thebe_selector_output = ".output, .cell_output"
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="IntroToPydantic.html">
-   Introcuction to Pydantic
+   Introduction to Pydantic
   </a>
  </li>
  <li class="toctree-l1">
@@ -473,14 +473,13 @@ title="Print to PDF"
               <div>
                 
   <section class="tex2jax_ignore mathjax_ignore" id="manual-data-validation">
-<h1>Manual Data Validation<a class="headerlink" href="#manual-data-validation" title="Permalink to this headline">#</a></h1>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p>Starting File: CHAPTER_2_WAFFLES
-This chapter will start from the CHAPTER_2_WAFFLES and end on the CHAPTER_3_WAFFLES.</p>
+<span id="ch03"></span><h1>Manual Data Validation<a class="headerlink" href="#manual-data-validation" title="Permalink to this headline">#</a></h1>
+<div class="important admonition">
+<p class="admonition-title">Starting File: <code>02_dataclass_molecule.py</code></p>
+<p>This chapter will start from the <code>02_dataclass_molecule.py</code> and end on the <code>03_manual_valid_molecule.py</code>.</p>
 </div>
 <p>We so far have looked at type hints in Python as augments to arguments, <code class="docutils literal notranslate"><span class="pre">dataclass</span></code> decorators to reduce code and automatically assign variables to attributes of the same name, and how to make our inputs more stable. Everything we’ve done up to now has been making our code easier to setup, read, and work around. However, we have not done anything to validate the inputs.</p>
-<p>No mater your field of work, validation of data is going to be something that happens. There is no getting around it, especially in the scientific field. It may be offloaded, automated, or even trvially simple, but it will happen; so we may as well get better at it.</p>
+<p>No matter your field of work, validation of data is going to be something that happens. There is no getting around it, especially in the scientific field. It may be offloaded, automated, or even trivially simple, but it will happen; so we may as well get better at it.</p>
 <div class="note admonition">
 <p class="admonition-title">Compatibility with Python 3.8 and below</p>
 <p>If you have Python 3.8 or below, you will need to import container type objects such as <code class="docutils literal notranslate"><span class="pre">List</span></code>, <code class="docutils literal notranslate"><span class="pre">Tuple</span></code>, <code class="docutils literal notranslate"><span class="pre">Dict</span></code>, etc. from the <code class="docutils literal notranslate"><span class="pre">typing</span></code> library instead of their native types of <code class="docutils literal notranslate"><span class="pre">list</span></code>, <code class="docutils literal notranslate"><span class="pre">tuple</span></code>, <code class="docutils literal notranslate"><span class="pre">dict</span></code>, etc. This chapter will assume Python 3.9 or greater, however, both approaches will work in &gt;=Python 3.9 and have 1:1 replacements of the same name.</p>
@@ -492,6 +491,7 @@ This chapter will start from the CHAPTER_2_WAFFLES and end on the CHAPTER_3_WAFF
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Molecule</span><span class="p">:</span>
@@ -522,7 +522,7 @@ This chapter will start from the CHAPTER_2_WAFFLES and end on the CHAPTER_3_WAFF
 </div>
 </div>
 </div>
-<p>We’ve seen several examples so far of feeeding in non-type appropriate code and not having errors. Now we’re going to do actual validation on our <code class="docutils literal notranslate"><span class="pre">dataclass</span></code>. Although there are third party libraries to do some of this, you the developer still have to have an understand the scientific use case for what is considered valid; even beyond the type checking itself.</p>
+<p>We’ve seen several examples so far of feeding in non-type appropriate code and not having errors. Now we’re going to do actual validation on our <code class="docutils literal notranslate"><span class="pre">dataclass</span></code>. Although there are third party libraries to do some of this, you the developer must still have an understanding of the scientific use case for what is considered valid; even beyond the type checking itself.</p>
 <p>We first have to know how to access the data on input. The <code class="docutils literal notranslate"><span class="pre">dataclass</span></code> decorator takes over the normal <code class="docutils literal notranslate"><span class="pre">__init__</span></code> process where someone may expect to write our validation code, or call the validation function(s). <code class="docutils literal notranslate"><span class="pre">dataclass</span></code> also provides a secondary function called <code class="docutils literal notranslate"><span class="pre">__post_init__</span></code> which is called automatically after the <code class="docutils literal notranslate"><span class="pre">__init__</span></code>, if it is defined. This function is basically free space for the developer to do whatever they want with the <code class="docutils literal notranslate"><span class="pre">dataclass</span></code> like there was an <code class="docutils literal notranslate"><span class="pre">__init__</span></code>, just after instance variables are assigned.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -561,12 +561,12 @@ Post Init Ran
 </div>
 </div>
 </div>
-<p>What you can see in the above code is that <code class="docutils literal notranslate"><span class="pre">__post_init__</span></code> did run, and does have access to all of the attributes we’re working with in this problem. If we wanted to recreate the <code class="docutils literal notranslate"><span class="pre">__init__</span></code> like settings we had from the BASE_FILE_WAFFLES, we could set <code class="docutils literal notranslate"><span class="pre">self.num_atoms</span> <span class="pre">=</span> <span class="pre">len(self.symbols)</span></code> in the <code class="docutils literal notranslate"><span class="pre">__post_init_</span></code> as well, but we’ll leave it as a <code class="docutils literal notranslate"><span class="pre">property</span></code>. Let’s actually delve into some validation, starting with simple type validation.</p>
+<p>What you can see in the above code is that <code class="docutils literal notranslate"><span class="pre">__post_init__</span></code> did run, and does have access to all of the attributes we’re working with in this problem. If we wanted to recreate the <code class="docutils literal notranslate"><span class="pre">__init__</span></code> like settings we had from the <code class="docutils literal notranslate"><span class="pre">00_base_molecule.py</span></code>, we could set <code class="docutils literal notranslate"><span class="pre">self.num_atoms</span> <span class="pre">=</span> <span class="pre">len(self.symbols)</span></code> in the <code class="docutils literal notranslate"><span class="pre">__post_init_</span></code> as well, but we’ll leave it as a <code class="docutils literal notranslate"><span class="pre">property</span></code>. Let’s actually delve into some validation, starting with simple type validation.</p>
 </section>
 <section id="manually-validating-types">
 <h2>Manually validating types<a class="headerlink" href="#manually-validating-types" title="Permalink to this headline">#</a></h2>
 <p>Although there are external libraries to do type and value validation of data, we’re going to go through the manual process in this chapter to show all the nuances that have to be thought of. Even the most sophisticated type-checking libraries still need the programmer to tell them what are the correct types, and are the values of those incoming data correct for the application.</p>
-<p>Validation rules themselves do not have to be complicated. Setting aside the scientifc understanding, lets start by simply validating the types. Let’s start with the <code class="docutils literal notranslate"><span class="pre">name</span></code> that we want to ensure is a string. We’ll handle validation in <code class="docutils literal notranslate"><span class="pre">__post_init__</span></code> as thats where we can intercept the initilization process in a <code class="docutils literal notranslate"><span class="pre">dataclass</span></code>.</p>
+<p>Validation rules themselves do not have to be complicated. Setting aside the scientific understanding, let’s start by simply validating the types. Let’s start with the <code class="docutils literal notranslate"><span class="pre">name</span></code> that we want to ensure is a string. We’ll handle validation in <code class="docutils literal notranslate"><span class="pre">__post_init__</span></code> as that’s where we can intercept the initialization process in a <code class="docutils literal notranslate"><span class="pre">dataclass</span></code>.</p>
 <div class="question">
     <p class="question-title">Heads Up Question</p>
     <p> Although we said "simply validating the types," there are some types in our current <code>Molecule</code> which might be rather complicated to validate. Can you think of what they might be and how you might validate them?</p>
@@ -594,7 +594,7 @@ Post Init Ran
 </div>
 </div>
 </div>
-<p>Let’s also create a set of bad data for use to feed to the constructor to test our validation. We’ll make a few bad entries here and combine dictionaries ont he fly as needed.</p>
+<p>Let’s also create a set of bad data for use to feed to the constructor to test our validation. We’ll make a few bad entries here and combine dictionaries on the fly as needed.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bad_name</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="mi">789</span><span class="p">}</span>  <span class="c1"># Name is not str</span>
@@ -629,29 +629,29 @@ Post Init Ran
 <div class="cell_output docutils container">
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">ValueError</span><span class="g g-Whitespace">                                </span>Traceback (most recent call last)
-<span class="nn">Input In [13],</span> in <span class="ni">&lt;cell line: 3&gt;</span><span class="nt">()</span>
+<span class="nn">Input In [8],</span> in <span class="ni">&lt;cell line: 3&gt;</span><span class="nt">()</span>
 <span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="c1"># This will not</span>
 <span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">mangle_name</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">mol_data</span><span class="p">,</span> <span class="o">**</span><span class="n">bad_name</span><span class="p">}</span>  <span class="c1"># Inject bad name, could be done in 1 line, easier to read this way</span>
 <span class="ne">----&gt; </span><span class="mi">3</span> <span class="n">water</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="o">**</span><span class="n">mangle_name</span><span class="p">)</span>
 
 <span class="nn">File &lt;string&gt;:7,</span> in <span class="ni">__init__</span><span class="nt">(self, name, charge, symbols, coordinates)</span>
 
-<span class="nn">Input In [6],</span> in <span class="ni">Molecule.__post_init__</span><span class="nt">(self)</span>
+<span class="nn">Input In [5],</span> in <span class="ni">Molecule.__post_init__</span><span class="nt">(self)</span>
 <span class="g g-Whitespace">      </span><span class="mi">8</span> <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="g g-Whitespace">      </span><span class="mi">9</span>     <span class="c1"># We&#39;ll validate the inputs here.</span>
 <span class="g g-Whitespace">     </span><span class="mi">10</span>     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-<span class="ne">---&gt; </span><span class="mi">11</span>         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`name` must be a str, was </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="ne">---&gt; </span><span class="mi">11</span>         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;name&#39; must be a str, was </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-<span class="ne">ValueError</span>: `name` must be a str, was 789
+<span class="ne">ValueError</span>: &#39;name&#39; must be a str, was 789
 </pre></div>
 </div>
 </div>
 </div>
-<p>Congradulations, we have our first piece of validaiton! Now lets move on to the <code class="docutils literal notranslate"><span class="pre">charge</span></code> entry. This one is slightly more complicated because <code class="docutils literal notranslate"><span class="pre">charge</span></code> is of type <code class="docutils literal notranslate"><span class="pre">Union[float,</span> <span class="pre">int]</span></code>. See if you can do this one yourself first.</p>
+<p>Congratulations, we have our first piece of validation! Now let’s move onto the <code class="docutils literal notranslate"><span class="pre">charge</span></code> entry. This one is slightly more complicated because <code class="docutils literal notranslate"><span class="pre">charge</span></code> is of type <code class="docutils literal notranslate"><span class="pre">Union[float,</span> <span class="pre">int]</span></code>. See if you can do this one yourself first.</p>
 <div class="exercise">
-<p class="exercise-title">Writting your own validator: validating Charge</p>
+<p class="exercise-title">Writing your own validator: validating Charge</p>
     <p>Write a validator statement for the <code>charge</code> which should be of type <code>Union[float, int]</code> to put in the <code>__post_init__</code> function.</p>
-    <p>We're not looking for code efficency here (minmal loops, fewest lines, minimal calls, etc.), so do what seems simplest here for understanding.</p>
+    <p>We're not looking for code efficiency here (minimal loops, fewest lines, minimal calls, etc.), so do what seems simplest here for understanding.</p>
 <div class="dropdown admonition">
 <p class="admonition-title">Hint</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>`Union` means &quot;either&quot; in this context.
@@ -668,7 +668,7 @@ Post Init Ran
 </div>
 </div><section id="more-difficult-validation-entries">
 <h3>More difficult validation entries<a class="headerlink" href="#more-difficult-validation-entries" title="Permalink to this headline">#</a></h3>
-<p>Let’s take a look at our two validated entries so far. We’re going to use our example from the excersie in the last section as our answer, yours might look different and that’s fine.</p>
+<p>Let’s take a look at our two validated entries so far. We’re going to use our example from the exercise in the last section as our answer, yours might look different and that’s fine.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
@@ -695,8 +695,8 @@ Post Init Ran
 </div>
 </div>
 </div>
-<p>Next we are going work on the <code class="docutils literal notranslate"><span class="pre">symbols</span></code>. Because this is a container-like type, we have to validate not only the outtermost type of <code class="docutils literal notranslate"><span class="pre">list</span></code>, but also the internal items of <code class="docutils literal notranslate"><span class="pre">str</span></code>.</p>
-<p>Let’s start with the Pythonic concept of “it is better to ask forgiveness than permission” and just try to do a loop on the <code class="docutils literal notranslate"><span class="pre">self.symbols</span></code>. If it cannot be looped over, we’ll catch that and throw a meaninful error.</p>
+<p>Next we are going to work on the <code class="docutils literal notranslate"><span class="pre">symbols</span></code>. Because this is a container-like type, we have to validate not only the outermost type of <code class="docutils literal notranslate"><span class="pre">list</span></code>, but also the internal items of <code class="docutils literal notranslate"><span class="pre">str</span></code>.</p>
+<p>Let’s start with the Pythonic concept of “it is better to ask forgiveness than permission” and just try to do a loop on the <code class="docutils literal notranslate"><span class="pre">self.symbols</span></code>. If it cannot be looped over, we’ll catch that and throw a meaningful error.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
@@ -736,7 +736,7 @@ Post Init Ran
 </div>
 <div class="question">
     <p class="question-title">Heads Up Question</p>
-    <p> We've intentionally wrote the <code>symbols</code> validator so there are a couple edge cases that will pass validation, but still not be the correct type hint. Can you think of such an edge case?</p>
+    <p> We've intentionally written the <code>symbols</code> validator so there are a couple edge cases that will pass validation, but still not be the correct type hint. Can you think of such an edge case?</p>
 <div class="dropdown admonition">
 <p class="admonition-title">Hint for Case A</p>
 <ul>
@@ -770,7 +770,7 @@ Post Init Ran
 <div class="cell_output docutils container">
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">TypeError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
-<span class="nn">Input In [20],</span> in <span class="ni">Molecule.__post_init__</span><span class="nt">(self)</span>
+<span class="nn">Input In [10],</span> in <span class="ni">Molecule.__post_init__</span><span class="nt">(self)</span>
 <span class="g g-Whitespace">     </span><span class="mi">16</span> <span class="k">try</span><span class="p">:</span>
 <span class="ne">---&gt; </span><span class="mi">17</span>     <span class="k">for</span> <span class="n">content</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="p">:</span>  <span class="c1"># Loop over elements</span>
 <span class="g g-Whitespace">     </span><span class="mi">18</span>         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>  <span class="c1"># Check content</span>
@@ -780,14 +780,14 @@ Post Init Ran
 <span class="n">The</span> <span class="n">above</span> <span class="n">exception</span> <span class="n">was</span> <span class="n">the</span> <span class="n">direct</span> <span class="n">cause</span> <span class="n">of</span> <span class="n">the</span> <span class="n">following</span> <span class="n">exception</span><span class="p">:</span>
 
 <span class="ne">ValueError</span><span class="g g-Whitespace">                                </span>Traceback (most recent call last)
-<span class="nn">Input In [22],</span> in <span class="ni">&lt;cell line: 3&gt;</span><span class="nt">()</span>
+<span class="nn">Input In [12],</span> in <span class="ni">&lt;cell line: 3&gt;</span><span class="nt">()</span>
 <span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="c1"># This will not</span>
 <span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">mangle_name</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">mol_data</span><span class="p">,</span> <span class="o">**</span><span class="n">noniter_symbols</span><span class="p">}</span>  <span class="c1"># Inject bad name, could be done in 1 line, easier to read this way</span>
 <span class="ne">----&gt; </span><span class="mi">3</span> <span class="n">water</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="o">**</span><span class="n">mangle_name</span><span class="p">)</span>
 
 <span class="nn">File &lt;string&gt;:7,</span> in <span class="ni">__init__</span><span class="nt">(self, name, charge, symbols, coordinates)</span>
 
-<span class="nn">Input In [20],</span> in <span class="ni">Molecule.__post_init__</span><span class="nt">(self)</span>
+<span class="nn">Input In [10],</span> in <span class="ni">Molecule.__post_init__</span><span class="nt">(self)</span>
 <span class="g g-Whitespace">     </span><span class="mi">19</span>             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">content</span><span class="p">))</span>
 <span class="g g-Whitespace">     </span><span class="mi">20</span> <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">exec</span><span class="p">:</span>  <span class="c1"># Trap not iterable item</span>
 <span class="g g-Whitespace">     </span><span class="mi">21</span>     <span class="c1"># This will throw if you can&#39;t iterate over self.symbols</span>
@@ -818,14 +818,14 @@ Post Init Ran
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;symbols&#39; must be a list, was </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exec</span>
 </pre></div>
 </div>
-<p>This exception in the <code class="docutils literal notranslate"><span class="pre">try...except</span></code> construct catchs the case of not being able to iterate during the <code class="docutils literal notranslate"><span class="pre">for</span></code> loop, then handles it gracefully with a cleaner exception stack using the Exception Chaining construct (<code class="docutils literal notranslate"><span class="pre">raise</span> <span class="pre">Exception()</span> <span class="pre">from</span></code>).</p>
+<p>This exception in the <code class="docutils literal notranslate"><span class="pre">try...except</span></code> construct catches the case of not being able to iterate during the <code class="docutils literal notranslate"><span class="pre">for</span></code> loop, then handles it gracefully with a cleaner exception stack using the Exception Chaining construct (<code class="docutils literal notranslate"><span class="pre">raise</span> <span class="pre">Exception()</span> <span class="pre">from</span></code>).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
     <span class="k">pass</span>
 <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exec</span><span class="p">:</span>
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Each element of &#39;symbols&#39; must be a string, was </span><span class="si">{</span><span class="n">exec</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> of type </span><span class="si">{</span><span class="n">exec</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exec</span>
 </pre></div>
 </div>
-<p>The last <code class="docutils literal notranslate"><span class="pre">except</span></code> clause catches the case of the elements of the <code class="docutils literal notranslate"><span class="pre">symbols</span></code> list not being a <code class="docutils literal notranslate"><span class="pre">str</span></code>. We’re combining two lesser deployed ideas here to make a more meaningful error message. First is the exception chaining to allow more elegant error messages, second is passing multiple arguments to the initial error (<code class="docutils literal notranslate"><span class="pre">raise</span> <span class="pre">ValueError(content,</span> <span class="pre">type(content))</span></code>) so that we can write a more informative error message by accsing the initial error’s <code class="docutils literal notranslate"><span class="pre">args</span></code> attribute.</p>
+<p>The last <code class="docutils literal notranslate"><span class="pre">except</span></code> clause catches the case of the elements of the <code class="docutils literal notranslate"><span class="pre">symbols</span></code> list not being a <code class="docutils literal notranslate"><span class="pre">str</span></code>. We’re combining two lesser deployed ideas here to make a more meaningful error message. First, the exception chaining allows more elegant error messages. Second, passing multiple arguments to the initial error (<code class="docutils literal notranslate"><span class="pre">raise</span> <span class="pre">ValueError(content,</span> <span class="pre">type(content))</span></code>) so that we can write a more informative error message by accessing the initial error’s <code class="docutils literal notranslate"><span class="pre">args</span></code> attribute.</p>
 <p>Let’s try to run a different type of data through the <code class="docutils literal notranslate"><span class="pre">symbols</span></code> validator. In theory, this is not the right type, and so it should throw an error too. As the Heads-Up Question above alluded to, it won’t (this is Case A).</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -845,7 +845,7 @@ Post Init Ran
 </div>
 </div>
 <p>This also works fine, and is Case B from the Heads-Up Question. Depending on how <code class="docutils literal notranslate"><span class="pre">symbols</span></code> is used in code, having it be a <code class="docutils literal notranslate"><span class="pre">tuple</span></code> might be fine for your purposes. If so, consider expanding the allowed types (or coercing the incoming data to a <code class="docutils literal notranslate"><span class="pre">list</span></code>).</p>
-<p>Because of all the edge cases, this is a case where being precise and “asking permission” can be more helpful than what we originally wrote. Let’s re-write our validator to handle <code class="docutils literal notranslate"><span class="pre">tuple</span></code>s permissivley, and to catch those pesky <code class="docutils literal notranslate"><span class="pre">string</span></code>s.</p>
+<p>Because of all the edge cases, this is a case where being precise and “asking permission” can be more helpful than what we originally wrote. Let’s rewrite our validator to handle <code class="docutils literal notranslate"><span class="pre">tuple</span></code>s permissively, and to catch those pesky <code class="docutils literal notranslate"><span class="pre">string</span></code>s.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
@@ -896,7 +896,7 @@ Post Init Ran
 <div class="cell_output docutils container">
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">TypeError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
-<span class="nn">Input In [30],</span> in <span class="ni">Molecule.__post_init__</span><span class="nt">(self)</span>
+<span class="nn">Input In [15],</span> in <span class="ni">Molecule.__post_init__</span><span class="nt">(self)</span>
 <span class="g g-Whitespace">     </span><span class="mi">17</span> <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
 <span class="ne">---&gt; </span><span class="mi">18</span>     <span class="k">raise</span> <span class="ne">TypeError</span>
 <span class="g g-Whitespace">     </span><span class="mi">19</span> <span class="k">for</span> <span class="n">content</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="p">:</span>  <span class="c1"># Loop over elements</span>
@@ -906,13 +906,14 @@ Post Init Ran
 <span class="n">The</span> <span class="n">above</span> <span class="n">exception</span> <span class="n">was</span> <span class="n">the</span> <span class="n">direct</span> <span class="n">cause</span> <span class="n">of</span> <span class="n">the</span> <span class="n">following</span> <span class="n">exception</span><span class="p">:</span>
 
 <span class="ne">ValueError</span><span class="g g-Whitespace">                                </span>Traceback (most recent call last)
-<span class="nn">Input In [31],</span> in <span class="ni">&lt;cell line: 2&gt;</span><span class="nt">()</span>
-<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">mangled_data</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">mol_data</span><span class="p">,</span> <span class="o">**</span><span class="n">nonlist_symbols</span><span class="p">}</span>
-<span class="ne">----&gt; </span><span class="mi">2</span> <span class="n">water</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="o">**</span><span class="n">mangled_data</span><span class="p">)</span>
+<span class="nn">Input In [16],</span> in <span class="ni">&lt;cell line: 3&gt;</span><span class="nt">()</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="c1"># Should now fail correctly</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">mangled_data</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">mol_data</span><span class="p">,</span> <span class="o">**</span><span class="n">nonlist_symbols</span><span class="p">}</span>
+<span class="ne">----&gt; </span><span class="mi">3</span> <span class="n">water</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="o">**</span><span class="n">mangled_data</span><span class="p">)</span>
 
 <span class="nn">File &lt;string&gt;:7,</span> in <span class="ni">__init__</span><span class="nt">(self, name, charge, symbols, coordinates)</span>
 
-<span class="nn">Input In [30],</span> in <span class="ni">Molecule.__post_init__</span><span class="nt">(self)</span>
+<span class="nn">Input In [15],</span> in <span class="ni">Molecule.__post_init__</span><span class="nt">(self)</span>
 <span class="g g-Whitespace">     </span><span class="mi">21</span>             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">content</span><span class="p">))</span>
 <span class="g g-Whitespace">     </span><span class="mi">22</span> <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">exec</span><span class="p">:</span>  <span class="c1"># Trap not iterable item</span>
 <span class="g g-Whitespace">     </span><span class="mi">23</span>     <span class="c1"># This will throw if you can&#39;t iterate over self.symbols</span>
@@ -937,10 +938,10 @@ Post Init Ran
 </div>
 </div>
 <p>We kept the same <code class="docutils literal notranslate"><span class="pre">try...except</span></code> block, but now added one extra check for type. Because we were more permissive to the type, we also modified the type hint for <code class="docutils literal notranslate"><span class="pre">symbols</span></code> from <code class="docutils literal notranslate"><span class="pre">list[str]</span></code> to <code class="docutils literal notranslate"><span class="pre">Union[list[str],</span> <span class="pre">tuple[str,</span> <span class="pre">...]]</span></code>. This had to take advantage of one of the “<a class="reference external" href="https://docs.python.org/3/library/typing.html#special-forms">Special Forms</a>” of type hints that <code class="docutils literal notranslate"><span class="pre">tuple</span></code> has.</p>
-<p>In CHAPTER_1_WAFFLES, we called out that the <code class="docutils literal notranslate"><span class="pre">tuple</span></code> is immutable, so multiple arguments of type hints fed into its <code class="docutils literal notranslate"><span class="pre">[]</span></code> annotations matched 1-to-1 with the index of items in the <code class="docutils literal notranslate"><span class="pre">tuple</span></code>. There is a “special form” of <code class="docutils literal notranslate"><span class="pre">tuple</span></code> annotation for “variable-length tuple of homogeneous type.” That is denoted with the literal ellipsis. So, <code class="docutils literal notranslate"><span class="pre">tuple[str,</span> <span class="pre">...]</span></code> means variable-length tuple of all types being <code class="docutils literal notranslate"><span class="pre">str</span></code>. If you feel this is confusing, consider not allowing <code class="docutils literal notranslate"><span class="pre">tuple</span></code> type, or coercing <code class="docutils literal notranslate"><span class="pre">tuple</span></code> to <code class="docutils literal notranslate"><span class="pre">list</span></code> before processing. Also consider using an automatic type/coercion checking like <em>pydantic</em> (CHAPTER-??-PYDANTIC-WAFFLES) to simplfy your code.</p>
+<p>In <a class="reference internal" href="TypeHintsInPython.html#ch01"><span class="std std-ref">Type Hints in Python</span></a>, we called out that the <code class="docutils literal notranslate"><span class="pre">tuple</span></code> is immutable, so multiple arguments of type hints fed into its <code class="docutils literal notranslate"><span class="pre">[]</span></code> annotations matched 1-to-1 with the index of items in the <code class="docutils literal notranslate"><span class="pre">tuple</span></code>. There is a “special form” of <code class="docutils literal notranslate"><span class="pre">tuple</span></code> annotation for “variable-length tuple of homogeneous type.” That is denoted with the literal ellipsis. So, <code class="docutils literal notranslate"><span class="pre">tuple[str,</span> <span class="pre">...]</span></code> means variable-length tuple of all types being <code class="docutils literal notranslate"><span class="pre">str</span></code>. If you feel this is confusing, consider not allowing <code class="docutils literal notranslate"><span class="pre">tuple</span></code> type, or coercing <code class="docutils literal notranslate"><span class="pre">tuple</span></code> to <code class="docutils literal notranslate"><span class="pre">list</span></code> before processing. Also consider using an automatic type/coercion checking like <em>pydantic</em> (<a class="reference internal" href="IntroToPydantic.html#ch04"><span class="std std-ref">Introduction to Pydantic</span></a>) to simplify your code.</p>
 <div class="note admonition">
-<p class="admonition-title">One-liner Validaiton</p>
-<p>It is possible to do the <code>symbols</code> validation in many other ways, including as a one-liner for the <code class="docutils literal notranslate"><span class="pre">if</span></code> statement. Because Python’s <code class="docutils literal notranslate"><span class="pre">or</span></code> statements are evaluated sequentually and only if its predecesor successed, you can compress both checks into a larger <code class="docutils literal notranslate"><span class="pre">if...or</span></code> construct. If you’re curious, here is one possible solution (wrapped with \ on a newline char for human legibility):</p>
+<p class="admonition-title">One-liner Validation</p>
+<p>It is possible to do the <code>symbols</code> validation in many other ways, including as a one-liner for the <code class="docutils literal notranslate"><span class="pre">if</span></code> statement. Because Python’s <code class="docutils literal notranslate"><span class="pre">or</span></code> statements are evaluated sequentially and only if its ppredecessor succeeded, you can compress both checks into a larger <code class="docutils literal notranslate"><span class="pre">if...or</span></code> construct. If you’re curious, here is one possible solution (wrapped with \ on a newline char for human legibility):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="ow">or</span> \
         <span class="nb">any</span><span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="p">):</span>
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="si">}</span><span class="s2"> must be a list of str&quot;</span><span class="p">)</span>
@@ -950,7 +951,7 @@ Post Init Ran
 </section>
 <section id="the-even-more-difficult-validation">
 <h3>The even more difficult validation<a class="headerlink" href="#the-even-more-difficult-validation" title="Permalink to this headline">#</a></h3>
-<p>By now our validation code has started to get pretty large for evaluating only three of our entries. Some efficency could be made with funciton calls for de-duplication, but not much. Even so, we still have the most complex validator so far, a list of list of numbers! In the grand scheme of schema, this isn’t that complicated of a validator, but lets check what will need to go into validating this entry. We’ll reuse every concept covered so far, and just apply it with an extra outer loop. Let’s cover the statements of fact and then translate them to a validator.</p>
+<p>By now our validation code has started to get pretty large for evaluating only three of our entries. Some efficiency could be made with function calls for de-duplication, but not much. Even so, we still have the most complex validator so far, a list of list of numbers! In the grand scheme of schema, this isn’t that complicated of a validator, but let’s check what will need to go into validating this entry. We’ll reuse every concept covered so far, and just apply it with an extra outer loop. Let’s cover the statements of fact and then translate them to a validator.</p>
 <ul class="simple">
 <li><p>The top most item is a (list or tuple)</p></li>
 <li><p>Each element of the outer (list or tuple) is a (list or tuple)</p></li>
@@ -1013,21 +1014,21 @@ Post Init Ran
 <div class="dropdown admonition">
 <p class="admonition-title">Solution:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">coordinates</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span>
     <span class="k">for</span> <span class="n">inner</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="p">:</span>  <span class="c1"># Loop over elements</span>
         <span class="k">pass</span>  <span class="c1"># Inner loop</span>
 <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">exec</span><span class="p">:</span>  <span class="c1"># Trap not iterable item</span>
-        <span class="c1"># This will throw if you can&#39;t iterate over self.symbols</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;coordinates&#39; must be a list or tuple of int/float, was </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">inner</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exec</span>
+    <span class="c1"># This will throw if you can&#39;t iterate over self.symbols</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;coordinates&#39; must be a list or tuple of int/float, was </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">inner</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exec</span>
 <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exec</span><span class="p">:</span>  <span class="c1"># Trap the content error</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;coordinates&#39; must be a list or tuple of int/float, however the following error was thrown: </span><span class="si">{</span><span class="n">exec</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exec</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;coordinates&#39; must be a list or tuple of int/float, however the following error was thrown: </span><span class="si">{</span><span class="n">exec</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exec</span>
 </pre></div>
 </div>
 </div>
 </div><div class="note admonition">
 <p class="admonition-title">One-liner Coordinates</p>
-<p>Just like with <code>symbols</code>, we can validate <code>coordinates</code> with one line as well. We throw out the ability to get much more informative errors, and admitedly double loop in this example, but its much more compact.</p>
+<p>Just like with <code>symbols</code>, we can validate <code>coordinates</code> with one line as well. We throw out the ability to get much more informative errors, and admittedly double loop in this example, but it’s much more compact.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="ow">or</span>
     <span class="nb">any</span><span class="p">(</span><span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="p">)</span> <span class="ow">or</span>
     <span class="nb">any</span><span class="p">(</span><span class="nb">any</span><span class="p">(</span><span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="nb">int</span><span class="p">))</span> <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">sub</span><span class="p">)</span> <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="p">)</span>
@@ -1040,16 +1041,20 @@ Post Init Ran
 </section>
 <section id="constructing-our-fully-validated-molecule">
 <h2>Constructing our fully validated molecule<a class="headerlink" href="#constructing-our-fully-validated-molecule" title="Permalink to this headline">#</a></h2>
-<p>Finally, we can build out our fully, manually validated <code class="docutils literal notranslate"><span class="pre">Molecule</span></code> object. This is also the final reference code of CHAPTER_3_WAFFLES.</p>
+<p>Finally, we can build out our fully, manually validated <code class="docutils literal notranslate"><span class="pre">Molecule</span></code> object. This is also the final reference code of <code class="docutils literal notranslate"><span class="pre">03_manual_valid_molecule.py</span></code>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Type Helpers</span>
-<span class="n">fi</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="nb">int</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+
+<span class="c1"># Type Helpers</span>
+<span class="n">fi</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
 <span class="n">lfi</span> <span class="o">=</span> <span class="nb">list</span><span class="p">[</span><span class="n">fi</span><span class="p">]</span>
 <span class="n">tfi</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">fi</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
 <span class="n">inner</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">lfi</span><span class="p">,</span> <span class="n">tfi</span><span class="p">]</span>
 <span class="n">lo</span> <span class="o">=</span> <span class="nb">list</span><span class="p">[</span><span class="n">inner</span><span class="p">]</span>
 <span class="n">tupo</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">inner</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Molecule</span><span class="p">:</span>
@@ -1057,15 +1062,15 @@ Post Init Ran
     <span class="n">charge</span><span class="p">:</span> <span class="n">fi</span>
     <span class="n">symbols</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span>
     <span class="n">coordinates</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">lo</span><span class="p">,</span> <span class="n">tupo</span><span class="p">]</span>
-    
+
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># We&#39;ll validate the inputs here.</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;name&#39; must be a str, was </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            
+
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">charge</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">charge</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;charge&#39; must be a float or int, was </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">charge</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            
+
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span>
@@ -1077,9 +1082,9 @@ Post Init Ran
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;symbols&#39; must be a list or tuple of string, was </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exec</span>
         <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exec</span><span class="p">:</span>  <span class="c1"># Trap the content error</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Each element of &#39;symbols&#39; must be a string, was </span><span class="si">{</span><span class="n">exec</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> of type </span><span class="si">{</span><span class="n">exec</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exec</span>
-            
+
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">coordinates</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span>
             <span class="k">for</span> <span class="n">inner</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="p">:</span>  <span class="c1"># Loop over elements</span>
                 <span class="k">try</span><span class="p">:</span>
@@ -1089,20 +1094,20 @@ Post Init Ran
                         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>  <span class="c1"># Check content</span>
                             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">content</span><span class="p">))</span>
                 <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">exec</span><span class="p">:</span>  <span class="c1"># Trap not iterable item</span>
-                        <span class="c1"># This will throw if you can&#39;t iterate over self.symbols</span>
-                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;coordinates&#39; inner elements must be a list or tuple of float/int, was </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">inner</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exec</span>
+                    <span class="c1"># This will throw if you can&#39;t iterate over self.symbols</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;coordinates&#39; inner elements must be a list or tuple of float/int, was </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">inner</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exec</span>
                 <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exec</span><span class="p">:</span>  <span class="c1"># Trap the content error</span>
-                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Each inner element of &#39;coordinates&#39; must be a string, was </span><span class="si">{</span><span class="n">exec</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> of type </span><span class="si">{</span><span class="n">exec</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exec</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Each inner element of &#39;coordinates&#39; must be a string, was </span><span class="si">{</span><span class="n">exec</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> of type </span><span class="si">{</span><span class="n">exec</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exec</span>
         <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">exec</span><span class="p">:</span>  <span class="c1"># Trap not iterable item</span>
-                <span class="c1"># This will throw if you can&#39;t iterate over self.symbols</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;coordinates&#39; must be a list or tuple of int/float, was </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">inner</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exec</span>
+            <span class="c1"># This will throw if you can&#39;t iterate over self.symbols</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;coordinates&#39; must be a list or tuple of int/float, was </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">inner</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exec</span>
         <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exec</span><span class="p">:</span>  <span class="c1"># Trap the content error</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;coordinates&#39; must be a list or tuple of int/float, however the following error was thrown: </span><span class="si">{</span><span class="n">exec</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exec</span>
-        
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;coordinates&#39; must be a list or tuple of int/float, however the following error was thrown: </span><span class="si">{</span><span class="n">exec</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exec</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">num_atoms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="p">)</span>
-        
+
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;name: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="se">\n</span><span class="s2">charge: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">charge</span><span class="si">}</span><span class="se">\n</span><span class="s2">symbols: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="si">}</span><span class="s2">&quot;</span>
 </pre></div>
@@ -1125,7 +1130,7 @@ Post Init Ran
 </div>
 </div>
 </div>
-<p>However, despite all our validation efforts, we so far have only validated types, actual data ranges are not yet validated. E.g. <code class="docutils literal notranslate"><span class="pre">sybmols</span></code> should be the same length as the outer iterable of <code class="docutils literal notranslate"><span class="pre">coordinates</span></code>, but actually testing that still passses.</p>
+<p>However, despite all our validation efforts, we so far have only validated types, actual data ranges are not yet validated. E.g. <code class="docutils literal notranslate"><span class="pre">symbols</span></code> should be the same length as the outer iterable of <code class="docutils literal notranslate"><span class="pre">coordinates</span></code>, but actually testing that still passses.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bad_symbols_and_cords</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;symbols&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="s2">&quot;O&quot;</span><span class="p">],</span>
@@ -1140,8 +1145,8 @@ Post Init Ran
 </section>
 <section id="key-takeaway-of-manual-validation-don-t-do-it-by-hand">
 <h2>Key Takeaway of Manual Validation: Don’t Do It by Hand!<a class="headerlink" href="#key-takeaway-of-manual-validation-don-t-do-it-by-hand" title="Permalink to this headline">#</a></h2>
-<p>As of now, you have written a bunch of code, just to validate 4 items of relatively simple types. What about complex dictionaries? Non-native Python types? Data structures with metadata also having their own structures? We also haven’t done anything really with the type hints. None of the validation code actually read the type hints to infer what the types should be, let alone do any programing with them.</p>
-<p>Still, this chapter should have instilled how to think about validation, what edge cases to consider, how to gracefully handle errors, shown the implicit advantages of data coersion (or at least shown all the effort to accomodate not coercing), and given a respect for what will be required should you choose to validate manually.</p>
+<p>As of now, you have written a bunch of code, just to validate 4 items of relatively simple types. What about complex dictionaries? Non-native Python types? Data structures with metadata also having their own structures? We also haven’t done anything really with the type hints. None of the validation code actually reads the type hints to infer what the types should be, let alone do any programming with them.</p>
+<p>Still, this chapter should have instilled how to think about validation, what edge cases to consider, how to gracefully handle errors, shown the implicit advantages of data coercion (or at least shown all the effort to accomodate not coercing), and given a respect for what will be required should you choose to validate manually.</p>
 <p>In the next chapter, we’re going to show <em>pydantic</em>: A powerful schema validation tool which takes the <code class="docutils literal notranslate"><span class="pre">dataclass</span></code> structure in tandem with Python’s own native type hints to do automatic validation.</p>
 </section>
 </section>
@@ -1183,7 +1188,7 @@ Post Init Ran
     <a class='right-next' id="next-link" href="IntroToPydantic.html" title="next page">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Introcuction to Pydantic</p>
+        <p class="prev-next-title">Introduction to Pydantic</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>
