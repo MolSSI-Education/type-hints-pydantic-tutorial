@@ -480,6 +480,11 @@ title="Print to PDF"
 </div>
 <p>We so far have looked at type hints in Python as augments to arguments, <code class="docutils literal notranslate"><span class="pre">dataclass</span></code> decorators to reduce code and automatically assign variables to attributes of the same name, and how to make our inputs more stable. Everything we’ve done up to now has been making our code easier to setup, read, and work around. However, we have not done anything to validate the inputs.</p>
 <p>No matter your field of work, validation of data is going to be something that happens. There is no getting around it, especially in the scientific field. It may be offloaded, automated, or even trivially simple, but it will happen; so we may as well get better at it.</p>
+<div class="important admonition">
+<p class="admonition-title">Hard Work Ahead</p>
+<p>This chapter will ask you to do a fair amount of coding for the purposes of understanding not only the data structure, but also to think about <em>what</em> needs to be validated and <em>how</em> scientific validation translates to programmatic validation.</p>
+<p>We’ll show a third party library to simplify this later, but understanding the foundation is important for understanding the tools which handle this for you.</p>
+</div>
 <div class="note admonition">
 <p class="admonition-title">Compatibility with Python 3.8 and below</p>
 <p>If you have Python 3.8 or below, you will need to import container type objects such as <code class="docutils literal notranslate"><span class="pre">List</span></code>, <code class="docutils literal notranslate"><span class="pre">Tuple</span></code>, <code class="docutils literal notranslate"><span class="pre">Dict</span></code>, etc. from the <code class="docutils literal notranslate"><span class="pre">typing</span></code> library instead of their native types of <code class="docutils literal notranslate"><span class="pre">list</span></code>, <code class="docutils literal notranslate"><span class="pre">tuple</span></code>, <code class="docutils literal notranslate"><span class="pre">dict</span></code>, etc. This chapter will assume Python 3.9 or greater, however, both approaches will work in &gt;=Python 3.9 and have 1:1 replacements of the same name.</p>

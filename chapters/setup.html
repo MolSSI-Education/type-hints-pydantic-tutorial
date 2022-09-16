@@ -367,8 +367,8 @@ title="Print to PDF"
     <nav id="bd-toc-nav" aria-label="Page">
         <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#installing-python-through-anaconda">
-   Installing Python through Anaconda
+  <a class="reference internal nav-link" href="#prerequisite-skills-and-installs">
+   Prerequisite Skills and Installs
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -377,8 +377,13 @@ title="Print to PDF"
   </a>
   <ul class="nav section-nav flex-column">
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#using-the-lesson-materials">
-     Using the Lesson Materials
+    <a class="reference internal nav-link" href="#using-the-lesson-materials-code">
+     Using the Lesson Materials: Code
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#using-the-lesson-materials-dependency-environment">
+     Using the Lesson Materials: Dependency Environment
     </a>
    </li>
   </ul>
@@ -408,8 +413,8 @@ title="Print to PDF"
                         <nav aria-label="Page">
                             <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#installing-python-through-anaconda">
-   Installing Python through Anaconda
+  <a class="reference internal nav-link" href="#prerequisite-skills-and-installs">
+   Prerequisite Skills and Installs
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -418,8 +423,13 @@ title="Print to PDF"
   </a>
   <ul class="nav section-nav flex-column">
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#using-the-lesson-materials">
-     Using the Lesson Materials
+    <a class="reference internal nav-link" href="#using-the-lesson-materials-code">
+     Using the Lesson Materials: Code
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#using-the-lesson-materials-dependency-environment">
+     Using the Lesson Materials: Dependency Environment
     </a>
    </li>
   </ul>
@@ -443,14 +453,16 @@ title="Print to PDF"
 <span id="setup"></span><h1>Objectives and Setup<a class="headerlink" href="#objectives-and-setup" title="Permalink to this headline">#</a></h1>
 <p>Python is a powerful programing language for getting things done, however, its very permissive acceptance of datum types to arguments and from data structures makes correctly programming around- and validating those data nebulous. This workshop is about annotating Python code to include information about data types for developers, users, and Integrated development Environments (IDEs) as well as validation of said data. You’ll learn about the built in Python type hints for non-enforceable annotation, wrapping data structures into programmable classes called a <code class="docutils literal notranslate"><span class="pre">dataclass</span></code>, manual validation of said data, and finally leveraging a powerful external library called <a class="reference external" href="https://pydantic-docs.helpmanual.io/"><code class="docutils literal notranslate"><span class="pre">pydantic</span></code></a> to automatically validate arbitrarily complex data structures through native type hints.</p>
 <p>In this workshop we will be using Jupyter notebooks, which you will be able to set up once you have installed Anaconda, however, this code is meant to be dynamically interacted with and run. So, feel free to follow along in your own editor or IDE.</p>
-<section id="installing-python-through-anaconda">
-<h2>Installing Python through Anaconda<a class="headerlink" href="#installing-python-through-anaconda" title="Permalink to this headline">#</a></h2>
-<p><a class="reference external" href="https://python.org/">Python</a> is a popular language for scientific computing, and great for general-purpose programming as well. Installing all of its scientific packages individually can be a bit difficult, however, so we recommend the all-in-one installer Anaconda.</p>
-<ol class="simple">
-<li><p>Navigate to the <a class="reference external" href="https://www.anaconda.com/products/individual">download page</a> for Anaconda.</p></li>
-<li><p>Download the appropriate installer for your operating system. <strong>Make sure you get the installer listed under Python 3</strong> (not 2.7).</p></li>
-<li><p>Double click the installer icon and follow the set-up instructions, keeping most of the default options. If you are Windows, make sure to choose the option <strong>Make Anaconda the default Python</strong> during installation.</p></li>
-</ol>
+<section id="prerequisite-skills-and-installs">
+<h2>Prerequisite Skills and Installs<a class="headerlink" href="#prerequisite-skills-and-installs" title="Permalink to this headline">#</a></h2>
+<p>Before starting this workshop, you should be familiar with object oriented programming in Python. You can complete <a class="reference external" href="https://education.molssi.org/oop_and_design_patterns/">MolSSI’s Object Oriented Programming in Python</a> workshop to get hands-on experience with object oriented programming.</p>
+<p>You should also already have Python installed (or know how to), as well as install packages into Python. Ideally you should set up a separate conda environment or other environment (e.g. wheel). If you need a primer or refresher on this, please see the <a class="reference external" href="https://education.molssi.org/python-scripting-biochemistry/chapters/setup.html">Setup page for one of MolSSI’s Python Programing Workshops</a></p>
+<p>You will need the following packages installed to run the material. We provide a conda environment file in the Lesson Materials (see below), or you can install the packages yourself through <code class="docutils literal notranslate"><span class="pre">conda</span></code>/<code class="docutils literal notranslate"><span class="pre">mamba</span></code> or <code class="docutils literal notranslate"><span class="pre">pip</span></code></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">pydantic</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">numpy</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">jupyter</span></code> (if using a Jupyter Notebook. This lesson can be done fully with terminal and a text editor/IDE if you want.)</p></li>
+</ul>
 </section>
 <section id="obtain-lesson-materials">
 <h2>Obtain lesson materials<a class="headerlink" href="#obtain-lesson-materials" title="Permalink to this headline">#</a></h2>
@@ -460,16 +472,28 @@ title="Print to PDF"
 <li><p>Move the downloaded materials to the new folder.</p></li>
 <li><p>Unzip the file.</p></li>
 </ol>
-<section id="using-the-lesson-materials">
-<h3>Using the Lesson Materials<a class="headerlink" href="#using-the-lesson-materials" title="Permalink to this headline">#</a></h3>
+<section id="using-the-lesson-materials-code">
+<h3>Using the Lesson Materials: Code<a class="headerlink" href="#using-the-lesson-materials-code" title="Permalink to this headline">#</a></h3>
 <p>This is meant to be a dynamic, interactive workshop where you will be building, updating, and executing code in real time. Each chapter covers certain topics which are expanded and built upon in the next chapter. You will start with the <code class="docutils literal notranslate"><span class="pre">molecule.py</span></code> (which is a copy of the <code class="docutils literal notranslate"><span class="pre">00_base_molecule.py</span></code>) in <a class="reference internal" href="TypeHintsInPython.html#ch01"><span class="std std-ref">Type Hints in Python</span></a>, and eventually construct the <code class="docutils literal notranslate"><span class="pre">01_typed_molecule.py</span></code> file from the Lesson Materials, which you can use as reference and to see the end-goal. <a class="reference internal" href="DataclassInPython.html#ch02"><span class="std std-ref">Dataclasses In Python</span></a> will pick up from <code class="docutils literal notranslate"><span class="pre">01_typed_molecule.py</span></code> as a base to eventually build <code class="docutils literal notranslate"><span class="pre">02_dataclass_molecule.py</span></code>, and so on. We encourage you to use the included <code class="docutils literal notranslate"><span class="pre">molecule.py</span></code> to follow along with the chapters of this workshop and build up so you can see where we started.</p>
 <p>Your files may look different depending on how you choose to approach the problems, and that’s okay! The lesson material files are meant to serve as guides, not the sole correct answers.</p>
+</section>
+<section id="using-the-lesson-materials-dependency-environment">
+<h3>Using the Lesson Materials: Dependency Environment<a class="headerlink" href="#using-the-lesson-materials-dependency-environment" title="Permalink to this headline">#</a></h3>
+<p>The Lesson Materials also include a Conda Environment file which all the dependencies ready to go. The file is the <code class="docutils literal notranslate"><span class="pre">type_hints_pydantic_tut.yml</span></code> file. You can run the following command to set up a Conda environment named “type-hint-pydantic” into a new clean environment.</p>
+<p>If you have <a class="reference external" href="https://github.com/mamba-org/mamba"><code class="docutils literal notranslate"><span class="pre">mamba</span></code> installed</a>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mamba env create -n type-hint-pydantic -f type_hints_pydantic_tut.yml
+</pre></div>
+</div>
+<p>If you only have <code class="docutils literal notranslate"><span class="pre">conda</span></code> installed</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda env create -n type-hint-pydantic -f type_hints_pydantic_tut.yml
+</pre></div>
+</div>
 </section>
 </section>
 <section id="start-a-jupyter-notebook">
 <h2>Start a Jupyter notebook<a class="headerlink" href="#start-a-jupyter-notebook" title="Permalink to this headline">#</a></h2>
 <p>From Finder or Spotlight (Mac OS) or the Start Menu (Windows) find the Anaconda Navigator.  The icon looks like a green circle.  Click Launch under Jupyter Notebook (not JupyterLab).  It may take a few seconds to load the page, especially if it is the first time you have ever used the jupyter notebook, so don’t panic if nothing loads for a few seconds.  Then a new window should open in your default internet browser. Use the file navigation window to navigate to <code class="docutils literal notranslate"><span class="pre">Desktop</span></code> and then to the <code class="docutils literal notranslate"><span class="pre">types-and-pydantic</span></code> folder.  In the upper right hand corner, click New, then choose Python 3 from the dropdown list (shown below)</p>
-<img alt="set-up" class="align-center" src="chapters/images/setup_figure_1.png" />
+<img alt="set-up" class="align-center" src="../_images/setup_figure_1.png" />
 <p>This will start a new Jupyter notebook using Python 3. You’re ready to go!</p>
 </section>
 <div class="toctree-wrapper compound">
