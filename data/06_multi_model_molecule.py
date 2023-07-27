@@ -1,34 +1,30 @@
 import re
-from typing import Union
+from typing import Optional, Union
+# Python 3.9+ you can just get Annotated from the standard typing module
+from typing_extensions import Annotated
 
 import numpy as np
-from pydantic import BaseModel, validator, AnyUrl
+from pydantic import BaseModel, field_validator, AfterValidator, ConfigDict
+from pydantic.networks import AnyUrl
 
 
-class MailTo(str):
-    @classmethod
-    def __get_validators__(cls):
-        for valid in [cls.valid_str, cls.valid_email]:
-            yield valid
+def strip_string(v: str):
+    return v.strip()
 
-    @classmethod
-    def valid_str(cls, v: str):
-        if not isinstance(v, str):
-            raise TypeError("Not a valid mailto Email format")
-        v = v.strip()
-        return v
 
-    @classmethod
-    def valid_email(cls, v: str):
-        if not re.match(r"(mailto:)?[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+", v):
-            raise ValueError("mailto URL is not a valid mailto or email link")
-        return v
+def valid_email(v: str):
+    if not re.match(r"(mailto:)?[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+", v):
+        raise ValueError("mailto URL is not a valid mailto or email link")
+    return v
+
+
+MailTo = Annotated[str, AfterValidator(valid_email), AfterValidator(strip_string)]
 
 
 class Contributor(BaseModel):
     name: str
     url: Union[MailTo, AnyUrl]
-    Organization: str = None  # Set default that makes it optional
+    Organization: Optional[str] = None  # Set default and explicitly make it Nullable
 
 
 class Molecule(BaseModel):
@@ -36,12 +32,12 @@ class Molecule(BaseModel):
     charge: float
     symbols: list[str]
     coordinates: np.ndarray
-    contributor: Contributor = None
+    contributor: Optional[Contributor] = None  # <--- New, nested, optional model
 
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    @validator("coordinates", pre=True)
+    @field_validator("coordinates", mode='before')
+    @classmethod
     def coord_to_numpy(cls, coords):
         try:
             coords = np.asarray(coords)
@@ -49,9 +45,10 @@ class Molecule(BaseModel):
             raise ValueError(f"Could not cast {coords} to numpy array")
         return coords
 
-    @validator("coordinates")
-    def coords_length_of_symbols(cls, coords, values):
-        symbols = values["symbols"]
+    @field_validator("coordinates")
+    @classmethod
+    def coords_length_of_symbols(cls, coords, info):
+        symbols = info.data["symbols"]
         if (len(coords.shape) != 2) or (len(symbols) != coords.shape[0]) or (coords.shape[1] != 3):
             raise ValueError(f"Coordinates must be of shape [Number Symbols, 3], was {coords.shape}")
         return coords
