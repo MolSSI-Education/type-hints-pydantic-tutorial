@@ -1,5 +1,5 @@
 import numpy as np
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, field_validator, ConfigDict
 
 
 class Molecule(BaseModel):
@@ -8,10 +8,10 @@ class Molecule(BaseModel):
     symbols: list[str]
     coordinates: np.ndarray
 
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    @validator("coordinates", pre=True)
+    @field_validator("coordinates", mode='before')
+    @classmethod
     def coord_to_numpy(cls, coords):
         try:
             coords = np.asarray(coords)
@@ -19,9 +19,10 @@ class Molecule(BaseModel):
             raise ValueError(f"Could not cast {coords} to numpy array")
         return coords
 
-    @validator("coordinates")
-    def coords_length_of_symbols(cls, coords, values):
-        symbols = values["symbols"]
+    @field_validator("coordinates")
+    @classmethod
+    def coords_length_of_symbols(cls, coords, info):
+        symbols = info.data["symbols"]
         if (len(coords.shape) != 2) or (len(symbols) != coords.shape[0]) or (coords.shape[1] != 3):
             raise ValueError(f"Coordinates must be of shape [Number Symbols, 3], was {coords.shape}")
         return coords

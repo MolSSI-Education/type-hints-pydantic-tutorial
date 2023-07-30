@@ -3,6 +3,6 @@ channels:
   - defaults
 dependencies:
   - python>=3.8
-  - pydantic
+  - pydantic>=2.0,<3
   - numpy
   - jupyter
