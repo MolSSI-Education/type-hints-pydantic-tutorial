@@ -71,6 +71,7 @@ const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="../_static/sphinx-thebe.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'chapters/NestedDataModels';</script>
+    <link rel="shortcut icon" href="../_static/molssi-favicon.jpg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="prev" title="Validating Data Beyond Types" href="ValidatingDataBeyondTypes.html" />
@@ -406,7 +407,7 @@ document.write(`
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">validator</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">field_validator</span><span class="p">,</span> <span class="n">ConfigDict</span>
 
 
 <span class="k">class</span> <span class="nc">Molecule</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
@@ -415,10 +416,10 @@ document.write(`
     <span class="n">symbols</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
     <span class="n">coordinates</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
 
-    <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
-        <span class="n">arbitrary_types_allowed</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">,</span> <span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;before&#39;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">coord_to_numpy</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">coords</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">coords</span><span class="p">)</span>
@@ -426,9 +427,10 @@ document.write(`
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not cast </span><span class="si">{</span><span class="n">coords</span><span class="si">}</span><span class="s2"> to numpy array&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">coords</span>
 
-    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">coords_length_of_symbols</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
-        <span class="n">symbols</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;symbols&quot;</span><span class="p">]</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">coords_length_of_symbols</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">info</span><span class="p">):</span>
+        <span class="n">symbols</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;symbols&quot;</span><span class="p">]</span>
         <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">symbols</span><span class="p">)</span> <span class="o">!=</span> <span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">or</span> <span class="p">(</span><span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Coordinates must be of shape [Number Symbols, 3], was </span><span class="si">{</span><span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">coords</span>
@@ -484,22 +486,22 @@ document.write(`
 <p>That looks like a good contributor of our <code class="docutils literal notranslate"><span class="pre">mol_data</span></code>. How would we add this entry to the <code class="docutils literal notranslate"><span class="pre">Molecule</span></code>? First let’s understand what an “optional” entry is.</p>
 <section id="defining-optional-entries">
 <h3>Defining Optional Entries<a class="headerlink" href="#defining-optional-entries" title="Permalink to this heading">#</a></h3>
-<p>For type hints/annotations, “optional” translates to “default <code class="docutils literal notranslate"><span class="pre">None</span></code>”. This can be specified in one of two main ways, three if you are on Python 3.10 or greater.</p>
+<p>For type hints/annotations, “optional” translates to “can be <code class="docutils literal notranslate"><span class="pre">None</span></code>”. That is not to say “if undefined is <code class="docutils literal notranslate"><span class="pre">None</span></code>” since that implies behavior which may not be intended. For now, lets look at how we can set optional fields in Python as a whole, not specifically <em>pydantic</em> yet. This can be specified in one of two main ways, three if you are on Python 3.10 or greater.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span>
 
-<span class="n">contributor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span>
-<span class="n">contributor</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="n">contributor</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span>  <span class="c1"># Python 3.10+ only</span>
+<span class="n">some_attribute</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span>
+<span class="n">some_attribute</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">some_attribute</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span>  <span class="c1"># Python 3.10+ only</span>
 </pre></div>
 </div>
 </div>
 </div>
-<p>First thing to note is the <code class="docutils literal notranslate"><span class="pre">Any</span></code> object from <code class="docutils literal notranslate"><span class="pre">typing</span></code>. This can be used to mean exactly that: <em>any</em> data types are valid here. We’ll replace it with our actual model in a moment. Let’s go over the wys to specify optional entries now with the understanding that all three of these mean and do the <em>exact</em> same thing.</p>
+<p>First thing to note is the <code class="docutils literal notranslate"><span class="pre">Any</span></code> object from <code class="docutils literal notranslate"><span class="pre">typing</span></code>. This can be used to mean exactly that: <em>any</em> data types are valid here. We’ll replace it with our actual model in a moment. Let’s go over the ways to specify optional entries now with the understanding that all three of these mean and do the <em>exact</em> same thing from a pure Python standpoint.</p>
 <p><code class="docutils literal notranslate"><span class="pre">Optional[Any]</span></code> borrows the <code class="docutils literal notranslate"><span class="pre">Optional</span></code> object from the <code class="docutils literal notranslate"><span class="pre">typing</span></code> library.</p>
 <p><code class="docutils literal notranslate"><span class="pre">Any</span> <span class="pre">=</span> <span class="pre">None</span></code> sets a default value of <code class="docutils literal notranslate"><span class="pre">None</span></code>, which also implies optional. This method can be used in tandem with any other type and not <code class="docutils literal notranslate"><span class="pre">None</span></code> to set a default value. E.g. <code class="docutils literal notranslate"><span class="pre">variable:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">12</span></code> would indicate an <code class="docutils literal notranslate"><span class="pre">int</span></code> type hint, and default value of <code class="docutils literal notranslate"><span class="pre">12</span></code> if it’s not set in the input data.</p>
-<p><code class="docutils literal notranslate"><span class="pre">Any</span> <span class="pre">|</span> <span class="pre">None</span></code> employs the set operators with Python to treat this as “any OR none”. This is also equal to <code class="docutils literal notranslate"><span class="pre">Union[Any,None]</span></code>. This only works in Python 3.10 or greater and it should be noted this will be the prefered way to specify <code class="docutils literal notranslate"><span class="pre">Union</span></code> in the future, removing the need to import it at all.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Any</span> <span class="pre">|</span> <span class="pre">None</span></code> employs the set operators with Python to treat this as “any OR none”. This is also equal to <code class="docutils literal notranslate"><span class="pre">Union[Any,None]</span></code>. This only works in Python 3.10 or greater and it should be noted this will be the preferred way to specify <code class="docutils literal notranslate"><span class="pre">Union</span></code> in the future, removing the need to import it at all.</p>
 </section>
 <section id="understanding-the-dict-type">
 <h3>Understanding the <code class="docutils literal notranslate"><span class="pre">dict</span></code> Type<a class="headerlink" href="#understanding-the-dict-type" title="Permalink to this heading">#</a></h3>
@@ -514,12 +516,12 @@ document.write(`
     <span class="k">pass</span>
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
-<span class="n">contributor</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span>
+<span class="n">contributor_mockup</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span>
     <span class="nb">str</span><span class="p">,</span>  <span class="c1"># Key Type Annotation</span>
     <span class="n">Union</span><span class="p">[</span>  <span class="c1"># Value Type Annotation</span>
         <span class="n">ValidEmail</span><span class="p">,</span> <span class="n">ValidHTML</span><span class="p">,</span> <span class="nb">str</span>  <span class="c1"># Different accepted string types, overly permissive</span>
     <span class="p">],</span>  
-<span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Optional</span>
+<span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Optional with default value of None</span>
 </pre></div>
 </div>
 </div>
@@ -540,47 +542,62 @@ document.write(`
 <p>Manually writing validators for structured models within our models made simple with <em>pydantic</em>. Because our <code class="docutils literal notranslate"><span class="pre">contributor</span></code> is just another model, we can treat it as such, and inject it in any other <em>pydantic</em> model.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">validator</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
 
 <span class="k">class</span> <span class="nc">Contributor</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">url</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">Organization</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Set default that makes it optional</span>
+    <span class="n">Organization</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Set default and explicitly make it Nullable</span>
 </pre></div>
 </div>
 </div>
 </div>
-<p>There it is, our very basic model. Because this is just another <em>pydantic</em> model, we can also write validators that will run for just this model. We’ll revisit that concept in a moment though, and let’s inject this model into our existing <em>pydantic</em> model for <code class="docutils literal notranslate"><span class="pre">Molecule</span></code>.</p>
+<p>There it is, our very basic model. Because this is just another <em>pydantic</em> model, we can also write validators that will run for just this model. <em>pydantic</em> treats optional fields a bit differently in that it will NOT set a default value to <code class="docutils literal notranslate"><span class="pre">None</span></code> if it is <code class="docutils literal notranslate"><span class="pre">Optional</span></code> without an explicit default value assigned by the <code class="docutils literal notranslate"><span class="pre">=</span></code> operator. It also follows a few basic rules:</p>
+<ul class="simple">
+<li><p>Default values are not checked against the type/schema. E.g. <code class="docutils literal notranslate"><span class="pre">None</span></code> here is not checked against <code class="docutils literal notranslate"><span class="pre">str</span></code></p></li>
+<li><p>Unless you specifically assign a value via <code class="docutils literal notranslate"><span class="pre">=</span></code> the field is required.</p></li>
+<li><p>Only fields explicitly set with <code class="docutils literal notranslate"><span class="pre">Optional</span></code> or <code class="docutils literal notranslate"><span class="pre">...</span> <span class="pre">|</span> <span class="pre">None</span></code> can be “nullable,” which means accepts <code class="docutils literal notranslate"><span class="pre">None</span></code> as an actual argument.</p></li>
+</ul>
+<p><a class="reference external" href="https://docs.pydantic.dev/dev-v2/migration/#required-optional-and-nullable-fields">See the rules for Optional vs. nullable fields here</a>. For our purposes, we will explicitly set the default value of <code class="docutils literal notranslate"><span class="pre">None</span></code> and <code class="docutils literal notranslate"><span class="pre">Optional</span></code> where appropriate to avoid any ambiguity.</p>
+<div class="note admonition">
+<p class="admonition-title">Optional and default None in Python 3.10</p>
+<p>If you have Python 3.10 and you wanted an optional default None field, you would do something like <code>Organization: str | None = None</code></p>
+</div>
+<p>We’ll revisit that concept in a moment though, and let’s inject this model into our existing <em>pydantic</em> model for <code class="docutils literal notranslate"><span class="pre">Molecule</span></code>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">validator</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">field_validator</span><span class="p">,</span> <span class="n">ConfigDict</span>
+
 
 <span class="k">class</span> <span class="nc">Molecule</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">charge</span><span class="p">:</span> <span class="nb">float</span>
     <span class="n">symbols</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
     <span class="n">coordinates</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
-    <span class="n">contributor</span><span class="p">:</span> <span class="n">Contributor</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># &lt;--- New, nested, optional model</span>
-        
-    <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
-        <span class="n">arbitrary_types_allowed</span> <span class="o">=</span> <span class="kc">True</span>
-    
-    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">,</span> <span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">contributor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Contributor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># &lt;--- New, nested, optional model</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;before&#39;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">coord_to_numpy</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">coords</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">coords</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not cast </span><span class="si">{</span><span class="n">coords</span><span class="si">}</span><span class="s2"> to numpy array&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">coords</span>
-        
-    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">coords_length_of_symbols</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
-        <span class="n">symbols</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;symbols&quot;</span><span class="p">]</span>
+
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">coords_length_of_symbols</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">info</span><span class="p">):</span>
+        <span class="n">symbols</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;symbols&quot;</span><span class="p">]</span>
         <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">symbols</span><span class="p">)</span> <span class="o">!=</span> <span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">or</span> <span class="p">(</span><span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Coordinates must be of shape [Number Symbols, 3], was </span><span class="si">{</span><span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">coords</span>
-    
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">num_atoms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="p">)</span>
@@ -615,7 +632,7 @@ document.write(`
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>name=&#39;water&#39; charge=0.0 symbols=[&#39;H&#39;, &#39;H&#39;, &#39;O&#39;] coordinates=array([[0, 0, 0],
        [1, 1, 1],
-       [2, 2, 2]]) contributor=None
+       [2, 2, 2]]) contributor=Contributor(name=&#39;I. Taylor Researcher&#39;, url=&#39;https://molssi.org&#39;, Organization=&#39;The Molecular Sciences Software Institute&#39;)
 </pre></div>
 </div>
 </div>
@@ -626,34 +643,34 @@ document.write(`
 <section id="validating-strings-on-patterns-regular-expressions">
 <h2>Validating Strings on Patterns: Regular Expressions<a class="headerlink" href="#validating-strings-on-patterns-regular-expressions" title="Permalink to this heading">#</a></h2>
 <p>Strings, all strings, have patterns in them. Those patterns can be described with a specialized pattern recognition language called <a class="reference external" href="https://en.wikipedia.org/wiki/Regular_expression">Regular Expressions or “regex”</a>. A full understanding of regex is NOT required nor expected for this workshop. However, we feel it’s important to touch on as the more data validation you do, especially on strings, the more likely it will be that you need or encounter regex at some point.</p>
-<p>Let’s write a validator for email. We’re looking for something that looks like <code class="docutils literal notranslate"><span class="pre">mailto:someemail&#64;fake-location.org</span></code>. And maybe the <code class="docutils literal notranslate"><span class="pre">mailto:</span></code> part is optional. We start by creating our validator by subclassing <code class="docutils literal notranslate"><span class="pre">str</span></code>.</p>
+<p>Let’s write a validator for email. We’re looking for something that looks like <code class="docutils literal notranslate"><span class="pre">mailto:someemail&#64;fake-location.org</span></code>. And maybe the <code class="docutils literal notranslate"><span class="pre">mailto:</span></code> part is optional. We start by creating a sequence of validators we can reuse by using <code class="docutils literal notranslate"><span class="pre">Annotated</span></code> on the <code class="docutils literal notranslate"><span class="pre">str</span></code> class. This is the alternate way to create re-usable, composable validators in <code class="docutils literal notranslate"><span class="pre">pydantic</span></code>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">re</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Annotated</span> 
+<span class="c1"># Python 3.9+ you can just get Annotated from the standard typing module</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">AfterValidator</span>
 
-<span class="k">class</span> <span class="nc">MailTo</span><span class="p">(</span><span class="nb">str</span><span class="p">):</span>
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">__get_validators__</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">valid</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">valid_str</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">valid_email</span><span class="p">]:</span>
-            <span class="k">yield</span> <span class="n">valid</span>
+<span class="kn">import</span> <span class="nn">re</span>
 
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">valid_str</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Not a valid mailto Email format&quot;</span><span class="p">)</span>
-        <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">v</span>
-    
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">valid_email</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(mailto:)?[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+&quot;</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;mailto URL is not a valid mailto or email link&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">v</span>
+<span class="k">def</span> <span class="nf">strip_string</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">v</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">valid_email</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(mailto:)?[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+&quot;</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;mailto URL is not a valid mailto or email link&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">v</span>
+
+<span class="n">MailTo</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">AfterValidator</span><span class="p">(</span><span class="n">valid_email</span><span class="p">),</span> <span class="n">AfterValidator</span><span class="p">(</span><span class="n">strip_string</span><span class="p">)]</span>
 </pre></div>
 </div>
 </div>
 </div>
-<p>This is the custom validator form of the supplementary material in the last chapter, <a class="reference internal" href="ValidatingDataBeyondTypes.html#ch05"><span class="std std-ref">Validating Data Beyond Types</span></a>. If you did not go through that section, don’t worry. The short of it is this is the form for making a custom type and providing built-in validation methods for <em>pydantic</em> to access. Each of the <code class="docutils literal notranslate"><span class="pre">valid_X</span></code> functions have been setup to run as different things which have to be validated for something of type <code class="docutils literal notranslate"><span class="pre">MailTo</span></code> to be considered valid. The important part to focus on here is the <code class="docutils literal notranslate"><span class="pre">valid_email</span></code> function and the <code class="docutils literal notranslate"><span class="pre">re.match</span></code> method.</p>
+<p>There is alot going on here, but lets break this down one thing at a time.</p>
+<p>First, we have imported the <code class="docutils literal notranslate"><span class="pre">Annotated</span></code> object, which lets us tack on additional metadata to a type. <em>Pydantic</em> will read that metadata to handle its validation of any <code class="docutils literal notranslate"><span class="pre">MailTo</span></code> object-type.</p>
+<p>Second, we have pulled in the <code class="docutils literal notranslate"><span class="pre">AfterValidator</span></code> method from <code class="docutils literal notranslate"><span class="pre">pydantic</span></code> which will allow us to define a function to use for validation after any standard <code class="docutils literal notranslate"><span class="pre">pydantic</span></code> validation is done.</p>
+<p>Third, we defined our two validation functions. <code class="docutils literal notranslate"><span class="pre">strip_string</span></code> is just a helper to do some formatting before we do regular expressions (Python <code class="docutils literal notranslate"><span class="pre">re</span></code> module) on the string in <code class="docutils literal notranslate"><span class="pre">valid_email</span></code>. Sure, we could have combined the two, but its a good illustration if we don’t.</p>
+<p>Fourth, we <code class="docutils literal notranslate"><span class="pre">Annotated</span></code> the <code class="docutils literal notranslate"><span class="pre">str</span></code> type with our two functions in reverse order of how we wanted to do them as <em>pydantic</em> does a <code class="docutils literal notranslate"><span class="pre">pop</span></code>-like operation to extract validators from the list of annotations.</p>
+<p>Overall, what we have here is now a custom validator form of the supplementary material in the last chapter, <a class="reference internal" href="ValidatingDataBeyondTypes.html#ch05"><span class="std std-ref">Validating Data Beyond Types</span></a>. If you did not go through that section, don’t worry, all the important bits have were explained in the list above. Each of the <code class="docutils literal notranslate"><span class="pre">valid_X</span></code> functions have been setup to run as different things which have to be validated for something of type <code class="docutils literal notranslate"><span class="pre">MailTo</span></code> to be considered valid. The important part to focus on here is the <code class="docutils literal notranslate"><span class="pre">valid_email</span></code> function and the <code class="docutils literal notranslate"><span class="pre">re.match</span></code> method.</p>
 <p><code class="docutils literal notranslate"><span class="pre">re</span></code> is a built-in Python library for doing regex. The <code class="docutils literal notranslate"><span class="pre">match(pattern,</span> <span class="pre">string_to_find_match)</span></code> function looks for the <code class="docutils literal notranslate"><span class="pre">pattern</span></code> from the first character of <code class="docutils literal notranslate"><span class="pre">string_to_find_match</span></code>. Our pattern can be broken down into the following way:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>r&quot;              &lt;-- Literal String, bypasses lots of special characters like #
 (               &lt;-- Grouping
@@ -673,7 +690,8 @@ document.write(`
 
 </pre></div>
 </div>
-<p>We’re not expecting this to be memorized, just to understand that there is a pattern that is being looked for. We can now set this pattern as one of the valid parameters of the <code class="docutils literal notranslate"><span class="pre">url</span></code> entry in the <code class="docutils literal notranslate"><span class="pre">contributor</span></code> model.</p>
+<p>We’re not expecting this to be memorized, just to understand that there is a pattern that is being looked for. <em>Pydantic</em> has other ways to define regex pattern searching in things like <code class="docutils literal notranslate"><span class="pre">Field</span></code> through its Rust backend, but we’re not going to focus on that here.</p>
+<p>We can now set this pattern as one of the valid parameters of the <code class="docutils literal notranslate"><span class="pre">url</span></code> entry in the <code class="docutils literal notranslate"><span class="pre">contributor</span></code> model.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
@@ -683,18 +701,18 @@ document.write(`
 <span class="k">class</span> <span class="nc">Contributor</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">url</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">MailTo</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
-    <span class="n">Organization</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Set default that makes it optional</span>
+    <span class="n">Organization</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Set default and explicitly make it Nullable</span>
 </pre></div>
 </div>
 </div>
 </div>
-<p>So why did we show this if we were only going to pass in <code class="docutils literal notranslate"><span class="pre">str</span></code> as the second <code class="docutils literal notranslate"><span class="pre">Union</span></code> option? We wanted to show this regex pattern as <em>pydantic</em> provides a number of helper “types” which function very similarly to our custom <code class="docutils literal notranslate"><span class="pre">MailTo</span></code> class that can be used to shortcut writing manual validators. Their names often say exactly what they do. Some examples include:</p>
+<p>So why did we show this if we were only going to pass in <code class="docutils literal notranslate"><span class="pre">str</span></code> as the second <code class="docutils literal notranslate"><span class="pre">Union</span></code> option? We wanted to show this regex pattern as <em>pydantic</em> provides a number of helper “types” in its <code class="docutils literal notranslate"><span class="pre">pydantic.types</span></code> and <code class="docutils literal notranslate"><span class="pre">pydantic.networks</span></code> modules which function very similarly to our custom <code class="docutils literal notranslate"><span class="pre">MailTo</span></code> class that can be used to shortcut writing manual validators. Their names often say exactly what they do. Some examples include (with which <code class="docutils literal notranslate"><span class="pre">pydantic.{module}</span></code> they come from:</p>
 <ul class="simple">
-<li><p>StrictInt</p></li>
-<li><p>PositiveFloat</p></li>
-<li><p>AnyUrl</p></li>
-<li><p>stricturl</p></li>
-<li><p>IPvAnyAddress</p></li>
+<li><p>StrictInt (types)</p></li>
+<li><p>PositiveFloat (types)</p></li>
+<li><p>AnyUrl (networks)</p></li>
+<li><p>HttpUrl (networks)</p></li>
+<li><p>IPvAnyAddress (networks)</p></li>
 <li><p>and many more</p></li>
 </ul>
 <p>They also have constrained types which you can use to set some boundaries without having to code them yourself. Natively, we can use the <code class="docutils literal notranslate"><span class="pre">AnyUrl</span></code> to save us having to write our own regex validator for matching URLs.</p>
@@ -702,12 +720,13 @@ document.write(`
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
 
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">validator</span><span class="p">,</span> <span class="n">AnyUrl</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+<span class="kn">from</span> <span class="nn">pydantic.networks</span> <span class="kn">import</span> <span class="n">AnyUrl</span>
 
 <span class="k">class</span> <span class="nc">Contributor</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">url</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">MailTo</span><span class="p">,</span> <span class="n">AnyUrl</span><span class="p">]</span>
-    <span class="n">Organization</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Set default that makes it optional</span>
+    <span class="n">Organization</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Set default and explicitly make it Nullable</span>
 </pre></div>
 </div>
 </div>
@@ -733,36 +752,32 @@ document.write(`
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="c1"># Python 3.9+ you can just get Annotated from the standard typing module</span>
+<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Annotated</span> 
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">validator</span><span class="p">,</span> <span class="n">AnyUrl</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">field_validator</span><span class="p">,</span> <span class="n">AfterValidator</span><span class="p">,</span> <span class="n">ConfigDict</span>
+<span class="kn">from</span> <span class="nn">pydantic.networks</span> <span class="kn">import</span> <span class="n">AnyUrl</span>
 
 
-<span class="k">class</span> <span class="nc">MailTo</span><span class="p">(</span><span class="nb">str</span><span class="p">):</span>
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">__get_validators__</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">valid</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">valid_str</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">valid_email</span><span class="p">]:</span>
-            <span class="k">yield</span> <span class="n">valid</span>
+<span class="k">def</span> <span class="nf">strip_string</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">v</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">valid_str</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Not a valid mailto Email format&quot;</span><span class="p">)</span>
-        <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">v</span>
-    
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">valid_email</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(mailto:)?[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+&quot;</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;mailto URL is not a valid mailto or email link&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">v</span>
 
-    
+<span class="k">def</span> <span class="nf">valid_email</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(mailto:)?[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+&quot;</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;mailto URL is not a valid mailto or email link&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">v</span>
+
+
+<span class="n">MailTo</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">AfterValidator</span><span class="p">(</span><span class="n">valid_email</span><span class="p">),</span> <span class="n">AfterValidator</span><span class="p">(</span><span class="n">strip_string</span><span class="p">)]</span>
+
+
 <span class="k">class</span> <span class="nc">Contributor</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">url</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">MailTo</span><span class="p">,</span> <span class="n">AnyUrl</span><span class="p">]</span>
-    <span class="n">Organization</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Set default that makes it optional</span>
+    <span class="n">Organization</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Set default and explicitly make it Nullable</span>
 
 
 <span class="k">class</span> <span class="nc">Molecule</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
@@ -770,26 +785,27 @@ document.write(`
     <span class="n">charge</span><span class="p">:</span> <span class="nb">float</span>
     <span class="n">symbols</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
     <span class="n">coordinates</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
-    <span class="n">contributor</span><span class="p">:</span> <span class="n">Contributor</span> <span class="o">=</span> <span class="kc">None</span>
-        
-    <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
-        <span class="n">arbitrary_types_allowed</span> <span class="o">=</span> <span class="kc">True</span>
-    
-    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">,</span> <span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">contributor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Contributor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># &lt;--- New, nested, optional model</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;before&#39;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">coord_to_numpy</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">coords</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">coords</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not cast </span><span class="si">{</span><span class="n">coords</span><span class="si">}</span><span class="s2"> to numpy array&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">coords</span>
-        
-    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">coords_length_of_symbols</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
-        <span class="n">symbols</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;symbols&quot;</span><span class="p">]</span>
+
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">coords_length_of_symbols</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">info</span><span class="p">):</span>
+        <span class="n">symbols</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;symbols&quot;</span><span class="p">]</span>
         <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">symbols</span><span class="p">)</span> <span class="o">!=</span> <span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">or</span> <span class="p">(</span><span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Coordinates must be of shape [Number Symbols, 3], was </span><span class="si">{</span><span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">coords</span>
-    
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">num_atoms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="p">)</span>

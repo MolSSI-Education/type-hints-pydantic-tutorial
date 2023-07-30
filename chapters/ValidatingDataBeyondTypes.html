@@ -71,6 +71,7 @@ const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="../_static/sphinx-thebe.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'chapters/ValidatingDataBeyondTypes';</script>
+    <link rel="shortcut icon" href="../_static/molssi-favicon.jpg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Nested Data Models" href="NestedDataModels.html" />
@@ -369,12 +370,13 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pydantic-s-validator-decorator">Pydantic’s Validator Decorator</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#validating-against-other-fields">Validating against other fields</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#non-native-types-in-pydantic">Non-native Types in Pydantic</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pre-validators-in-pydantic">Pre-Validators in Pydantic</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#before-validators-in-pydantic">Before-Validators in Pydantic</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#supplemental-defining-custom-types-with-built-in-validators">Supplemental: Defining Custom Types with Built-In Validators</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#supplemental-defining-custom-numpy-type-and-setting-data-type-dtype">Supplemental: Defining Custom NumPy Type AND Setting Data Type (<em>dtype</em>)</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#multiple-validators">Multiple Validators</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#make-an-on-demand-typer-function">Make an on Demand Typer Function</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metclass-for-on-the-fly-assignment">Metclass for on-the-fly assignment.</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-core-schema">Custom Core Schema</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metaclasses-of-the-past">Metaclasses of the Past</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#do-what-makes-sense-and-only-if-you-need-to">Do what makes sense, and only if you need to</a></li>
 </ul>
 </li>
@@ -450,10 +452,14 @@ document.write(`
 </div>
 </div>
 <p>You may notice we have extended our “Good Data” here to have <code class="docutils literal notranslate"><span class="pre">coordinates</span></code> actually define the <code class="docutils literal notranslate"><span class="pre">Nx3</span></code> structure where <code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">=</span> <span class="pre">len(symbols)</span></code>. This is important for what we plan to validate.</p>
-<p><em>pydantic</em> allows you to write custom validators, in addition to the type validators which run automatically for a type annotation. This <code class="docutils literal notranslate"><span class="pre">validator</span></code> is pulled from the <code class="docutils literal notranslate"><span class="pre">pydantic</span></code> module just like <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code>, and is used to decorate a <em>class</em> function you write. Let’s look at the most basic <code class="docutils literal notranslate"><span class="pre">validator</span></code> we can write and assign it to <code class="docutils literal notranslate"><span class="pre">coordinates</span></code>.</p>
+<p><em>pydantic</em> allows you to write custom validators, in addition to the type validators which run automatically for a type annotation. This <code class="docutils literal notranslate"><span class="pre">field_validator</span></code> is pulled from the <code class="docutils literal notranslate"><span class="pre">pydantic</span></code> module just like <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code>, and is used to decorate a <em>class</em> function you write. Let’s look at the most basic <code class="docutils literal notranslate"><span class="pre">field_validator</span></code> we can write and assign it to <code class="docutils literal notranslate"><span class="pre">coordinates</span></code>.</p>
+<div class="note admonition">
+<p class="admonition-title">Field vs Annotated Validators</p>
+<p><code class="docutils literal notranslate"><span class="pre">pydantic</span></code> allows validators to be defined functionally for reuse, ordering, and much more powerful utilization through the <code class="docutils literal notranslate"><span class="pre">Annotated</span></code> class. We will be showing <code class="docutils literal notranslate"><span class="pre">field_validator</span></code> for this example to keep the validator much more local for learning purposes. Please see (the <em>pydantic</em> docs on validators for more info.)[<a class="reference external" href="https://docs.pydantic.dev/latest/usage/validators/">https://docs.pydantic.dev/latest/usage/validators/</a>]</p>
+</div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">validator</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">field_validator</span>
 
 <span class="k">class</span> <span class="nc">Molecule</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
@@ -461,7 +467,8 @@ document.write(`
     <span class="n">symbols</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
     <span class="n">coordinates</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span>
         
-    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">ensure_coordinates_is_3D</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">coords</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">coords</span>
 
@@ -472,19 +479,20 @@ document.write(`
 </div>
 </div>
 </div>
-<p>Here we have defined an additional validator which does nothing, but has the basic structure we can look at. For convenience and reference, I’ve broken the aspects of the <code class="docutils literal notranslate"><span class="pre">validator</span></code> into a list.</p>
+<p>Here we have defined an additional validator which does nothing, but has the basic structure we can look at. For convenience and reference, I’ve broken the aspects of the <code class="docutils literal notranslate"><span class="pre">field_validator</span></code> into a list.</p>
 <ul class="simple">
-<li><p>The <code class="docutils literal notranslate"><span class="pre">validator</span></code> decorator takes as arguments the <em>exact</em> name of the attributes you are validating against as a string. In this case <code class="docutils literal notranslate"><span class="pre">coordinates</span></code>. You could provide multiple string args of each attribute you want to run through the validator if you want to reuse it.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">field_validator</span></code> decorator takes as arguments the <em>exact</em> name of the attributes you are validating against as a string. In this case <code class="docutils literal notranslate"><span class="pre">coordinates</span></code>. You could provide multiple string args of each attribute you want to run through the validator if you want to reuse it.</p></li>
 <li><p>The function name can be whatever you want it to be. We’ve called it <code class="docutils literal notranslate"><span class="pre">ensure_coordinates_is_3D</span></code> to be meaningful if anyone ever wants to come back and see what this should be doing.</p></li>
-<li><p>The function itself is a <em>class function</em>. Similar to what happens when you use the <code class="docutils literal notranslate"><span class="pre">&#64;classmethod</span></code> decorator from native Python, this validator is intended to be called on the non-instanced class. The formal nomenclature for the first variable here is therefore <code class="docutils literal notranslate"><span class="pre">cls</span></code> and not <code class="docutils literal notranslate"><span class="pre">self</span></code>. Your IDE may complain about this, but it should be <code class="docutils literal notranslate"><span class="pre">cls</span></code>.</p></li>
-<li><p>The first argument of the function can be whatever string name you want EXCLUDING the following list: <code class="docutils literal notranslate"><span class="pre">values</span></code>, <code class="docutils literal notranslate"><span class="pre">config</span></code>, and <code class="docutils literal notranslate"><span class="pre">field</span></code> (reasons discussed later in this chapter).</p></li>
+<li><p>The function itself is a <em>class function</em>. This is why we have included the <code class="docutils literal notranslate"><span class="pre">&#64;classmethod</span></code> decorator from native Python, this validator is intended to be called on the non-instanced class. The formal nomenclature for the first variable here is therefore <code class="docutils literal notranslate"><span class="pre">cls</span></code> and not <code class="docutils literal notranslate"><span class="pre">self</span></code>. You can define the validators without the <code class="docutils literal notranslate"><span class="pre">&#64;classmethod</span></code> decorator, but your IDE may complain about this, so we also add the <code class="docutils literal notranslate"><span class="pre">&#64;classmethod</span></code> decorator so we can use <code class="docutils literal notranslate"><span class="pre">cls</span></code> without IDE issues, at least on that point.</p></li>
+<li><p>The first (non <code class="docutils literal notranslate"><span class="pre">cls</span></code>) argument of the function can be whatever string name you want. The <strong>optional</strong> second argument will be give a <em>pydantic</em> metadata class of type <code class="docutils literal notranslate"><span class="pre">FieldValidationInfo</span></code> and can also be named whatever we want. We’ll use this metadata class later in the chapter.</p></li>
 <li><p>The return MUST be the validated data to be fed into the attribute. We’ve done nothing to our variable <code class="docutils literal notranslate"><span class="pre">coords</span></code>, so we simply return it. If you fail to have a <code class="docutils literal notranslate"><span class="pre">return</span></code> statement with something, it will return <code class="docutils literal notranslate"><span class="pre">None</span></code> and that will be considered valid.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">validator</span></code> runs <em>after</em> type validation, unless specified (see later in this chapter).</p></li>
+<li><p>If the data are not validated correctly, the function must raise either a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> or <code class="docutils literal notranslate"><span class="pre">AssertionError</span></code> for <em>pydantic</em> to correctly trap the error, anything else will raise the Python error stack as normal.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">field_validator</span></code> runs <em>after</em> type validation, unless specified (see later in this chapter).</p></li>
 </ul>
-<p>That may seem like lots of rules, but most of them are boilerplate and intuitive. Let’s apply these items to our validator. We want to make sure the inner lists of <code class="docutils literal notranslate"><span class="pre">coordinates</span></code> are 3D, or length 3. We don’t have to worry about type checking (that was done before any custom <code class="docutils literal notranslate"><span class="pre">validator</span></code> was run), so we can just do an iteration of the top list and make sure. Let’s apply that now.</p>
+<p>That may seem like lots of rules, but most of them are boilerplate and intuitive. Let’s apply these items to our validator. We want to make sure the inner lists of <code class="docutils literal notranslate"><span class="pre">coordinates</span></code> are 3D, or length 3. We don’t have to worry about type checking (that was done before any custom <code class="docutils literal notranslate"><span class="pre">field_validator</span></code> was run), so we can just do an iteration of the top list and make sure. Let’s apply that now.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">validator</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">field_validator</span>
 
 <span class="k">class</span> <span class="nc">Molecule</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
@@ -492,7 +500,8 @@ document.write(`
     <span class="n">symbols</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
     <span class="n">coordinates</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span>
         
-    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">ensure_coordinates_is_3D</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">coords</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">failure</span> <span class="o">:=</span> <span class="n">inner</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span> <span class="k">for</span> <span class="n">inner</span> <span class="ow">in</span> <span class="n">coords</span><span class="p">):</span>  <span class="c1"># Walrus operator (:=) for Python 3.8+</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Inner coordinates must be 3D, got </span><span class="si">{</span><span class="n">failure</span><span class="si">}</span><span class="s2"> of length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">failure</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -516,22 +525,26 @@ document.write(`
 <div class="cell_output docutils container">
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">ValidationError</span><span class="g g-Whitespace">                           </span>Traceback (most recent call last)
-<span class="nn">Input In [5],</span> in <span class="ni">&lt;cell line: 3&gt;</span><span class="nt">()</span>
+<span class="nn">Input In [90],</span> in <span class="ni">&lt;cell line: 3&gt;</span><span class="nt">()</span>
 <span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">good_water</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="o">**</span><span class="n">mol_data</span><span class="p">)</span>
 <span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">mangled</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">mol_data</span><span class="p">,</span> <span class="o">**</span><span class="n">inner_coords_not3d</span><span class="p">}</span>
 <span class="ne">----&gt; </span><span class="mi">3</span> <span class="n">water</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="o">**</span><span class="n">mangled</span><span class="p">)</span>
 
-<span class="nn">File ~/miniconda3/envs/pyd-tut/lib/python3.10/site-packages/pydantic/main.py:341,</span> in <span class="ni">pydantic.main.BaseModel.__init__</span><span class="nt">()</span>
+<span class="nn">File ~/miniconda3/envs/pyd-tut/lib/python3.10/site-packages/pydantic/main.py:150,</span> in <span class="ni">BaseModel.__init__</span><span class="nt">(__pydantic_self__, **data)</span>
+<span class="g g-Whitespace">    </span><span class="mi">148</span> <span class="c1"># `__tracebackhide__` tells pytest and some other tools to omit this function from tracebacks</span>
+<span class="g g-Whitespace">    </span><span class="mi">149</span> <span class="n">__tracebackhide__</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="ne">--&gt; </span><span class="mi">150</span> <span class="n">__pydantic_self__</span><span class="o">.</span><span class="n">__pydantic_validator__</span><span class="o">.</span><span class="n">validate_python</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">self_instance</span><span class="o">=</span><span class="n">__pydantic_self__</span><span class="p">)</span>
 
 <span class="ne">ValidationError</span>: 1 validation error for Molecule
 <span class="n">coordinates</span>
-  <span class="n">Inner</span> <span class="n">coordinates</span> <span class="n">must</span> <span class="n">be</span> <span class="mi">3</span><span class="n">D</span><span class="p">,</span> <span class="n">got</span> <span class="p">[</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">]</span> <span class="n">of</span> <span class="n">length</span> <span class="mi">2</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">value_error</span><span class="p">)</span>
+  <span class="n">Value</span> <span class="n">error</span><span class="p">,</span> <span class="n">Inner</span> <span class="n">coordinates</span> <span class="n">must</span> <span class="n">be</span> <span class="mi">3</span><span class="n">D</span><span class="p">,</span> <span class="n">got</span> <span class="p">[</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">]</span> <span class="n">of</span> <span class="n">length</span> <span class="mi">2</span> <span class="p">[</span><span class="nb">type</span><span class="o">=</span><span class="n">value_error</span><span class="p">,</span> <span class="n">input_value</span><span class="o">=</span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]],</span> <span class="n">input_type</span><span class="o">=</span><span class="nb">list</span><span class="p">]</span>
+    <span class="n">For</span> <span class="n">further</span> <span class="n">information</span> <span class="n">visit</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">errors</span><span class="o">.</span><span class="n">pydantic</span><span class="o">.</span><span class="n">dev</span><span class="o">/</span><span class="mf">2.0.3</span><span class="o">/</span><span class="n">v</span><span class="o">/</span><span class="n">value_error</span>
 </pre></div>
 </div>
 </div>
 </div>
-<p>Here we have checked the good data still works, and checked that the mangled data raised an error. It’s important to note the error raised by the function can be any type of error, but what came out in the error report was a <code class="docutils literal notranslate"><span class="pre">ValidationError</span></code>. We can also see the error message is what we put as the error string and <code class="docutils literal notranslate"><span class="pre">type</span></code> of error is of the type we raised. This is why it’s very important to have meaningful error strings when your custom validator fails.</p>
-<p>With all that said, our validator function really does look like any other function we may call to do a quick check of data, and then some special addons to make it work with <em>pydantic</em>. There is no practical limit to the number of <code class="docutils literal notranslate"><span class="pre">validator</span></code>s you have in a given class, so validate to your heart’s content.</p>
+<p>Here we have checked the good data still works, and checked that the mangled data raised an error. It’s important to note the error raised by the function was a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> (or <code class="docutils literal notranslate"><span class="pre">AssertionError</span></code>) so the error report was a <code class="docutils literal notranslate"><span class="pre">ValidationError</span></code>. We can also see the error message is what we put as the error string and <code class="docutils literal notranslate"><span class="pre">type</span></code> of error is of the type we raised. This is why it’s very important to have meaningful error strings when your custom validator fails.</p>
+<p>With all that said, our validator function really does look like any other function we may call to do a quick check of data, and then some special addons to make it work with <em>pydantic</em>. There is no practical limit to the number of <code class="docutils literal notranslate"><span class="pre">field_validator</span></code>s you have in a given class, so validate to your heart’s content.</p>
 <div class="note admonition">
 <p class="admonition-title">Python Assignment Expressions “The Walrus Operator” <code>:=</code></p>
 <p>Since Python 3.8, there is a new operator for “assignment expressions” called “<a class="reference external" href="https://peps.python.org/pep-0572/">The Walrus Operator</a>” which allows variables to be assigned inside other expressions. We’ve used it here to trap the value at time of error and save space. Do not feel compelled to use this yourself, especially if it’s not clear what is happening.</p>
@@ -541,7 +554,8 @@ document.write(`
     <p>How would you validate that <code>symbols</code> entries are at most 2 characters? There is more than one correct solution beyond what we show here.</p>
 <div class="dropdown admonition">
 <p class="admonition-title">Possible Solution:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;symbols&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;symbols&quot;</span><span class="p">)</span>
+<span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">symbols_are_possible_element_length</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">symbs</span><span class="p">):</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="mi">1</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">failure</span> <span class="o">:=</span> <span class="n">symb</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">symb</span> <span class="ow">in</span> <span class="n">symbs</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Symbols be 1 or 2 characters, got </span><span class="si">{</span><span class="n">failure</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -552,10 +566,10 @@ document.write(`
 </div></section>
 <section id="validating-against-other-fields">
 <h2>Validating against other fields<a class="headerlink" href="#validating-against-other-fields" title="Permalink to this heading">#</a></h2>
-<p><em>pydantic</em>’s validators can check fields beyond their own. This is helpful for cross referencing dependent data. In our example, we want to make sure there are exactly the right number of <code class="docutils literal notranslate"><span class="pre">coordinates</span></code> as there are <code class="docutils literal notranslate"><span class="pre">symbols</span></code> in our <code class="docutils literal notranslate"><span class="pre">Molecule</span></code>. To check against other fields in a <code class="docutils literal notranslate"><span class="pre">validator</span></code>, we extend the arguments to include one called <code class="docutils literal notranslate"><span class="pre">values</span></code>. We are going to leave our initial validator to show a feature of the <code class="docutils literal notranslate"><span class="pre">validator</span></code>s for now, but we could combine them (and will) later.</p>
+<p><em>pydantic</em>’s validators can check fields beyond their own. This is helpful for cross referencing dependent data. In our example, we want to make sure there are exactly the right number of <code class="docutils literal notranslate"><span class="pre">coordinates</span></code> as there are <code class="docutils literal notranslate"><span class="pre">symbols</span></code> in our <code class="docutils literal notranslate"><span class="pre">Molecule</span></code>. To check against other fields in a <code class="docutils literal notranslate"><span class="pre">field_validator</span></code>, we extend the arguments to include the optional secondary one for metadata we’re going to call <code class="docutils literal notranslate"><span class="pre">info</span></code>. We are going to leave our initial validator to show a feature of the <code class="docutils literal notranslate"><span class="pre">field_validator</span></code>s for now, but we could combine them (and will) later.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">validator</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">field_validator</span>
 
 <span class="k">class</span> <span class="nc">Molecule</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
@@ -563,15 +577,17 @@ document.write(`
     <span class="n">symbols</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
     <span class="n">coordinates</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span>
         
-    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">ensure_coordinates_match_symbols</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
-        <span class="n">n_symbols</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;symbols&quot;</span><span class="p">])</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">ensure_coordinates_match_symbols</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">info</span><span class="p">):</span>
+        <span class="n">n_symbols</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;symbols&quot;</span><span class="p">])</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">n_coords</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="n">coords</span><span class="p">))</span> <span class="o">!=</span> <span class="n">n_symbols</span><span class="p">:</span>  <span class="c1"># Walrus operator (:=) for Python 3.8+</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;There must be an equal number of XYZ coordinates as there are symbols.&quot;</span> 
                              <span class="sa">f</span><span class="s2">&quot; There are </span><span class="si">{</span><span class="n">n_coords</span><span class="si">}</span><span class="s2"> coordinates and </span><span class="si">{</span><span class="n">n_symbols</span><span class="si">}</span><span class="s2"> symbols.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">coords</span>
         
-    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">ensure_coordinates_is_3D</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">coords</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">failure</span> <span class="o">:=</span> <span class="n">inner</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span> <span class="k">for</span> <span class="n">inner</span> <span class="ow">in</span> <span class="n">coords</span><span class="p">):</span>  <span class="c1"># Walrus operator (:=) for Python 3.8+</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Inner coordinates must be 3D, got </span><span class="si">{</span><span class="n">failure</span><span class="si">}</span><span class="s2"> of length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">failure</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -587,9 +603,9 @@ document.write(`
 <p>We’ve added a second validator to our code called <code class="docutils literal notranslate"><span class="pre">ensure_coordinates_match_symbols</span></code>, and this funciton will validate against <code class="docutils literal notranslate"><span class="pre">coordinates</span></code>. There are two main things we can see from adding this function:</p>
 <ol class="arabic simple">
 <li><p>Multiple functions can be declared to validate against the same field.</p></li>
-<li><p>We’ve added a one of the blocked argument names to our new validator: <code class="docutils literal notranslate"><span class="pre">values</span></code>.</p></li>
+<li><p>We’ve added the additional optional metadata argument to our new validator: <code class="docutils literal notranslate"><span class="pre">info</span></code>.</p></li>
 </ol>
-<p>The reason the blocked argument names were given in the list of rules for <code class="docutils literal notranslate"><span class="pre">validators</span></code> is because <em>pydantic</em>’s <code class="docutils literal notranslate"><span class="pre">validator</span></code> reserves those to inject special code. The addition of <code class="docutils literal notranslate"><span class="pre">values</span></code> as an argument tells the <code class="docutils literal notranslate"><span class="pre">validator</span></code> to also retrieve <em>all previously validated fields for the model</em>. In our case, that would be <code class="docutils literal notranslate"><span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">charge</span></code>, and <code class="docutils literal notranslate"><span class="pre">symbols</span></code> as those entries appeared before <code class="docutils literal notranslate"><span class="pre">coordinates</span></code> in the list of attributes. Any and all validators which would have been applied to those three entries have already been done and what we have access to is their validated records as a dictionary called <code class="docutils literal notranslate"><span class="pre">values</span></code> in the function itself. <a class="reference external" href="https://pydantic-docs.helpmanual.io/usage/validators/">See the <em>pydantic</em> docs</a> for more details about the special arguments in <code class="docutils literal notranslate"><span class="pre">validator</span></code>.</p>
+<p>The second argument, if it appears in a <code class="docutils literal notranslate"><span class="pre">field_validator</span></code>, provides metadata for the validation currently happening and that has already happened. The addition of <code class="docutils literal notranslate"><span class="pre">info</span></code> as an argument tells the <code class="docutils literal notranslate"><span class="pre">field_validator</span></code> to also retrieve <em>all previously validated fields for the model</em>. In our case, that would be <code class="docutils literal notranslate"><span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">charge</span></code>, and <code class="docutils literal notranslate"><span class="pre">symbols</span></code> as those entries appeared before <code class="docutils literal notranslate"><span class="pre">coordinates</span></code> in the list of attributes. Any and all validators which would have been applied to those three entries have already been done and what we have access to is their validated records as metadata object with those validated values stored in the dictionary at <code class="docutils literal notranslate"><span class="pre">.data</span></code>. <a class="reference external" href="https://docs.pydantic.dev/latest/usage/validators/">See the <em>pydantic</em> docs</a> for more details about the special argument and metadata for <code class="docutils literal notranslate"><span class="pre">field_validator</span></code>.</p>
 <p>Let’s see this in action</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -602,16 +618,20 @@ document.write(`
 <div class="cell_output docutils container">
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">ValidationError</span><span class="g g-Whitespace">                           </span>Traceback (most recent call last)
-<span class="nn">Input In [7],</span> in <span class="ni">&lt;cell line: 3&gt;</span><span class="nt">()</span>
+<span class="nn">Input In [92],</span> in <span class="ni">&lt;cell line: 3&gt;</span><span class="nt">()</span>
 <span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">good_water</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="o">**</span><span class="n">mol_data</span><span class="p">)</span>
 <span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">mangled</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">mol_data</span><span class="p">,</span> <span class="o">**</span><span class="n">bad_symbols_and_cords</span><span class="p">}</span>
 <span class="ne">----&gt; </span><span class="mi">3</span> <span class="n">water</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="o">**</span><span class="n">mangled</span><span class="p">)</span>
 
-<span class="nn">File ~/miniconda3/envs/pyd-tut/lib/python3.10/site-packages/pydantic/main.py:341,</span> in <span class="ni">pydantic.main.BaseModel.__init__</span><span class="nt">()</span>
+<span class="nn">File ~/miniconda3/envs/pyd-tut/lib/python3.10/site-packages/pydantic/main.py:150,</span> in <span class="ni">BaseModel.__init__</span><span class="nt">(__pydantic_self__, **data)</span>
+<span class="g g-Whitespace">    </span><span class="mi">148</span> <span class="c1"># `__tracebackhide__` tells pytest and some other tools to omit this function from tracebacks</span>
+<span class="g g-Whitespace">    </span><span class="mi">149</span> <span class="n">__tracebackhide__</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="ne">--&gt; </span><span class="mi">150</span> <span class="n">__pydantic_self__</span><span class="o">.</span><span class="n">__pydantic_validator__</span><span class="o">.</span><span class="n">validate_python</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">self_instance</span><span class="o">=</span><span class="n">__pydantic_self__</span><span class="p">)</span>
 
 <span class="ne">ValidationError</span>: 1 validation error for Molecule
 <span class="n">coordinates</span>
-  <span class="n">There</span> <span class="n">must</span> <span class="n">be</span> <span class="n">an</span> <span class="n">equal</span> <span class="n">number</span> <span class="n">of</span> <span class="n">XYZ</span> <span class="n">coordinates</span> <span class="k">as</span> <span class="n">there</span> <span class="n">are</span> <span class="n">symbols</span><span class="o">.</span> <span class="n">There</span> <span class="n">are</span> <span class="mi">2</span> <span class="n">coordinates</span> <span class="ow">and</span> <span class="mi">3</span> <span class="n">symbols</span><span class="o">.</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">value_error</span><span class="p">)</span>
+  <span class="n">Value</span> <span class="n">error</span><span class="p">,</span> <span class="n">There</span> <span class="n">must</span> <span class="n">be</span> <span class="n">an</span> <span class="n">equal</span> <span class="n">number</span> <span class="n">of</span> <span class="n">XYZ</span> <span class="n">coordinates</span> <span class="k">as</span> <span class="n">there</span> <span class="n">are</span> <span class="n">symbols</span><span class="o">.</span> <span class="n">There</span> <span class="n">are</span> <span class="mi">2</span> <span class="n">coordinates</span> <span class="ow">and</span> <span class="mi">3</span> <span class="n">symbols</span><span class="o">.</span> <span class="p">[</span><span class="nb">type</span><span class="o">=</span><span class="n">value_error</span><span class="p">,</span> <span class="n">input_value</span><span class="o">=</span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">]],</span> <span class="n">input_type</span><span class="o">=</span><span class="nb">list</span><span class="p">]</span>
+    <span class="n">For</span> <span class="n">further</span> <span class="n">information</span> <span class="n">visit</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">errors</span><span class="o">.</span><span class="n">pydantic</span><span class="o">.</span><span class="n">dev</span><span class="o">/</span><span class="mf">2.0.3</span><span class="o">/</span><span class="n">v</span><span class="o">/</span><span class="n">value_error</span>
 </pre></div>
 </div>
 </div>
@@ -623,7 +643,7 @@ document.write(`
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">validator</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">field_validator</span>
 
 <span class="k">class</span> <span class="nc">Molecule</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
@@ -631,15 +651,17 @@ document.write(`
     <span class="n">symbols</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
     <span class="n">coordinates</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
         
-    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">ensure_coordinates_match_symbols</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
-        <span class="n">n_symbols</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;symbols&quot;</span><span class="p">])</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">ensure_coordinates_match_symbols</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">info</span><span class="p">):</span>
+        <span class="n">n_symbols</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;symbols&quot;</span><span class="p">])</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">n_coords</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="n">coords</span><span class="p">))</span> <span class="o">!=</span> <span class="n">n_symbols</span><span class="p">:</span>  <span class="c1"># Walrus operator (:=) for Python 3.8+</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;There must be an equal number of XYZ coordinates as there are symbols.&quot;</span> 
                              <span class="sa">f</span><span class="s2">&quot; There are </span><span class="si">{</span><span class="n">n_coords</span><span class="si">}</span><span class="s2"> coordinates and </span><span class="si">{</span><span class="n">n_symbols</span><span class="si">}</span><span class="s2"> symbols.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">coords</span>
         
-    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">ensure_coordinates_is_3D</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">coords</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">failure</span> <span class="o">:=</span> <span class="n">inner</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span> <span class="k">for</span> <span class="n">inner</span> <span class="ow">in</span> <span class="n">coords</span><span class="p">):</span>  <span class="c1"># Walrus operator (:=) for Python 3.8+</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Inner coordinates must be 3D, got </span><span class="si">{</span><span class="n">failure</span><span class="si">}</span><span class="s2"> of length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">failure</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -652,62 +674,215 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">RuntimeError</span><span class="g g-Whitespace">                              </span>Traceback (most recent call last)
-<span class="nn">Input In [8],</span> in <span class="ni">&lt;cell line: 4&gt;</span><span class="nt">()</span>
-<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">validator</span>
-<span class="ne">----&gt; </span><span class="mi">4</span> <span class="k">class</span> <span class="nc">Molecule</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="g g-Whitespace">      </span><span class="mi">5</span>     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-<span class="g g-Whitespace">      </span><span class="mi">6</span>     <span class="n">charge</span><span class="p">:</span> <span class="nb">float</span>
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span>---------------------------------------------------------------------------
+PydanticSchemaGenerationError             Traceback (most recent call last)
+Input In [93], in &lt;cell line: 4&gt;()
+      1 import numpy as np
+      2 from pydantic import BaseModel, field_validator
+----&gt; 4 class Molecule(BaseModel):
+      5     name: str
+      6     charge: float
 
-<span class="nn">File ~/miniconda3/envs/pyd-tut/lib/python3.10/site-packages/pydantic/main.py:205,</span> in <span class="ni">pydantic.main.ModelMetaclass.__new__</span><span class="nt">()</span>
+File ~/miniconda3/envs/pyd-tut/lib/python3.10/site-packages/pydantic/_internal/_model_construction.py:174, in ModelMetaclass.__new__(mcs, cls_name, bases, namespace, __pydantic_generic_metadata__, __pydantic_reset_parent_namespace__, **kwargs)
+    172 types_namespace = get_cls_types_namespace(cls, parent_namespace)
+    173 set_model_fields(cls, bases, config_wrapper, types_namespace)
+--&gt; 174 complete_model_class(
+    175     cls,
+    176     cls_name,
+    177     config_wrapper,
+    178     raise_errors=False,
+    179     types_namespace=types_namespace,
+    180 )
+    181 # using super(cls, cls) on the next line ensures we only call the parent class&#39;s __pydantic_init_subclass__
+    182 # I believe the `type: ignore` is only necessary because mypy doesn&#39;t realize that this code branch is
+    183 # only hit for _proper_ subclasses of BaseModel
+    184 super(cls, cls).__pydantic_init_subclass__(**kwargs)  # type: ignore[misc]
 
-<span class="nn">File ~/miniconda3/envs/pyd-tut/lib/python3.10/site-packages/pydantic/fields.py:491,</span> in <span class="ni">pydantic.fields.ModelField.infer</span><span class="nt">()</span>
+File ~/miniconda3/envs/pyd-tut/lib/python3.10/site-packages/pydantic/_internal/_model_construction.py:431, in complete_model_class(cls, cls_name, config_wrapper, raise_errors, types_namespace)
+    424 handler = CallbackGetCoreSchemaHandler(
+    425     partial(gen_schema.generate_schema, from_dunder_get_core_schema=False),
+    426     gen_schema,
+    427     ref_mode=&#39;unpack&#39;,
+    428 )
+    430 try:
+--&gt; 431     schema = cls.__get_pydantic_core_schema__(cls, handler)
+    432 except PydanticUndefinedAnnotation as e:
+    433     if raise_errors:
 
-<span class="nn">File ~/miniconda3/envs/pyd-tut/lib/python3.10/site-packages/pydantic/fields.py:421,</span> in <span class="ni">pydantic.fields.ModelField.__init__</span><span class="nt">()</span>
+File ~/miniconda3/envs/pyd-tut/lib/python3.10/site-packages/pydantic/main.py:533, in BaseModel.__get_pydantic_core_schema__(cls, _BaseModel__source, _BaseModel__handler)
+    530     if not cls.__pydantic_generic_metadata__[&#39;origin&#39;]:
+    531         return cls.__pydantic_core_schema__
+--&gt; 533 return __handler(__source)
 
-<span class="nn">File ~/miniconda3/envs/pyd-tut/lib/python3.10/site-packages/pydantic/fields.py:542,</span> in <span class="ni">pydantic.fields.ModelField.prepare</span><span class="nt">()</span>
+File ~/miniconda3/envs/pyd-tut/lib/python3.10/site-packages/pydantic/_internal/_schema_generation_shared.py:82, in CallbackGetCoreSchemaHandler.__call__(self, _CallbackGetCoreSchemaHandler__source_type)
+     81 def __call__(self, __source_type: Any) -&gt; core_schema.CoreSchema:
+---&gt; 82     schema = self._handler(__source_type)
+     83     ref = schema.get(&#39;ref&#39;)
+     84     if self._ref_mode == &#39;to-def&#39;:
 
-<span class="nn">File ~/miniconda3/envs/pyd-tut/lib/python3.10/site-packages/pydantic/fields.py:804,</span> in <span class="ni">pydantic.fields.ModelField.populate_validators</span><span class="nt">()</span>
+File ~/miniconda3/envs/pyd-tut/lib/python3.10/site-packages/pydantic/_internal/_generate_schema.py:280, in GenerateSchema.generate_schema(self, obj, from_dunder_get_core_schema, from_prepare_args)
+    278 if isinstance(obj, type(Annotated[int, 123])):
+    279     return self._annotated_schema(obj)
+--&gt; 280 return self._generate_schema_for_type(
+    281     obj, from_dunder_get_core_schema=from_dunder_get_core_schema, from_prepare_args=from_prepare_args
+    282 )
 
-<span class="nn">File ~/miniconda3/envs/pyd-tut/lib/python3.10/site-packages/pydantic/validators.py:723,</span> in <span class="ni">find_validators</span><span class="nt">()</span>
+File ~/miniconda3/envs/pyd-tut/lib/python3.10/site-packages/pydantic/_internal/_generate_schema.py:301, in GenerateSchema._generate_schema_for_type(self, obj, from_dunder_get_core_schema, from_prepare_args)
+    298         schema = from_property
+    300 if schema is None:
+--&gt; 301     schema = self._generate_schema(obj)
+    303 metadata_js_function = _extract_get_pydantic_json_schema(obj, schema)
+    304 if metadata_js_function is not None:
 
-<span class="ne">RuntimeError</span>: no validator found for &lt;class &#39;numpy.ndarray&#39;&gt;, see `arbitrary_types_allowed` in Config
+File ~/miniconda3/envs/pyd-tut/lib/python3.10/site-packages/pydantic/_internal/_generate_schema.py:519, in GenerateSchema._generate_schema(self, obj)
+    516 from ..main import BaseModel
+    518 if lenient_issubclass(obj, BaseModel):
+--&gt; 519     return self._model_schema(obj)
+    521 if isinstance(obj, PydanticRecursiveRef):
+    522     return core_schema.definition_reference_schema(schema_ref=obj.type_ref)
+
+File ~/miniconda3/envs/pyd-tut/lib/python3.10/site-packages/pydantic/_internal/_generate_schema.py:370, in GenerateSchema._model_schema(self, cls)
+    367 self._config_wrapper_stack.append(config_wrapper)
+    368 try:
+    369     fields_schema: core_schema.CoreSchema = core_schema.model_fields_schema(
+--&gt; 370         {k: self._generate_md_field_schema(k, v, decorators) for k, v in fields.items()},
+    371         computed_fields=[self._computed_field_schema(d) for d in decorators.computed_fields.values()],
+    372         extra_validator=extra_validator,
+    373         model_name=cls.__name__,
+    374     )
+    375 finally:
+    376     self._config_wrapper_stack.pop()
+
+File ~/miniconda3/envs/pyd-tut/lib/python3.10/site-packages/pydantic/_internal/_generate_schema.py:370, in &lt;dictcomp&gt;(.0)
+    367 self._config_wrapper_stack.append(config_wrapper)
+    368 try:
+    369     fields_schema: core_schema.CoreSchema = core_schema.model_fields_schema(
+--&gt; 370         {k: self._generate_md_field_schema(k, v, decorators) for k, v in fields.items()},
+    371         computed_fields=[self._computed_field_schema(d) for d in decorators.computed_fields.values()],
+    372         extra_validator=extra_validator,
+    373         model_name=cls.__name__,
+    374     )
+    375 finally:
+    376     self._config_wrapper_stack.pop()
+
+File ~/miniconda3/envs/pyd-tut/lib/python3.10/site-packages/pydantic/_internal/_generate_schema.py:674, in GenerateSchema._generate_md_field_schema(self, name, field_info, decorators)
+    667 def _generate_md_field_schema(
+    668     self,
+    669     name: str,
+    670     field_info: FieldInfo,
+    671     decorators: DecoratorInfos,
+    672 ) -&gt; core_schema.ModelField:
+    673     &quot;&quot;&quot;Prepare a ModelField to represent a model field.&quot;&quot;&quot;
+--&gt; 674     common_field = self._common_field_schema(name, field_info, decorators)
+    675     return core_schema.model_field(
+    676         common_field[&#39;schema&#39;],
+    677         serialization_exclude=common_field[&#39;serialization_exclude&#39;],
+   (...)
+    681         metadata=common_field[&#39;metadata&#39;],
+    682     )
+
+File ~/miniconda3/envs/pyd-tut/lib/python3.10/site-packages/pydantic/_internal/_generate_schema.py:714, in GenerateSchema._common_field_schema(self, name, field_info, decorators)
+    712     schema = self._apply_annotations(source_type, annotations, transform_inner_schema=set_discriminator)
+    713 else:
+--&gt; 714     schema = self._apply_annotations(
+    715         source_type,
+    716         annotations,
+    717     )
+    719 # This V1 compatibility shim should eventually be removed
+    720 # push down any `each_item=True` validators
+    721 # note that this won&#39;t work for any Annotated types that get wrapped by a function validator
+    722 # but that&#39;s okay because that didn&#39;t exist in V1
+    723 this_field_validators = filter_field_decorator_info_by_field(decorators.validators.values(), name)
+
+File ~/miniconda3/envs/pyd-tut/lib/python3.10/site-packages/pydantic/_internal/_generate_schema.py:1405, in GenerateSchema._apply_annotations(self, source_type, annotations, transform_inner_schema)
+   1400     annotation = annotations[idx]
+   1401     get_inner_schema = self._get_wrapped_inner_schema(
+   1402         get_inner_schema, annotation, pydantic_js_annotation_functions
+   1403     )
+-&gt; 1405 schema = get_inner_schema(source_type)
+   1406 if pydantic_js_annotation_functions:
+   1407     metadata = CoreMetadataHandler(schema).metadata
+
+File ~/miniconda3/envs/pyd-tut/lib/python3.10/site-packages/pydantic/_internal/_schema_generation_shared.py:82, in CallbackGetCoreSchemaHandler.__call__(self, _CallbackGetCoreSchemaHandler__source_type)
+     81 def __call__(self, __source_type: Any) -&gt; core_schema.CoreSchema:
+---&gt; 82     schema = self._handler(__source_type)
+     83     ref = schema.get(&#39;ref&#39;)
+     84     if self._ref_mode == &#39;to-def&#39;:
+
+File ~/miniconda3/envs/pyd-tut/lib/python3.10/site-packages/pydantic/_internal/_generate_schema.py:1366, in GenerateSchema._apply_annotations.&lt;locals&gt;.inner_handler(obj)
+   1364 from_property = self._generate_schema_from_property(obj, obj)
+   1365 if from_property is None:
+-&gt; 1366     schema = self._generate_schema(obj)
+   1367 else:
+   1368     schema = from_property
+
+File ~/miniconda3/envs/pyd-tut/lib/python3.10/site-packages/pydantic/_internal/_generate_schema.py:586, in GenerateSchema._generate_schema(self, obj)
+    583     return self._type_alias_type_schema(obj)
+    585 if origin is None:
+--&gt; 586     return self._arbitrary_type_schema(obj, obj)
+    588 # Need to handle generic dataclasses before looking for the schema properties because attribute accesses
+    589 # on _GenericAlias delegate to the origin type, so lose the information about the concrete parametrization
+    590 # As a result, currently, there is no way to cache the schema for generic dataclasses. This may be possible
+    591 # to resolve by modifying the value returned by `Generic.__class_getitem__`, but that is a dangerous game.
+    592 if _typing_extra.is_dataclass(origin):
+
+File ~/miniconda3/envs/pyd-tut/lib/python3.10/site-packages/pydantic/_internal/_generate_schema.py:638, in GenerateSchema._arbitrary_type_schema(self, obj, type_)
+    636     return core_schema.is_instance_schema(type_)
+    637 else:
+--&gt; 638     raise PydanticSchemaGenerationError(
+    639         f&#39;Unable to generate pydantic-core schema for {obj!r}. &#39;
+    640         &#39;Set `arbitrary_types_allowed=True` in the model_config to ignore this error&#39;
+    641         &#39; or implement `__get_pydantic_core_schema__` on your type to fully support it.&#39;
+    642         &#39;\n\nIf you got this error by calling handler(&lt;some type&gt;) within&#39;
+    643         &#39; `__get_pydantic_core_schema__` then you likely need to call&#39;
+    644         &#39; `handler.generate_schema(&lt;some type&gt;)` since we do not call&#39;
+    645         &#39; `__get_pydantic_core_schema__` on `&lt;some type&gt;` otherwise to avoid infinite recursion.&#39;
+    646     )
+
+PydanticSchemaGenerationError: Unable to generate pydantic-core schema for &lt;class &#39;numpy.ndarray&#39;&gt;. Set `arbitrary_types_allowed=True` in the model_config to ignore this error or implement `__get_pydantic_core_schema__` on your type to fully support it.
+
+If you got this error by calling handler(&lt;some type&gt;) within `__get_pydantic_core_schema__` then you likely need to call `handler.generate_schema(&lt;some type&gt;)` since we do not call `__get_pydantic_core_schema__` on `&lt;some type&gt;` otherwise to avoid infinite recursion.
+
+For further information visit https://errors.pydantic.dev/2.0.3/u/schema-for-unknown-type
 </pre></div>
 </div>
 </div>
 </div>
 <p>This error was thrown because <em>pydantic</em> is coded to handle certain types of data, but it cannot handle types it was not programmed to understand. However, <em>pydantic</em> does provide a useful error message to fix this.</p>
-<p>You can configure your <em>pydantic</em> models to modify their behavior by adding a class within the <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code> class explicitly called <code class="docutils literal notranslate"><span class="pre">Config</span></code>. This is not an imported object, its just a class bearing that name. Within that class, you set class attributes that serve as the options.</p>
+<p>You can configure your <em>pydantic</em> models to modify their behavior by adding a class attribute within the <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code> class explicitly called <code class="docutils literal notranslate"><span class="pre">model_config</span></code> that is an instance of the <code class="docutils literal notranslate"><span class="pre">ConfigDict</span></code> class provided by <em>pydantic</em>. Within that class, you set class keywords which serve as settings for the model they are attached to.</p>
 <div class="note admonition">
-<p class="admonition-title">More Config settings</p>
-<p>You can see all of the config settings <a class="reference external" href="https://pydantic-docs.helpmanual.io/usage/model_config/">in the <em>pydantic</em> docs</a></p>
+<p class="admonition-title">More model_config settings</p>
+<p>You can see all of the config settings <a class="reference external" href="https://docs.pydantic.dev/latest/usage/model_config/">in the <em>pydantic</em> docs</a></p>
 </div>
-<p>Our particular error is saying we need to configure our model and set <code class="docutils literal notranslate"><span class="pre">arbitrary_types_allowed</span></code>, in this case to <code class="docutils literal notranslate"><span class="pre">True</span></code>. This will tell this particular <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code> to permit types that it does not naturally understand how to handle, and assume the user/programer will handle it. Let’s see what <code class="docutils literal notranslate"><span class="pre">Molecule</span></code> looks like with this set. Note: The location of the <code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">Config</span></code> statement does not matter, and <code class="docutils literal notranslate"><span class="pre">Config</span></code> is on a per-model basis, not a global <em>pydantic</em> configuration.</p>
+<p>Our particular error says many things, but we are going to focus on the simplest where it says we need to configure our model and set <code class="docutils literal notranslate"><span class="pre">arbitrary_types_allowed</span></code>, in this case to <code class="docutils literal notranslate"><span class="pre">True</span></code>. This will tell this particular <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code> to permit types that it does not naturally understand how to handle, and assume the user/programer will handle it. Let’s see what <code class="docutils literal notranslate"><span class="pre">Molecule</span></code> looks like with this set. Note: The location of the <code class="docutils literal notranslate"><span class="pre">model_config</span></code> attribute does not matter, and <code class="docutils literal notranslate"><span class="pre">model_config</span></code> is on a per-model basis, not a global <em>pydantic</em> configuration.</p>
+<div class="note admonition">
+<p class="admonition-title">Better and more powerful ways to do this with pydantic</p>
+<p>Pydantic has much more powerful and precise ways to establish custom types than what we show here! Treat this lesson as a rudimentary basics in understanding custom types and only <em>some</em> of the ways to validate them. Please <a class="reference external" href="https://docs.pydantic.dev/latest/usage/types/custom/">see the pydantic docs on custom validation</a> which includes examples on how to handle third-party types such as NumPy or Pandas.</p>
+</div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">validator</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">field_validator</span><span class="p">,</span> <span class="n">ConfigDict</span>
 
 <span class="k">class</span> <span class="nc">Molecule</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">charge</span><span class="p">:</span> <span class="nb">float</span>
     <span class="n">symbols</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
     <span class="n">coordinates</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">arbitrary_types_allowed</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
         
-    <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
-        <span class="n">arbitrary_types_allowed</span> <span class="o">=</span> <span class="kc">True</span>
-        
-    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">ensure_coordinates_match_symbols</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
-        <span class="n">n_symbols</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;symbols&quot;</span><span class="p">])</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">ensure_coordinates_match_symbols</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">info</span><span class="p">):</span>
+        <span class="n">n_symbols</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;symbols&quot;</span><span class="p">])</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">n_coords</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="n">coords</span><span class="p">))</span> <span class="o">!=</span> <span class="n">n_symbols</span><span class="p">:</span>  <span class="c1"># Walrus operator (:=) for Python 3.8+</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;There must be an equal number of XYZ coordinates as there are symbols.&quot;</span> 
                              <span class="sa">f</span><span class="s2">&quot; There are </span><span class="si">{</span><span class="n">n_coords</span><span class="si">}</span><span class="s2"> coordinates and </span><span class="si">{</span><span class="n">n_symbols</span><span class="si">}</span><span class="s2"> symbols.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">coords</span>
         
-    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">ensure_coordinates_is_3D</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">coords</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">failure</span> <span class="o">:=</span> <span class="n">inner</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span> <span class="k">for</span> <span class="n">inner</span> <span class="ow">in</span> <span class="n">coords</span><span class="p">):</span>  <span class="c1"># Walrus operator (:=) for Python 3.8+</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Inner coordinates must be 3D, got </span><span class="si">{</span><span class="n">failure</span><span class="si">}</span><span class="s2"> of length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">failure</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -730,14 +905,18 @@ document.write(`
 <div class="cell_output docutils container">
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">ValidationError</span><span class="g g-Whitespace">                           </span>Traceback (most recent call last)
-<span class="nn">Input In [10],</span> in <span class="ni">&lt;cell line: 1&gt;</span><span class="nt">()</span>
+<span class="nn">Input In [95],</span> in <span class="ni">&lt;cell line: 1&gt;</span><span class="nt">()</span>
 <span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">water</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="o">**</span><span class="n">mol_data</span><span class="p">)</span>
 
-<span class="nn">File ~/miniconda3/envs/pyd-tut/lib/python3.10/site-packages/pydantic/main.py:341,</span> in <span class="ni">pydantic.main.BaseModel.__init__</span><span class="nt">()</span>
+<span class="nn">File ~/miniconda3/envs/pyd-tut/lib/python3.10/site-packages/pydantic/main.py:150,</span> in <span class="ni">BaseModel.__init__</span><span class="nt">(__pydantic_self__, **data)</span>
+<span class="g g-Whitespace">    </span><span class="mi">148</span> <span class="c1"># `__tracebackhide__` tells pytest and some other tools to omit this function from tracebacks</span>
+<span class="g g-Whitespace">    </span><span class="mi">149</span> <span class="n">__tracebackhide__</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="ne">--&gt; </span><span class="mi">150</span> <span class="n">__pydantic_self__</span><span class="o">.</span><span class="n">__pydantic_validator__</span><span class="o">.</span><span class="n">validate_python</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">self_instance</span><span class="o">=</span><span class="n">__pydantic_self__</span><span class="p">)</span>
 
 <span class="ne">ValidationError</span>: 1 validation error for Molecule
 <span class="n">coordinates</span>
-  <span class="n">instance</span> <span class="n">of</span> <span class="n">ndarray</span> <span class="n">expected</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">type_error</span><span class="o">.</span><span class="n">arbitrary_type</span><span class="p">;</span> <span class="n">expected_arbitrary_type</span><span class="o">=</span><span class="n">ndarray</span><span class="p">)</span>
+  <span class="n">Input</span> <span class="n">should</span> <span class="n">be</span> <span class="n">an</span> <span class="n">instance</span> <span class="n">of</span> <span class="n">ndarray</span> <span class="p">[</span><span class="nb">type</span><span class="o">=</span><span class="n">is_instance_of</span><span class="p">,</span> <span class="n">input_value</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]],</span> <span class="n">input_type</span><span class="o">=</span><span class="nb">list</span><span class="p">]</span>
+    <span class="n">For</span> <span class="n">further</span> <span class="n">information</span> <span class="n">visit</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">errors</span><span class="o">.</span><span class="n">pydantic</span><span class="o">.</span><span class="n">dev</span><span class="o">/</span><span class="mf">2.0.3</span><span class="o">/</span><span class="n">v</span><span class="o">/</span><span class="n">is_instance_of</span>
 </pre></div>
 </div>
 </div>
@@ -745,14 +924,14 @@ document.write(`
 <p>We’re still getting a validation error, but it’s different. <em>pydantic</em> is now telling us that the data given to <code class="docutils literal notranslate"><span class="pre">coordinates</span></code> must be of type <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>. Remember there are two default levels of validation in <em>pydantic</em>: Ensure type, manually written validators. When we have <code class="docutils literal notranslate"><span class="pre">arbitrary_types_allowed</span></code> configured, any unknown type to <em>pydantic</em> is not type-checked or coerced beyond that it is the declared type. Effectively, a glorified <code class="docutils literal notranslate"><span class="pre">isinstance</span></code> check.</p>
 <p>So to fix this, either the user has to have already cast the data to the expected type, or the developer has to preempt the type validation somehow.</p>
 </section>
-<section id="pre-validators-in-pydantic">
-<h2>Pre-Validators in Pydantic<a class="headerlink" href="#pre-validators-in-pydantic" title="Permalink to this heading">#</a></h2>
-<p>Good news! You can make <em>pydantic</em> validators that run before the type validation, effectively adding a third layer of validation stack. These are called “pre-validators” and will run before any other level of validator. The primary use case for these validators is data coercion, and that includes casting incoming data to specific types. E.g. Casting a list of lists to a NumPy array because we have <code class="docutils literal notranslate"><span class="pre">arbitrary_types_allowed</span></code> set.</p>
-<p>A pre-validator is defined exactly like any other <code class="docutils literal notranslate"><span class="pre">validator</span></code>, it just has the keyword <code class="docutils literal notranslate"><span class="pre">pre=True</span></code> in its arguments. We’re going to use the validator to take the <code class="docutils literal notranslate"><span class="pre">coordinates</span></code> data in, and cast it to a NumPy array.</p>
+<section id="before-validators-in-pydantic">
+<h2>Before-Validators in Pydantic<a class="headerlink" href="#before-validators-in-pydantic" title="Permalink to this heading">#</a></h2>
+<p>Good news! You can make <em>pydantic</em> validators that run before the type validation, effectively adding a third layer of validation stack. These are called “before validators” and will run before any other level of validator. The primary use case for these validators is data coercion, and that includes casting incoming data to specific types. E.g. Casting a list of lists to a NumPy array because we have <code class="docutils literal notranslate"><span class="pre">arbitrary_types_allowed</span></code> set.</p>
+<p>A pre-validator is defined exactly like any other <code class="docutils literal notranslate"><span class="pre">field_validator</span></code>, it just has the keyword <code class="docutils literal notranslate"><span class="pre">mode='before'</span></code> in its arguments. We’re going to use the validator to take the <code class="docutils literal notranslate"><span class="pre">coordinates</span></code> data in, and cast it to a NumPy array.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">validator</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">field_validator</span><span class="p">,</span> <span class="n">ConfigDict</span>
 
 <span class="k">class</span> <span class="nc">Molecule</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
@@ -760,10 +939,10 @@ document.write(`
     <span class="n">symbols</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
     <span class="n">coordinates</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
         
-    <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
-        <span class="n">arbitrary_types_allowed</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">arbitrary_types_allowed</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
     
-    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">,</span> <span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;before&#39;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">coord_to_numpy</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">coords</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">coords</span><span class="p">)</span>
@@ -771,15 +950,17 @@ document.write(`
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not cast </span><span class="si">{</span><span class="n">coords</span><span class="si">}</span><span class="s2"> to numpy array&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">coords</span>
         
-    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">ensure_coordinates_match_symbols</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
-        <span class="n">n_symbols</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;symbols&quot;</span><span class="p">])</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">ensure_coordinates_match_symbols</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">info</span><span class="p">):</span>
+        <span class="n">n_symbols</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;symbols&quot;</span><span class="p">])</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">n_coords</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="n">coords</span><span class="p">))</span> <span class="o">!=</span> <span class="n">n_symbols</span><span class="p">:</span>  <span class="c1"># Walrus operator (:=) for Python 3.8+</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;There must be an equal number of XYZ coordinates as there are symbols.&quot;</span> 
                              <span class="sa">f</span><span class="s2">&quot; There are </span><span class="si">{</span><span class="n">n_coords</span><span class="si">}</span><span class="s2"> coordinates and </span><span class="si">{</span><span class="n">n_symbols</span><span class="si">}</span><span class="s2"> symbols.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">coords</span>
         
-    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">ensure_coordinates_is_3D</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">coords</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">failure</span> <span class="o">:=</span> <span class="n">inner</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span> <span class="k">for</span> <span class="n">inner</span> <span class="ow">in</span> <span class="n">coords</span><span class="p">):</span>  <span class="c1"># Walrus operator (:=) for Python 3.8+</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Inner coordinates must be 3D, got </span><span class="si">{</span><span class="n">failure</span><span class="si">}</span><span class="s2"> of length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">failure</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -812,8 +993,7 @@ document.write(`
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">validator</span>
-
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">field_validator</span><span class="p">,</span> <span class="n">ConfigDict</span>
 
 <span class="k">class</span> <span class="nc">Molecule</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
@@ -821,10 +1001,10 @@ document.write(`
     <span class="n">symbols</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
     <span class="n">coordinates</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
         
-    <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
-        <span class="n">arbitrary_types_allowed</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">arbitrary_types_allowed</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
     
-    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">,</span> <span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;before&#39;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">coord_to_numpy</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">coords</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">coords</span><span class="p">)</span>
@@ -832,9 +1012,10 @@ document.write(`
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not cast </span><span class="si">{</span><span class="n">coords</span><span class="si">}</span><span class="s2"> to numpy array&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">coords</span>
         
-    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">coords_length_of_symbols</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
-        <span class="n">symbols</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;symbols&quot;</span><span class="p">]</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">coords_length_of_symbols</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">info</span><span class="p">):</span>
+        <span class="n">symbols</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;symbols&quot;</span><span class="p">]</span>
         <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">symbols</span><span class="p">)</span> <span class="o">!=</span> <span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">or</span> <span class="p">(</span><span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Coordinates must be of shape [Number Symbols, 3], was </span><span class="si">{</span><span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">coords</span>
@@ -863,17 +1044,22 @@ document.write(`
 <div class="cell_output docutils container">
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">ValidationError</span><span class="g g-Whitespace">                           </span>Traceback (most recent call last)
-<span class="nn">Input In [15],</span> in <span class="ni">&lt;cell line: 2&gt;</span><span class="nt">()</span>
+<span class="nn">Input In [100],</span> in <span class="ni">&lt;cell line: 2&gt;</span><span class="nt">()</span>
 <span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">mangle</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">mol_data</span><span class="p">,</span> <span class="o">**</span><span class="n">bad_charge</span><span class="p">,</span> <span class="o">**</span><span class="n">bad_coords</span><span class="p">}</span>
 <span class="ne">----&gt; </span><span class="mi">2</span> <span class="n">water</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="o">**</span><span class="n">mangle</span><span class="p">)</span>
 
-<span class="nn">File ~/miniconda3/envs/pyd-tut/lib/python3.10/site-packages/pydantic/main.py:341,</span> in <span class="ni">pydantic.main.BaseModel.__init__</span><span class="nt">()</span>
+<span class="nn">File ~/miniconda3/envs/pyd-tut/lib/python3.10/site-packages/pydantic/main.py:150,</span> in <span class="ni">BaseModel.__init__</span><span class="nt">(__pydantic_self__, **data)</span>
+<span class="g g-Whitespace">    </span><span class="mi">148</span> <span class="c1"># `__tracebackhide__` tells pytest and some other tools to omit this function from tracebacks</span>
+<span class="g g-Whitespace">    </span><span class="mi">149</span> <span class="n">__tracebackhide__</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="ne">--&gt; </span><span class="mi">150</span> <span class="n">__pydantic_self__</span><span class="o">.</span><span class="n">__pydantic_validator__</span><span class="o">.</span><span class="n">validate_python</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">self_instance</span><span class="o">=</span><span class="n">__pydantic_self__</span><span class="p">)</span>
 
 <span class="ne">ValidationError</span>: 2 validation errors for Molecule
 <span class="n">charge</span>
-  <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">a</span> <span class="n">valid</span> <span class="nb">float</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">type_error</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+  <span class="n">Input</span> <span class="n">should</span> <span class="n">be</span> <span class="n">a</span> <span class="n">valid</span> <span class="n">number</span> <span class="p">[</span><span class="nb">type</span><span class="o">=</span><span class="n">float_type</span><span class="p">,</span> <span class="n">input_value</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">input_type</span><span class="o">=</span><span class="nb">list</span><span class="p">]</span>
+    <span class="n">For</span> <span class="n">further</span> <span class="n">information</span> <span class="n">visit</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">errors</span><span class="o">.</span><span class="n">pydantic</span><span class="o">.</span><span class="n">dev</span><span class="o">/</span><span class="mf">2.0.3</span><span class="o">/</span><span class="n">v</span><span class="o">/</span><span class="n">float_type</span>
 <span class="n">coordinates</span>
-  <span class="n">Coordinates</span> <span class="n">must</span> <span class="n">be</span> <span class="n">of</span> <span class="n">shape</span> <span class="p">[</span><span class="n">Number</span> <span class="n">Symbols</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">was</span> <span class="p">(</span><span class="mi">3</span><span class="p">,)</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">value_error</span><span class="p">)</span>
+  <span class="n">Value</span> <span class="n">error</span><span class="p">,</span> <span class="n">Coordinates</span> <span class="n">must</span> <span class="n">be</span> <span class="n">of</span> <span class="n">shape</span> <span class="p">[</span><span class="n">Number</span> <span class="n">Symbols</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">was</span> <span class="p">(</span><span class="mi">3</span><span class="p">,)</span> <span class="p">[</span><span class="nb">type</span><span class="o">=</span><span class="n">value_error</span><span class="p">,</span> <span class="n">input_value</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">],</span> <span class="n">input_type</span><span class="o">=</span><span class="nb">list</span><span class="p">]</span>
+    <span class="n">For</span> <span class="n">further</span> <span class="n">information</span> <span class="n">visit</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">errors</span><span class="o">.</span><span class="n">pydantic</span><span class="o">.</span><span class="n">dev</span><span class="o">/</span><span class="mf">2.0.3</span><span class="o">/</span><span class="n">v</span><span class="o">/</span><span class="n">value_error</span>
 </pre></div>
 </div>
 </div>
@@ -884,35 +1070,34 @@ document.write(`
 </section>
 <section id="supplemental-defining-custom-types-with-built-in-validators">
 <h2>Supplemental: Defining Custom Types with Built-In Validators<a class="headerlink" href="#supplemental-defining-custom-types-with-built-in-validators" title="Permalink to this heading">#</a></h2>
-<p>In the example of this chapter, we showed how to combine <code class="docutils literal notranslate"><span class="pre">arbitrary_types_allowed</span></code> in <code class="docutils literal notranslate"><span class="pre">Config</span></code> with the <code class="docutils literal notranslate"><span class="pre">validator(...,</span> <span class="pre">pre=True)</span></code> to convert incoming data to the types not understood by <em>pydantic</em>. There are obvious limitations to this such as having to write a different set of validators for each Model, being limited (or at least confined) in how you can permit types through, and then having to be accepting of arbitrary types.</p>
+<p>In the example of this chapter, we showed how to combine <code class="docutils literal notranslate"><span class="pre">arbitrary_types_allowed</span></code> in <code class="docutils literal notranslate"><span class="pre">Config</span></code> with the <code class="docutils literal notranslate"><span class="pre">field_validator(...,</span> <span class="pre">mode='before')</span></code> to convert incoming data to the types not understood by <em>pydantic</em>. There are obvious limitations to this such as having to write a different set of validators for each Model, being limited (or at least confined) in how you can permit types through, and then having to be accepting of arbitrary types.</p>
 <p><em>pydantic</em> provides a separate way to write your custom class validator by extending the class in question. This can be done even to extend existing known types to augment them to special conditions.</p>
-<div class="note admonition">
-<p class="admonition-title">Pydantic example: Regular Expression Based String Extension</p>
-<p>The pydantic site has an example of <a class="reference external" href="https://pydantic-docs.helpmanual.io/usage/types/#classes-with-__get_validators__">validating a string that is a UK postcode</a> on their site, which creates a custom validator for <code>str</code> type. Check it out for more examples.</p>
-</div>
-<p>Let’s extend a NumPy array type to have be something <em>pydantic</em> can validate without needing to use <code class="docutils literal notranslate"><span class="pre">arbitrary_types_allowed</span></code>. The main thing you need is to make a subclass of the type in question, then create a <code class="docutils literal notranslate"><span class="pre">classmethod</span></code> called <code class="docutils literal notranslate"><span class="pre">__get_validators__</span></code> that takes no arguments, and yields a series of <code class="docutils literal notranslate"><span class="pre">classmethod</span></code> validation functions. But talk is cheap and examples are better.</p>
+<p>Let’s extend a NumPy array type to have be something <em>pydantic</em> can validate without needing to use <code class="docutils literal notranslate"><span class="pre">arbitrary_types_allowed</span></code>. There are two ways to do this, either as an <code class="docutils literal notranslate"><span class="pre">Annotated</span></code> type where we overload <em>pydantic</em>’s type logic, or as a custom class schema generator. We’ll look at the <code class="docutils literal notranslate"><span class="pre">Annotated</span></code> method which the <em>pydantic</em> docs indicate is more <a class="reference external" href="https://docs.pydantic.dev/latest/usage/types/custom/#customizing-validation-with-__get_pydantic_core_schema__">stable than the custom class schema generator from an API standpoint</a>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="k">class</span> <span class="nc">ValidatableArray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">__get_validators__</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        <span class="k">yield</span> <span class="bp">cls</span><span class="o">.</span><span class="n">cast_to_ndarray</span>
+<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Annotated</span>
+<span class="kn">from</span> <span class="nn">pydantic.functional_validators</span> <span class="kn">import</span> <span class="n">PlainValidator</span>
 
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">cast_to_ndarray</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not cast </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2"> to NumPy Array!&quot;</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">v</span>
+<span class="k">def</span> <span class="nf">cast_to_np</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not cast </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2"> to NumPy Array!&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">v</span>
+
+
+<span class="n">ValidatableArray</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">PlainValidator</span><span class="p">(</span><span class="n">cast_to_np</span><span class="p">)]</span>
 </pre></div>
 </div>
 </div>
 </div>
-<p>That’s it. We’ve defined our subclass of <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> called <code class="docutils literal notranslate"><span class="pre">ValidatableArray</span></code>. We added a <code class="docutils literal notranslate"><span class="pre">classmethod</span></code> called <code class="docutils literal notranslate"><span class="pre">__get_validators__</span></code> which accepts no argument and yields a <code class="docutils literal notranslate"><span class="pre">classfunctions</span></code> to handle the validation. We only have one function here, so there is only one object to <code class="docutils literal notranslate"><span class="pre">yield</span></code>. If there were multiple objects to yield, each object would accept the validated/coerced value from the one before it. Because these are all <code class="docutils literal notranslate"><span class="pre">classmethod</span></code>s and not called on an instance of the <code class="docutils literal notranslate"><span class="pre">ValidatableArray</span></code>, we don’t have to do anything with the validated value inside <code class="docutils literal notranslate"><span class="pre">__get_validators__</span></code>; its all handled by a routine in <em>pydantic</em>.</p>
+<p>That’s it.</p>
+<p>We’ve first taken the <code class="docutils literal notranslate"><span class="pre">Annotated</span></code> object from the back-ported <code class="docutils literal notranslate"><span class="pre">typing_extensions</span></code> module which will work with Python 3.7+ (<code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">typing</span> <span class="pre">import</span> <span class="pre">Annotated</span></code> works with Python 3.9+ for identical behavior). This object allows you to augment types with additional metadata information for IDEs and other tools such as <em>pydantic</em> without disrupting normal code behavior.</p>
+<p>Next we’ve taken augmented <code class="docutils literal notranslate"><span class="pre">np.ndarray</span></code> type with the <em>pydantic</em> <code class="docutils literal notranslate"><span class="pre">PlainValidator</span></code> method and passed it a function which will overwrite any of <em>pydantic</em>’s normal logic when validating the <code class="docutils literal notranslate"><span class="pre">np.ndarray</span></code>. Otherwise <em>pydantic</em> would have attempted to validate against <code class="docutils literal notranslate"><span class="pre">np.ndarray</span></code> and we’d be back where we started with the error asking about <code class="docutils literal notranslate"><span class="pre">allow_arbitrary_types</span></code>. Instead, we’ve usurped the normal <em>pydantic</em> logic and effectively said “The validator for this type is the function <code class="docutils literal notranslate"><span class="pre">cast_to_np</span></code>, send the data there, and if it doesn’t error, we’re good.”</p>
+<p>There is FAR more you can do with the <code class="docutils literal notranslate"><span class="pre">Annotated</span></code> object and <em>pydantic</em>, including defining multiple Before, After, and Wrap validators for any and all class attributes. For instance, there is a <code class="docutils literal notranslate"><span class="pre">BeforeValidator</span></code> which takes a functional argument as well which can be annotated into any data field that will do the same thing as <code class="docutils literal notranslate"><span class="pre">&#64;field_validator(...,</span> <span class="pre">mode='before')</span></code>. However, advanced usage is best left to the <a class="reference external" href="https://docs.pydantic.dev/latest/usage/validators/"><em>pydantic</em> docs</a></p>
 <p>Let’s apply this to our <code class="docutils literal notranslate"><span class="pre">Molecule</span></code>.</p>
 <div class="note admonition">
 <p class="admonition-title">This won’t appear in the next chapter</p>
@@ -920,7 +1105,8 @@ document.write(`
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">validator</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">field_validator</span><span class="p">,</span> <span class="n">ConfigDict</span>
 
 <span class="k">class</span> <span class="nc">Molecule</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
@@ -928,9 +1114,10 @@ document.write(`
     <span class="n">symbols</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
     <span class="n">coordinates</span><span class="p">:</span> <span class="n">ValidatableArray</span>
         
-    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">coords_length_of_symbols</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
-        <span class="n">symbols</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;symbols&quot;</span><span class="p">]</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;coordinates&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">coords_length_of_symbols</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">info</span><span class="p">):</span>
+        <span class="n">symbols</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;symbols&quot;</span><span class="p">]</span>
         <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">symbols</span><span class="p">)</span> <span class="o">!=</span> <span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">or</span> <span class="p">(</span><span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Coordinates must be of shape [Number Symbols, 3], was </span><span class="si">{</span><span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">coords</span>
@@ -959,59 +1146,57 @@ document.write(`
 <div class="cell_output docutils container">
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">ValidationError</span><span class="g g-Whitespace">                           </span>Traceback (most recent call last)
-<span class="nn">Input In [19],</span> in <span class="ni">&lt;cell line: 2&gt;</span><span class="nt">()</span>
+<span class="nn">Input In [104],</span> in <span class="ni">&lt;cell line: 2&gt;</span><span class="nt">()</span>
 <span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">mangle</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">mol_data</span><span class="p">,</span> <span class="o">**</span><span class="n">bad_charge</span><span class="p">,</span> <span class="o">**</span><span class="n">bad_coords</span><span class="p">}</span>
 <span class="ne">----&gt; </span><span class="mi">2</span> <span class="n">water</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="o">**</span><span class="n">mangle</span><span class="p">)</span>
 
-<span class="nn">File ~/miniconda3/envs/pyd-tut/lib/python3.10/site-packages/pydantic/main.py:341,</span> in <span class="ni">pydantic.main.BaseModel.__init__</span><span class="nt">()</span>
+<span class="nn">File ~/miniconda3/envs/pyd-tut/lib/python3.10/site-packages/pydantic/main.py:150,</span> in <span class="ni">BaseModel.__init__</span><span class="nt">(__pydantic_self__, **data)</span>
+<span class="g g-Whitespace">    </span><span class="mi">148</span> <span class="c1"># `__tracebackhide__` tells pytest and some other tools to omit this function from tracebacks</span>
+<span class="g g-Whitespace">    </span><span class="mi">149</span> <span class="n">__tracebackhide__</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="ne">--&gt; </span><span class="mi">150</span> <span class="n">__pydantic_self__</span><span class="o">.</span><span class="n">__pydantic_validator__</span><span class="o">.</span><span class="n">validate_python</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">self_instance</span><span class="o">=</span><span class="n">__pydantic_self__</span><span class="p">)</span>
 
 <span class="ne">ValidationError</span>: 2 validation errors for Molecule
 <span class="n">charge</span>
-  <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">a</span> <span class="n">valid</span> <span class="nb">float</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">type_error</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+  <span class="n">Input</span> <span class="n">should</span> <span class="n">be</span> <span class="n">a</span> <span class="n">valid</span> <span class="n">number</span> <span class="p">[</span><span class="nb">type</span><span class="o">=</span><span class="n">float_type</span><span class="p">,</span> <span class="n">input_value</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">input_type</span><span class="o">=</span><span class="nb">list</span><span class="p">]</span>
+    <span class="n">For</span> <span class="n">further</span> <span class="n">information</span> <span class="n">visit</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">errors</span><span class="o">.</span><span class="n">pydantic</span><span class="o">.</span><span class="n">dev</span><span class="o">/</span><span class="mf">2.0.3</span><span class="o">/</span><span class="n">v</span><span class="o">/</span><span class="n">float_type</span>
 <span class="n">coordinates</span>
-  <span class="n">Coordinates</span> <span class="n">must</span> <span class="n">be</span> <span class="n">of</span> <span class="n">shape</span> <span class="p">[</span><span class="n">Number</span> <span class="n">Symbols</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">was</span> <span class="p">(</span><span class="mi">3</span><span class="p">,)</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">value_error</span><span class="p">)</span>
+  <span class="n">Value</span> <span class="n">error</span><span class="p">,</span> <span class="n">Coordinates</span> <span class="n">must</span> <span class="n">be</span> <span class="n">of</span> <span class="n">shape</span> <span class="p">[</span><span class="n">Number</span> <span class="n">Symbols</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">was</span> <span class="p">(</span><span class="mi">3</span><span class="p">,)</span> <span class="p">[</span><span class="nb">type</span><span class="o">=</span><span class="n">value_error</span><span class="p">,</span> <span class="n">input_value</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">],</span> <span class="n">input_type</span><span class="o">=</span><span class="nb">list</span><span class="p">]</span>
+    <span class="n">For</span> <span class="n">further</span> <span class="n">information</span> <span class="n">visit</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">errors</span><span class="o">.</span><span class="n">pydantic</span><span class="o">.</span><span class="n">dev</span><span class="o">/</span><span class="mf">2.0.3</span><span class="o">/</span><span class="n">v</span><span class="o">/</span><span class="n">value_error</span>
 </pre></div>
 </div>
 </div>
 </div>
-<p>We removed the <code class="docutils literal notranslate"><span class="pre">Config</span></code> since we no longer are handling arbitrary types: we’re handling the explicit type we defined. We also removed the <code class="docutils literal notranslate"><span class="pre">pre=True</span></code> validator on <code class="docutils literal notranslate"><span class="pre">coordinates</span></code> because that work got pushed to the <code class="docutils literal notranslate"><span class="pre">ValidatableArray</span></code>. That new subclass we wrote already preempts our custom <code class="docutils literal notranslate"><span class="pre">coords_length_of_symbols</span></code> <code class="docutils literal notranslate"><span class="pre">validator</span></code> because it operates at the same time as the type annotation check, which comes before custom validators in order of operations.</p>
-<p>If we wanted to make a custom schema output for our new type, we would need to add another class method called <code class="docutils literal notranslate"><span class="pre">__modify_schema__</span></code>. However, please refer to the <a class="reference external" href="https://pydantic-docs.helpmanual.io/usage/types/#classes-with-__get_validators__"><em>pydantic</em> docs</a> for more details.</p>
+<p>We removed the <code class="docutils literal notranslate"><span class="pre">model_config</span></code> since we no longer are handling arbitrary types: we’re handling the explicit type we defined. We also removed the <code class="docutils literal notranslate"><span class="pre">mode='before'</span></code> validator on <code class="docutils literal notranslate"><span class="pre">coordinates</span></code> because that work got pushed to the <code class="docutils literal notranslate"><span class="pre">ValidatableArray</span></code>. That new <code class="docutils literal notranslate"><span class="pre">Annotated</span></code> type we wrote already preempts our custom <code class="docutils literal notranslate"><span class="pre">coords_length_of_symbols</span></code> <code class="docutils literal notranslate"><span class="pre">field_validator</span></code> because it operates at the same time as the type annotation check, which comes before custom validators in order of operations.</p>
+<p>If we wanted to make a custom schema output for our new type, we would need to add another class method called <code class="docutils literal notranslate"><span class="pre">__get_pydantic_core_schema__</span></code>. However, please refer to the <a class="reference external" href="https://docs.pydantic.dev/latest/usage/types/custom/#customizing-validation-with-__get_pydantic_core_schema__"><em>pydantic</em> docs</a> for more details.</p>
 </section>
 <section id="supplemental-defining-custom-numpy-type-and-setting-data-type-dtype">
 <h2>Supplemental: Defining Custom NumPy Type AND Setting Data Type (<em>dtype</em>)<a class="headerlink" href="#supplemental-defining-custom-numpy-type-and-setting-data-type-dtype" title="Permalink to this heading">#</a></h2>
 <p>It is possible to set the NumPy array <code class="docutils literal notranslate"><span class="pre">dtype</span></code> as well as part of the type checking without having to define multiple custom types. This approach is not related to <em>pydantic</em> per se, but is a showcase of chaining several very advanced Python topics together.</p>
-<p>In the previous Supplemental, we showed how to write a subclass with <code class="docutils literal notranslate"><span class="pre">__get_validators__</span></code> to define a NumPy <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> type in <em>pydantic</em>. We cast the input data to a numpy array with the <code class="docutils literal notranslate"><span class="pre">np.asarray</span></code>. That function can also accept a <code class="docutils literal notranslate"><span class="pre">dtype=...</span></code> argument where you can specify the type of data the array will be. How would you support arbitrarily setting the <code class="docutils literal notranslate"><span class="pre">dtype</span></code>?</p>
+<p>In the previous Supplemental, we showed how to write an augmented type with <code class="docutils literal notranslate"><span class="pre">Annotated</span></code> to define a NumPy <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> type in <em>pydantic</em>. We cast the input data to a numpy array with the <code class="docutils literal notranslate"><span class="pre">np.asarray</span></code>. That function can also accept a <code class="docutils literal notranslate"><span class="pre">dtype=...</span></code> argument where you can specify the type of data the array will be. How would you support arbitrarily setting the <code class="docutils literal notranslate"><span class="pre">dtype</span></code>?</p>
 <p>There are several, equally acceptable and perfectly valid, approaches to this.</p>
 <section id="multiple-validators">
 <h3>Multiple Validators<a class="headerlink" href="#multiple-validators" title="Permalink to this heading">#</a></h3>
-<p>One option would be to make multiple types of validators and call the one you need. And there are several ways to do this. The first way is to just make multiple classes.</p>
+<p>One option would be to make multiple types of validators and call the one you need. And there are several ways to do this. The first way is to just make multiple annotated types.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">IntArray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">__get_validators__</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        <span class="k">yield</span> <span class="bp">cls</span><span class="o">.</span><span class="n">cast_to_ndarray</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">cast_to_np_int</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not cast </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2"> to NumPy Array!&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">v</span>
 
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">cast_to_ndarray</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not cast </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2"> to NumPy Array!&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">v</span>
-    
-<span class="k">class</span> <span class="nc">FloatArray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">__get_validators__</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        <span class="k">yield</span> <span class="bp">cls</span><span class="o">.</span><span class="n">cast_to_ndarray</span>
 
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">cast_to_ndarray</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not cast </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2"> to NumPy Array!&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">v</span>
+<span class="k">def</span> <span class="nf">cast_to_np_float</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not cast </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2"> to NumPy Array!&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">v</span>
+
+
+<span class="n">IntArray</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">PlainValidator</span><span class="p">(</span><span class="n">cast_to_np_int</span><span class="p">)]</span>
+<span class="n">FloatArray</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">PlainValidator</span><span class="p">(</span><span class="n">cast_to_np_float</span><span class="p">)]</span>
 </pre></div>
 </div>
 </div>
@@ -1041,29 +1226,20 @@ document.write(`
 </div>
 </div>
 <p>A valid approach, can be dropped in when needed. However, this involves code duplication.</p>
-<p>We can cut down on the work by defining a top level class and then inheriting and subclassing it as needed through Monkey Patching.</p>
+<p>We can cut down on the work by defining a function which accepts a keyword and use <code class="docutils literal notranslate"><span class="pre">functools.partial</span></code> to lock the keyword in.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">BaseArray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-    <span class="n">_dtype</span> <span class="o">=</span> <span class="kc">None</span>
-    
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">__get_validators__</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        <span class="k">yield</span> <span class="bp">cls</span><span class="o">.</span><span class="n">cast_to_ndarray</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
 
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">cast_to_ndarray</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">_dtype</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not cast </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2"> to NumPy Array!&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">v</span>
+<span class="k">def</span> <span class="nf">cast_to_np</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not cast </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2"> to NumPy Array!&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">v</span>
 
-<span class="k">class</span> <span class="nc">InttArray</span><span class="p">(</span><span class="n">BaseArray</span><span class="p">):</span>
-    <span class="n">_dtype</span> <span class="o">=</span> <span class="nb">int</span>
-    
-<span class="k">class</span> <span class="nc">FloatArray</span><span class="p">(</span><span class="n">BaseArray</span><span class="p">):</span>
-    <span class="n">_dtype</span> <span class="o">=</span> <span class="nb">float</span>
+<span class="n">IntArray</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">PlainValidator</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="n">cast_to_np</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">))]</span>
+<span class="n">FloatArray</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">PlainValidator</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="n">cast_to_np</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">))]</span>
 </pre></div>
 </div>
 </div>
@@ -1098,25 +1274,14 @@ document.write(`
 <p>One option is to just make a function create types on demand.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">BaseArray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-    <span class="n">_dtype</span> <span class="o">=</span> <span class="kc">None</span>
-    
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">__get_validators__</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        <span class="k">yield</span> <span class="bp">cls</span><span class="o">.</span><span class="n">cast_to_ndarray</span>
-
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">cast_to_ndarray</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">array_typer</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">cast_to_np</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">_dtype</span><span class="p">)</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not cast </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2"> to NumPy Array!&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">v</span>
-
-<span class="k">def</span> <span class="nf">array_typer</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
-    <span class="k">class</span> <span class="nc">GeneratedType</span><span class="p">(</span><span class="n">BaseArray</span><span class="p">):</span>
-        <span class="n">_dtype</span> <span class="o">=</span> <span class="n">dtype</span>
-    <span class="k">return</span> <span class="n">GeneratedType</span>
+    <span class="k">return</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">PlainValidator</span><span class="p">(</span><span class="n">cast_to_np</span><span class="p">)]</span>
 </pre></div>
 </div>
 </div>
@@ -1145,63 +1310,65 @@ document.write(`
 </div>
 </div>
 </div>
-<p>But this has the problem of now having to regenerate a new class each time, and its type schema will always be “GeneratedType” class. This isn’t a problem most of the time, but it can be a little confusing to suddenly see functions in type annotation instead of the normal types and square brackets.</p>
+<p>But this has the problem of now having to regenerate a new <code class="docutils literal notranslate"><span class="pre">Annotated</span></code> type each time, and its type schema will always have the same signature. This isn’t a problem most of the time, but it can be a little confusing to suddenly see functions in type annotation instead of the normal types and square brackets.</p>
 </section>
-<section id="metclass-for-on-the-fly-assignment">
-<h3>Metclass for on-the-fly assignment.<a class="headerlink" href="#metclass-for-on-the-fly-assignment" title="Permalink to this heading">#</a></h3>
-<p>One option MolSSI deploys in our <a class="reference external" href="https://github.com/MolSSI/QCElemental/blob/295642189fe3c4d0812142c0304d8ae9c8674d4c/qcelemental/models/types.py#L39"><code class="docutils literal notranslate"><span class="pre">QCElemental</span></code> package</a> is to use a <a class="reference external" href="https://docs.python.org/3/reference/datamodel.html#metaclasses">Python Metaclass</a> as a way to define a class generator whose properties are set dynamically, then usable by the class.</p>
-<div class="warning admonition">
-<p class="admonition-title">Here There be Forbidden Magics</p>
-<p>“Metaclasses are deeper magic than 99% of users should ever worry about. If you wonder whether you need them, you don’t (the people who actually need them know with certainty that they need them, and don’t need an explanation about why).”</p>
-<p>— Tim Peters, Author of <a class="reference external" href="https://peps.python.org/pep-0020/">Zen of Python, PEP 20</a></p>
-</div>
-<p>Metaclasses are usually not something you want to touch, because you don’t need to. The above methods provide a fine way to generate type hints dynamically. However, if you want to be fancy, you can use a Metaclass. The best primer I, Levi Naden, have found on Metaclasses at the time of writing this section (Fall 2022) was through <a class="reference external" href="https://stackoverflow.com/a/6581949/10364409">this Stack Overflow answer</a>.</p>
-<p>For our example, we’re going to define a base typed array, define a Metaclass which abuses the <code class="docutils literal notranslate"><span class="pre">__getindex__</span></code> to treat our <code class="docutils literal notranslate"><span class="pre">[</span> <span class="pre">]</span></code> arguments for “type hint” as a type assignment, then feed the metaclass in with that type specification as a settable parameter and generate classes on the fly.</p>
-<p>Let’s see that in code where we’ve annotated the lines everything in the last paragraph said.</p>
+<section id="custom-core-schema">
+<h3>Custom Core Schema<a class="headerlink" href="#custom-core-schema" title="Permalink to this heading">#</a></h3>
+<p>We’re going to take a look at the other way <em>pydantic</em> has for defining a custom type, one way they specifically suggest for NumPy in their own documentations, namely <a class="reference external" href="https://docs.pydantic.dev/latest/usage/types/custom/#customizing-validation-with-__get_pydantic_core_schema__">a custom core schema</a>. We avoided this in the previous blocks of the lessons because the <em>pydantic</em> docs say this functionality touches the underlying <code class="docutils literal notranslate"><span class="pre">pydantic-core</span></code> functionality. And while it <em>does</em> have an API (and follows semantic versioning), its also the section most likely to change according to them.</p>
+<p>We do want to look at this approach because we are abusing the <code class="docutils literal notranslate"><span class="pre">PlainValidator</span></code> a bit to overload <em>pydantic</em>’s internal type checking.</p>
+<p>We’re going to build this piece by piece, with the understanding that it won’t work fully until we’ve constructed it. Effectively: writing the instructions for <em>pydantic</em> to handle this with mostly native <code class="docutils literal notranslate"><span class="pre">pydantic-core</span></code> functions.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
-<span class="c1"># Base typed array</span>
-<span class="k">class</span> <span class="nc">TypedArray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>    
-    <span class="n">_dtype</span> <span class="o">=</span> <span class="kc">None</span>
-    
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ValidatableArray</span><span class="p">:</span>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">__get_validators__</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        <span class="k">yield</span> <span class="bp">cls</span><span class="o">.</span><span class="n">validate</span>
-
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">_dtype</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Could not cast </span><span class="si">{}</span><span class="s2"> to NumPy Array!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">v</span>
-
-<span class="c1"># A Metaclass which abuses the `__getindex__` to treat our `[ ]` arguments for &quot;type hint&quot; as a type assignment</span>
-<span class="k">class</span> <span class="nc">ArrayMeta</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="p">):</span>
-        <span class="c1"># Feed the metaclass in with that type specification as a settable parameter</span>
-        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="s2">&quot;Array&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">TypedArray</span><span class="p">,),</span> <span class="p">{</span><span class="s2">&quot;_dtype&quot;</span><span class="p">:</span> <span class="n">dtype</span><span class="p">})</span>
-
-<span class="c1"># Generate classes on the fly.</span>
-<span class="k">class</span> <span class="nc">Array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ArrayMeta</span><span class="p">):</span>
-    <span class="k">pass</span>
+    <span class="k">def</span> <span class="nf">__get_pydantic_core_schema__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">handler</span><span class="p">):</span>
+        <span class="k">pass</span>
 </pre></div>
 </div>
 </div>
 </div>
-<p>Then in practice, we just “index” the <code class="docutils literal notranslate"><span class="pre">Array</span></code> class as needed.</p>
+<p>This is the primary work method for the core schema. The <code class="docutils literal notranslate"><span class="pre">__get_pydantic_core_schema__</span></code> is the method that <em>pydantic</em> will look for when validating this type of data.</p>
+<p><code class="docutils literal notranslate"><span class="pre">source</span></code> is the class we are generating a schema for; this will generally be the same as the <code class="docutils literal notranslate"><span class="pre">cls</span></code> argument if this is a classmethod.</p>
+<p><code class="docutils literal notranslate"><span class="pre">handler</span></code> is the call into Pydantic’s internal JSON schema generation logic. Since we’re writing our own schema generator for something that <em>Pydantic</em> does not natively understand, we likely won’t need <code class="docutils literal notranslate"><span class="pre">source</span></code> or <code class="docutils literal notranslate"><span class="pre">handler</span></code> at all for most uses. However, we will be taking advantage of <code class="docutils literal notranslate"><span class="pre">source</span></code> and some other Python <code class="docutils literal notranslate"><span class="pre">typing</span></code> tools as well.</p>
+<p>We’ll fill in everything we want to do in the function itself.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">IntMolecule</span><span class="p">(</span><span class="n">Molecule</span><span class="p">):</span>
-    <span class="n">coordinates</span><span class="p">:</span> <span class="n">Array</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
-        
-<span class="k">class</span> <span class="nc">FloatMolecule</span><span class="p">(</span><span class="n">Molecule</span><span class="p">):</span>
-    <span class="n">coordinates</span><span class="p">:</span> <span class="n">Array</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
-        
-<span class="nb">print</span><span class="p">(</span><span class="n">IntMolecule</span><span class="p">(</span><span class="o">**</span><span class="n">mol_data</span><span class="p">)</span><span class="o">.</span><span class="n">coordinates</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">FloatMolecule</span><span class="p">(</span><span class="o">**</span><span class="n">mol_data</span><span class="p">)</span><span class="o">.</span><span class="n">coordinates</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pydantic_core</span> <span class="kn">import</span> <span class="n">core_schema</span>
+
+<span class="k">def</span> <span class="nf">cast_to_np</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not cast </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2"> to NumPy Array!&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">v</span>
+
+
+<span class="k">class</span> <span class="nc">ValidatableArray</span><span class="p">:</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">__get_pydantic_core_schema__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">handler</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        We return a pydantic_core.CoreSchema that behaves in the following ways:</span>
+
+<span class="sd">        * Data will be cast to ndarrays with the correct dtype</span>
+<span class="sd">        * `ndarrays` instances will be parsed as `ndarrays` and cast to the correct dtype</span>
+<span class="sd">        * Serialization will cast the ndarray to list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">schema</span> <span class="o">=</span> <span class="n">core_schema</span><span class="o">.</span><span class="n">no_info_plain_validator_function</span><span class="p">(</span><span class="n">cast_to_np</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">schema</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We’ve added back in our actual “cast to NumPy” function we’ve used previously, and then we have added a function from the <code class="docutils literal notranslate"><span class="pre">core_schema</span></code> object of <code class="docutils literal notranslate"><span class="pre">pydantic_core</span></code>. The <code class="docutils literal notranslate"><span class="pre">no_info_plain_validator</span></code> function which is what generates a schema for <code class="docutils literal notranslate"><span class="pre">PlainValidator</span></code> as we have seen before. We finally return the schema generated from the function, although we can further manipulate it later as needed.</p>
+<p>There are also other calls such as a <a class="reference external" href="https://docs.pydantic.dev/latest/api/pydantic_core_schema/#pydantic_core.core_schema.general_plain_validator_function"><code class="docutils literal notranslate"><span class="pre">general_plain_validator_function</span></code></a> which supports additional info being fed into the function as a secondary argument, or <a class="reference external" href="https://docs.pydantic.dev/latest/api/pydantic_core_schema/#pydantic_core.core_schema.no_info_after_validator_function"><code class="docutils literal notranslate"><span class="pre">no_info_after_validator_function</span></code></a> which would make an <code class="docutils literal notranslate"><span class="pre">AfterValidator</span></code>, but we’re not going to cover those topics here.</p>
+<p>Thus far, all we have done is cast to a NumPy array, which is good! We have done that before with the <code class="docutils literal notranslate"><span class="pre">Annotated</span></code> method, but this sets us up for much more powerful manipulation later if we want. We also want to make sure</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ArrMolecule</span><span class="p">(</span><span class="n">Molecule</span><span class="p">):</span>
+    <span class="n">coordinates</span><span class="p">:</span> <span class="n">ValidatableArray</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">ArrMolecule</span><span class="p">(</span><span class="o">**</span><span class="n">mol_data</span><span class="p">)</span><span class="o">.</span><span class="n">coordinates</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ArrMolecule</span><span class="p">(</span><span class="o">**</span><span class="n">mol_data</span><span class="p">)</span><span class="o">.</span><span class="n">coordinates</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1209,14 +1376,251 @@ document.write(`
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[0 0 0]
  [1 1 1]
  [2 2 2]]
-[[0. 0. 0.]
- [1. 1. 1.]
- [2. 2. 2.]]
+[[0 0 0]
+ [1 1 1]
+ [2 2 2]]
 </pre></div>
 </div>
 </div>
 </div>
-<p>There are also a couple downsides to this. You have to understand Metaclasses, which we showed a quote warning against. You cannot just use a bare <code class="docutils literal notranslate"><span class="pre">Array</span></code> because then it’s an arbitrary type. Lastly, if you want default <code class="docutils literal notranslate"><span class="pre">dtype</span></code> handling you have to use the <code class="docutils literal notranslate"><span class="pre">TypedArray</span></code> as the type annotation or <code class="docutils literal notranslate"><span class="pre">Array[None]</span></code>, which can be a bit confusing.</p>
+<p>Great! We’ve made a validatable array. Now we’re going to extend this approach to handle passing types in as part of the array construction. However, our dtype option isn’t used anywhere. To fix that, we’re going to expand on this with some of Python’s native <code class="docutils literal notranslate"><span class="pre">typing</span></code> tools.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">TypeVar</span>
+<span class="kn">from</span> <span class="nn">pydantic_core</span> <span class="kn">import</span> <span class="n">core_schema</span>
+
+<span class="n">dtype</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;dtype&quot;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">cast_to_np</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not cast </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2"> to NumPy Array!&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">v</span>
+
+
+<span class="k">class</span> <span class="nc">ValidatableArray</span><span class="p">(</span><span class="n">Sequence</span><span class="p">[</span><span class="n">dtype</span><span class="p">]):</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">__get_pydantic_core_schema__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">handler</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        We return a pydantic_core.CoreSchema that behaves in the following ways:</span>
+
+<span class="sd">        * Data will be cast to ndarrays with the correct dtype</span>
+<span class="sd">        * `ndarrays` instances will be parsed as `ndarrays` and cast to the correct dtype</span>
+<span class="sd">        * Serialization will cast the ndarray to list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">schema</span> <span class="o">=</span> <span class="n">core_schema</span><span class="o">.</span><span class="n">no_info_plain_validator_function</span><span class="p">(</span><span class="n">cast_to_np</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">schema</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We’ve now established a custom Python type we are calling <code class="docutils literal notranslate"><span class="pre">dtype</span></code>, which is a common term in NumPy space, but we’re going to focus on the more general case for now and specialize later.</p>
+<p>The new object <code class="docutils literal notranslate"><span class="pre">dtype</span></code> is now recognized as a valid Python type, even though nothing in the Python space or any of our modules use this, that’s okay! We’re going to use it as a placeholder for accepting an index/argument to the <code class="docutils literal notranslate"><span class="pre">ValidatableArray</span></code> class.</p>
+<p>Speaking of, the <code class="docutils literal notranslate"><span class="pre">ValidatableArray</span></code> is now a subclass of two things: the <code class="docutils literal notranslate"><span class="pre">Sequence</span></code> from Python’s <code class="docutils literal notranslate"><span class="pre">typing</span></code> library, and our placeholder <code class="docutils literal notranslate"><span class="pre">dtype</span></code> type as an index/argument. Although it is square brackets, <code class="docutils literal notranslate"><span class="pre">[]</span></code>, we’ll refer to these as “arguments” as they effectively are for types. We chose the <code class="docutils literal notranslate"><span class="pre">Sequence</span></code> instead of <code class="docutils literal notranslate"><span class="pre">Generic</span></code> from <code class="docutils literal notranslate"><span class="pre">typing</span></code> because at its core, NumPy arrays are sequences, just very formatted and specialized ones. This approach would have worked with <code class="docutils literal notranslate"><span class="pre">Generic</span></code> too, but we’re opting to be more verbose.</p>
+<p>So far, nothing has changed, everything will continue to run exactly as we have designed it previously, however, we can now specify an argument to the <code class="docutils literal notranslate"><span class="pre">ValidatableArray</span></code>. Observe:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ArrMolecule</span><span class="p">(</span><span class="n">Molecule</span><span class="p">):</span>
+    <span class="n">coordinates</span><span class="p">:</span> <span class="n">ValidatableArray</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">ArrMolecule</span><span class="p">(</span><span class="o">**</span><span class="n">mol_data</span><span class="p">)</span><span class="o">.</span><span class="n">coordinates</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ArrMolecule</span><span class="p">(</span><span class="o">**</span><span class="n">mol_data</span><span class="p">)</span><span class="o">.</span><span class="n">coordinates</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[0 0 0]
+ [1 1 1]
+ [2 2 2]]
+[[0 0 0]
+ [1 1 1]
+ [2 2 2]]
+</pre></div>
+</div>
+</div>
+</div>
+<p>So now let’s change our code to actually do something with that new argument in our function to specify what the dtype should be for the arrays.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">TypeVar</span>
+<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">get_args</span>
+<span class="kn">from</span> <span class="nn">pydantic_core</span> <span class="kn">import</span> <span class="n">core_schema</span>
+
+<span class="n">dtype</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;dtype&quot;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">generate_caster</span><span class="p">(</span><span class="n">dtype_input</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">cast_to_np</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype_input</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not cast </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2"> to NumPy Array!&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">v</span>
+    <span class="k">return</span> <span class="n">cast_to_np</span>
+
+
+<span class="k">class</span> <span class="nc">ValidatableArray</span><span class="p">(</span><span class="n">Sequence</span><span class="p">[</span><span class="n">dtype</span><span class="p">]):</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">__get_pydantic_core_schema__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">handler</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        We return a pydantic_core.CoreSchema that behaves in the following ways:</span>
+
+<span class="sd">        * Data will be cast to ndarrays with the correct dtype</span>
+<span class="sd">        * `ndarrays` instances will be parsed as `ndarrays` and cast to the correct dtype</span>
+<span class="sd">        * Serialization will cast the ndarray to list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dtype_arg</span> <span class="o">=</span> <span class="n">get_args</span><span class="p">(</span><span class="n">source</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">validator</span> <span class="o">=</span> <span class="n">generate_caster</span><span class="p">(</span><span class="n">dtype_arg</span><span class="p">)</span>
+        <span class="n">schema</span> <span class="o">=</span> <span class="n">core_schema</span><span class="o">.</span><span class="n">no_info_plain_validator_function</span><span class="p">(</span><span class="n">validator</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">schema</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">FloatArrMolecule</span><span class="p">(</span><span class="n">Molecule</span><span class="p">):</span>
+    <span class="n">coordinates</span><span class="p">:</span> <span class="n">ValidatableArray</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
+
+<span class="k">class</span> <span class="nc">IntArrMolecule</span><span class="p">(</span><span class="n">Molecule</span><span class="p">):</span>
+    <span class="n">coordinates</span><span class="p">:</span> <span class="n">ValidatableArray</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">FloatArrMolecule</span><span class="p">(</span><span class="o">**</span><span class="n">mol_data</span><span class="p">)</span><span class="o">.</span><span class="n">coordinates</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">FloatArrMolecule</span><span class="p">(</span><span class="o">**</span><span class="n">mol_data</span><span class="p">)</span><span class="o">.</span><span class="n">coordinates</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">IntArrMolecule</span><span class="p">(</span><span class="o">**</span><span class="n">mol_data</span><span class="p">)</span><span class="o">.</span><span class="n">coordinates</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">IntArrMolecule</span><span class="p">(</span><span class="o">**</span><span class="n">mol_data</span><span class="p">)</span><span class="o">.</span><span class="n">coordinates</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[0. 0. 0.]
+ [1. 1. 1.]
+ [2. 2. 2.]]
+[[0. 0. 0.]
+ [1. 1. 1.]
+ [2. 2. 2.]]
+
+[[0 0 0]
+ [1 1 1]
+ [2 2 2]]
+[[0 0 0]
+ [1 1 1]
+ [2 2 2]]
+</pre></div>
+</div>
+</div>
+</div>
+<p>Ta-da! We’ve now used the <code class="docutils literal notranslate"><span class="pre">get_args</span></code> function from <code class="docutils literal notranslate"><span class="pre">typing_extensions</span></code> (native in <code class="docutils literal notranslate"><span class="pre">typing</span></code> in Python 3.9+) to get the argument we fed into the <code class="docutils literal notranslate"><span class="pre">ValidatableArray</span></code>, established a generator function for dtypes in <code class="docutils literal notranslate"><span class="pre">generate_caster</span></code>, and then used all of that information to make our NumPy arrays of a specific type. All of this shows the power of the customization we can do with <em>pydantic</em>. There are some less-boilerplate ways to do this in <em>pydantic</em>, but we leave that up to you to read the docs to find out more.</p>
+<p>Before we move past this, there are a couple of notes to make about this approach:</p>
+<ul class="simple">
+<li><p>This is a relatively slow process in that the generator will be made for every validation, that could be faster.</p></li>
+<li><p>As written, you MUST pass an arg to <code class="docutils literal notranslate"><span class="pre">ValidatableArray</span></code>, but it could be rewritten to avoid that.</p></li>
+</ul>
+<p>We’ve specifically written this example to use generic Python type objects and methods. However, <a class="reference external" href="https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray">NumPy does have its own native types as of 1.20 and 1.21</a> we can use instead of the <code class="docutils literal notranslate"><span class="pre">Generic</span></code> and <code class="docutils literal notranslate"><span class="pre">Sequence</span></code>, or defining our own arbitrary type with <code class="docutils literal notranslate"><span class="pre">TypeVar</span></code> to make IDE’s happy. Below is the example of this.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">get_args</span><span class="p">,</span> <span class="n">Annotated</span>
+<span class="kn">from</span> <span class="nn">pydantic_core</span> <span class="kn">import</span> <span class="n">core_schema</span>
+<span class="kn">from</span> <span class="nn">numpy.typing</span> <span class="kn">import</span> <span class="n">NDArray</span>
+
+<span class="k">def</span> <span class="nf">generate_caster</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">cast_to_np</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not cast </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2"> to NumPy Array!&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">v</span>
+    <span class="k">return</span> <span class="n">cast_to_np</span>
+
+
+<span class="k">class</span> <span class="nc">ValidatableArrayAnnotation</span><span class="p">:</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">__get_pydantic_core_schema__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">handler</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        We return a pydantic_core.CoreSchema that behaves in the following ways:</span>
+
+<span class="sd">        * Data will be cast to ndarrays with the correct dtype</span>
+<span class="sd">        * `ndarrays` instances will be parsed as `ndarrays` and cast to the correct dtype</span>
+<span class="sd">        * Serialization will cast the ndarray to list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">shape</span><span class="p">,</span> <span class="n">dtype_alias</span> <span class="o">=</span> <span class="n">get_args</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="n">get_args</span><span class="p">(</span><span class="n">dtype_alias</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">validator</span> <span class="o">=</span> <span class="n">generate_caster</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="n">schema</span> <span class="o">=</span> <span class="n">core_schema</span><span class="o">.</span><span class="n">no_info_plain_validator_function</span><span class="p">(</span><span class="n">validator</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">schema</span>
+
+<span class="n">ValidatableArray</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">ValidatableArrayAnnotation</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">FloatArrMolecule</span><span class="p">(</span><span class="n">Molecule</span><span class="p">):</span>
+    <span class="n">coordinates</span><span class="p">:</span> <span class="n">ValidatableArray</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
+
+<span class="k">class</span> <span class="nc">IntArrMolecule</span><span class="p">(</span><span class="n">Molecule</span><span class="p">):</span>
+    <span class="n">coordinates</span><span class="p">:</span> <span class="n">ValidatableArray</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">FloatArrMolecule</span><span class="p">(</span><span class="o">**</span><span class="n">mol_data</span><span class="p">)</span><span class="o">.</span><span class="n">coordinates</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">FloatArrMolecule</span><span class="p">(</span><span class="o">**</span><span class="n">mol_data</span><span class="p">)</span><span class="o">.</span><span class="n">coordinates</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">IntArrMolecule</span><span class="p">(</span><span class="o">**</span><span class="n">mol_data</span><span class="p">)</span><span class="o">.</span><span class="n">coordinates</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">IntArrMolecule</span><span class="p">(</span><span class="o">**</span><span class="n">mol_data</span><span class="p">)</span><span class="o">.</span><span class="n">coordinates</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[0. 0. 0.]
+ [1. 1. 1.]
+ [2. 2. 2.]]
+[[0. 0. 0.]
+ [1. 1. 1.]
+ [2. 2. 2.]]
+
+[[0 0 0]
+ [1 1 1]
+ [2 2 2]]
+[[0 0 0]
+ [1 1 1]
+ [2 2 2]]
+</pre></div>
+</div>
+</div>
+</div>
+<p>This approach now annotates the <code class="docutils literal notranslate"><span class="pre">NDArray</span></code> with additional information as per <a class="reference external" href="https://docs.pydantic.dev/latest/usage/types/custom/#as-an-annotation">the <em>pydantic</em> docs</a> which is then passed to the <code class="docutils literal notranslate"><span class="pre">ValidatableArrayAnnotation</span></code>, and takes use of the NumPy type hint format and behavior for <code class="docutils literal notranslate"><span class="pre">NDArray</span></code>. This <em>also</em> has problems as in the end we are trying to reverse engineer a type hint into a formal <code class="docutils literal notranslate"><span class="pre">dtype</span></code> for NumPy, which isn’t exactly clear-cut. E.g.:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">NDArray</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">NDArray</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span>
+<span class="n">default_second</span> <span class="o">=</span> <span class="n">get_args</span><span class="p">(</span><span class="n">get_args</span><span class="p">(</span><span class="n">NDArray</span><span class="p">)[</span><span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">default_second</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">default_second</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>numpy.ndarray[typing.Any, numpy.dtype[+ScalarType]]
+numpy.ndarray[typing.Any, numpy.dtype[int]]
++ScalarType
+&lt;class &#39;typing.TypeVar&#39;&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<p>Its very unclear how, if you provide no arguments, to convert the <code class="docutils literal notranslate"><span class="pre">TypeVar</span></code> (which is what you get from the <code class="docutils literal notranslate"><span class="pre">TypeVar</span></code> function of “+ScalarType” into <code class="docutils literal notranslate"><span class="pre">None</span></code> which would be the default behavior of <code class="docutils literal notranslate"><span class="pre">dtype=...</span></code> style arguments. Sure you could hard code it, but will that always be the case? That’s up to you and beyond what this example hopes to show you.</p>
+</section>
+<section id="metaclasses-of-the-past">
+<h3>Metaclasses of the Past<a class="headerlink" href="#metaclasses-of-the-past" title="Permalink to this heading">#</a></h3>
+<p>At one point in this lesson back in Pydantic v1, we talked about <a class="reference external" href="https://docs.python.org/3/reference/datamodel.html#metaclasses">Python Metaclass</a> as a way to define a class generator whose properties are set dynamically, then usable by the class. BUT…</p>
+<div class="warning admonition">
+<p class="admonition-title">Metaclasses be Forbidden Magics</p>
+<p>“Metaclasses are deeper magic than 99% of users should ever worry about. If you wonder whether you need them, you don’t (the people who actually need them know with certainty that they need them, and don’t need an explanation about why).”</p>
+<p>— Tim Peters, Author of <a class="reference external" href="https://peps.python.org/pep-0020/">Zen of Python, PEP 20</a></p>
+</div>
+<p>Metaclasses are usually not something you want to touch, because you don’t need to. The above methods provide a fine way to generate type hints dynamically. However, if you want to be fancy, you can use a Metaclass. The best primer I, Levi Naden, have found on Metaclasses at the time of writing this section (Fall 2022) was through <a class="reference external" href="https://stackoverflow.com/a/6581949/10364409">this Stack Overflow answer</a>.</p>
+<p>To be honest: you’re probably better off writing <a class="reference external" href="https://docs.pydantic.dev/latest/usage/types/custom/#customizing-validation-with-__get_pydantic_core_schema__">a custom core schema as <em>pydantic</em> suggests</a> as above than messing with a Metaclass.</p>
 </section>
 <section id="do-what-makes-sense-and-only-if-you-need-to">
 <h3>Do what makes sense, and only if you need to<a class="headerlink" href="#do-what-makes-sense-and-only-if-you-need-to" title="Permalink to this heading">#</a></h3>
@@ -1295,12 +1699,13 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pydantic-s-validator-decorator">Pydantic’s Validator Decorator</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#validating-against-other-fields">Validating against other fields</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#non-native-types-in-pydantic">Non-native Types in Pydantic</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pre-validators-in-pydantic">Pre-Validators in Pydantic</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#before-validators-in-pydantic">Before-Validators in Pydantic</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#supplemental-defining-custom-types-with-built-in-validators">Supplemental: Defining Custom Types with Built-In Validators</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#supplemental-defining-custom-numpy-type-and-setting-data-type-dtype">Supplemental: Defining Custom NumPy Type AND Setting Data Type (<em>dtype</em>)</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#multiple-validators">Multiple Validators</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#make-an-on-demand-typer-function">Make an on Demand Typer Function</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metclass-for-on-the-fly-assignment">Metclass for on-the-fly assignment.</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-core-schema">Custom Core Schema</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metaclasses-of-the-past">Metaclasses of the Past</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#do-what-makes-sense-and-only-if-you-need-to">Do what makes sense, and only if you need to</a></li>
 </ul>
 </li>

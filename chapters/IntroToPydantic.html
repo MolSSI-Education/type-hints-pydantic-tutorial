@@ -71,6 +71,7 @@ const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="../_static/sphinx-thebe.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'chapters/IntroToPydantic';</script>
+    <link rel="shortcut icon" href="../_static/molssi-favicon.jpg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Validating Data Beyond Types" href="ValidatingDataBeyondTypes.html" />
@@ -395,6 +396,10 @@ document.write(`
 <p class="admonition-title">Check Out Pydantic</p>
 <p>We will not be covering all the capabilities of <em>pydantic</em> here, and we highly encourage you to visit <a class="reference external" href="https://pydantic-docs.helpmanual.io/">the pydantic docs</a> to learn about all the powerful and easy-to-execute things <em>pydantic</em> can do.</p>
 </div>
+<div class="important admonition">
+<p class="admonition-title">This lesson uses Pydantic 2.0 or greater</p>
+<p>This lesson works on Pydantic 2.0+. It is incompatible with Pydantic 1.X.</p>
+</div>
 <div class="note admonition">
 <p class="admonition-title">Compatibility with Python 3.8 and below</p>
 <p>If you have Python 3.8 or below, you will need to import container type objects such as <code class="docutils literal notranslate"><span class="pre">List</span></code>, <code class="docutils literal notranslate"><span class="pre">Tuple</span></code>, <code class="docutils literal notranslate"><span class="pre">Dict</span></code>, etc. from the <code class="docutils literal notranslate"><span class="pre">typing</span></code> library instead of their native types of <code class="docutils literal notranslate"><span class="pre">list</span></code>, <code class="docutils literal notranslate"><span class="pre">tuple</span></code>, <code class="docutils literal notranslate"><span class="pre">dict</span></code>, etc. This chapter will assume Python 3.9 or greater, however, both approaches will work in &gt;=Python 3.9 and have 1:1 replacements of the same name.</p>
@@ -621,7 +626,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>name=&#39;water&#39; charge=0.0 symbols=[&#39;H&#39;, &#39;H&#39;, &#39;O&#39;] coordinates=[[0.0, 0.0, 0.0]]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>name=&#39;water&#39; charge=0.0 symbols=[&#39;H&#39;, &#39;H&#39;, &#39;O&#39;] coordinates=[[0, 0, 0]]
 </pre></div>
 </div>
 </div>
@@ -636,7 +641,7 @@ document.write(`
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>water
-[[0.0, 0.0, 0.0]]
+[[0, 0, 0]]
 </pre></div>
 </div>
 </div>
@@ -644,7 +649,7 @@ document.write(`
 <p><em>pydantic</em> also provides a few built-in methods for quick exporting of models to other data structures like dictionaries and JSON strings.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">water</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">water</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -652,19 +657,19 @@ document.write(`
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;name&#39;: &#39;water&#39;,
  &#39;charge&#39;: 0.0,
  &#39;symbols&#39;: [&#39;H&#39;, &#39;H&#39;, &#39;O&#39;],
- &#39;coordinates&#39;: [[0.0, 0.0, 0.0]]}
+ &#39;coordinates&#39;: [[0, 0, 0]]}
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">water</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">water</span><span class="o">.</span><span class="n">model_dump_json</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&#39;{&quot;name&quot;: &quot;water&quot;, &quot;charge&quot;: 0.0, &quot;symbols&quot;: [&quot;H&quot;, &quot;H&quot;, &quot;O&quot;], &quot;coordinates&quot;: [[0.0, 0.0, 0.0]]}&#39;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&#39;{&quot;name&quot;:&quot;water&quot;,&quot;charge&quot;:0.0,&quot;symbols&quot;:[&quot;H&quot;,&quot;H&quot;,&quot;O&quot;],&quot;coordinates&quot;:[[0,0,0]]}&#39;
 </pre></div>
 </div>
 </div>
@@ -678,43 +683,63 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">ValidationError</span><span class="g g-Whitespace">                           </span>Traceback (most recent call last)
-<span class="nn">Input In [10],</span> in <span class="ni">&lt;cell line: 2&gt;</span><span class="nt">()</span>
-<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">mangle</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">mol_data</span><span class="p">,</span> <span class="o">**</span><span class="n">bad_name</span><span class="p">,</span> <span class="o">**</span><span class="n">bad_charge</span><span class="p">,</span> <span class="o">**</span><span class="n">bad_coords</span><span class="p">}</span>
-<span class="ne">----&gt; </span><span class="mi">2</span> <span class="n">water</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="o">**</span><span class="n">mangle</span><span class="p">)</span>
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span>---------------------------------------------------------------------------
+ValidationError                           Traceback (most recent call last)
+Input In [19], in &lt;cell line: 2&gt;()
+      1 mangle = {**mol_data, **bad_name, **bad_charge, **bad_coords}
+----&gt; 2 water = Molecule(**mangle)
 
-<span class="nn">File ~/miniconda3/envs/pyd-tut/lib/python3.10/site-packages/pydantic/main.py:341,</span> in <span class="ni">pydantic.main.BaseModel.__init__</span><span class="nt">()</span>
+File ~/miniconda3/envs/pyd-tut/lib/python3.10/site-packages/pydantic/main.py:150, in BaseModel.__init__(__pydantic_self__, **data)
+    148 # `__tracebackhide__` tells pytest and some other tools to omit this function from tracebacks
+    149 __tracebackhide__ = True
+--&gt; 150 __pydantic_self__.__pydantic_validator__.validate_python(data, self_instance=__pydantic_self__)
 
-<span class="ne">ValidationError</span>: 14 validation errors for Molecule
-<span class="n">charge</span>
-  <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">a</span> <span class="n">valid</span> <span class="nb">float</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">type_error</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
-<span class="n">charge</span>
-  <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">a</span> <span class="n">valid</span> <span class="n">integer</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">type_error</span><span class="o">.</span><span class="n">integer</span><span class="p">)</span>
-<span class="n">coordinates</span> <span class="o">-&gt;</span> <span class="mi">0</span>
-  <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">a</span> <span class="n">valid</span> <span class="nb">list</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">type_error</span><span class="o">.</span><span class="n">list</span><span class="p">)</span>
-<span class="n">coordinates</span> <span class="o">-&gt;</span> <span class="mi">0</span>
-  <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">a</span> <span class="n">valid</span> <span class="nb">tuple</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">type_error</span><span class="o">.</span><span class="n">tuple</span><span class="p">)</span>
-<span class="n">coordinates</span> <span class="o">-&gt;</span> <span class="mi">1</span>
-  <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">a</span> <span class="n">valid</span> <span class="nb">list</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">type_error</span><span class="o">.</span><span class="n">list</span><span class="p">)</span>
-<span class="n">coordinates</span> <span class="o">-&gt;</span> <span class="mi">1</span>
-  <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">a</span> <span class="n">valid</span> <span class="nb">tuple</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">type_error</span><span class="o">.</span><span class="n">tuple</span><span class="p">)</span>
-<span class="n">coordinates</span> <span class="o">-&gt;</span> <span class="mi">2</span>
-  <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">a</span> <span class="n">valid</span> <span class="nb">list</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">type_error</span><span class="o">.</span><span class="n">list</span><span class="p">)</span>
-<span class="n">coordinates</span> <span class="o">-&gt;</span> <span class="mi">2</span>
-  <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">a</span> <span class="n">valid</span> <span class="nb">tuple</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">type_error</span><span class="o">.</span><span class="n">tuple</span><span class="p">)</span>
-<span class="n">coordinates</span> <span class="o">-&gt;</span> <span class="mi">0</span>
-  <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">a</span> <span class="n">valid</span> <span class="nb">list</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">type_error</span><span class="o">.</span><span class="n">list</span><span class="p">)</span>
-<span class="n">coordinates</span> <span class="o">-&gt;</span> <span class="mi">0</span>
-  <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">a</span> <span class="n">valid</span> <span class="nb">tuple</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">type_error</span><span class="o">.</span><span class="n">tuple</span><span class="p">)</span>
-<span class="n">coordinates</span> <span class="o">-&gt;</span> <span class="mi">1</span>
-  <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">a</span> <span class="n">valid</span> <span class="nb">list</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">type_error</span><span class="o">.</span><span class="n">list</span><span class="p">)</span>
-<span class="n">coordinates</span> <span class="o">-&gt;</span> <span class="mi">1</span>
-  <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">a</span> <span class="n">valid</span> <span class="nb">tuple</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">type_error</span><span class="o">.</span><span class="n">tuple</span><span class="p">)</span>
-<span class="n">coordinates</span> <span class="o">-&gt;</span> <span class="mi">2</span>
-  <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">a</span> <span class="n">valid</span> <span class="nb">list</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">type_error</span><span class="o">.</span><span class="n">list</span><span class="p">)</span>
-<span class="n">coordinates</span> <span class="o">-&gt;</span> <span class="mi">2</span>
-  <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">a</span> <span class="n">valid</span> <span class="nb">tuple</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">type_error</span><span class="o">.</span><span class="n">tuple</span><span class="p">)</span>
+ValidationError: 15 validation errors for Molecule
+name
+  Input should be a valid string [type=string_type, input_value=789, input_type=int]
+    For further information visit https://errors.pydantic.dev/2.0.3/v/string_type
+charge.float
+  Input should be a valid number [type=float_type, input_value=[1, 0.0], input_type=list]
+    For further information visit https://errors.pydantic.dev/2.0.3/v/float_type
+charge.int
+  Input should be a valid integer [type=int_type, input_value=[1, 0.0], input_type=list]
+    For further information visit https://errors.pydantic.dev/2.0.3/v/int_type
+coordinates.`list[union[list[union[float,int]],tuple[union[float,int], ...]]]`.0.list[union[float,int]]
+  Input should be a valid list [type=list_type, input_value=&#39;1&#39;, input_type=str]
+    For further information visit https://errors.pydantic.dev/2.0.3/v/list_type
+coordinates.`list[union[list[union[float,int]],tuple[union[float,int], ...]]]`.0.`tuple[union[float,int], ...]`
+  Input should be a valid tuple [type=tuple_type, input_value=&#39;1&#39;, input_type=str]
+    For further information visit https://errors.pydantic.dev/2.0.3/v/tuple_type
+coordinates.`list[union[list[union[float,int]],tuple[union[float,int], ...]]]`.1.list[union[float,int]]
+  Input should be a valid list [type=list_type, input_value=&#39;2&#39;, input_type=str]
+    For further information visit https://errors.pydantic.dev/2.0.3/v/list_type
+coordinates.`list[union[list[union[float,int]],tuple[union[float,int], ...]]]`.1.`tuple[union[float,int], ...]`
+  Input should be a valid tuple [type=tuple_type, input_value=&#39;2&#39;, input_type=str]
+    For further information visit https://errors.pydantic.dev/2.0.3/v/tuple_type
+coordinates.`list[union[list[union[float,int]],tuple[union[float,int], ...]]]`.2.list[union[float,int]]
+  Input should be a valid list [type=list_type, input_value=&#39;3&#39;, input_type=str]
+    For further information visit https://errors.pydantic.dev/2.0.3/v/list_type
+coordinates.`list[union[list[union[float,int]],tuple[union[float,int], ...]]]`.2.`tuple[union[float,int], ...]`
+  Input should be a valid tuple [type=tuple_type, input_value=&#39;3&#39;, input_type=str]
+    For further information visit https://errors.pydantic.dev/2.0.3/v/tuple_type
+coordinates.`tuple[union[list[union[float,int]],tuple[union[float,int], ...]], ...]`.0.list[union[float,int]]
+  Input should be a valid list [type=list_type, input_value=&#39;1&#39;, input_type=str]
+    For further information visit https://errors.pydantic.dev/2.0.3/v/list_type
+coordinates.`tuple[union[list[union[float,int]],tuple[union[float,int], ...]], ...]`.0.`tuple[union[float,int], ...]`
+  Input should be a valid tuple [type=tuple_type, input_value=&#39;1&#39;, input_type=str]
+    For further information visit https://errors.pydantic.dev/2.0.3/v/tuple_type
+coordinates.`tuple[union[list[union[float,int]],tuple[union[float,int], ...]], ...]`.1.list[union[float,int]]
+  Input should be a valid list [type=list_type, input_value=&#39;2&#39;, input_type=str]
+    For further information visit https://errors.pydantic.dev/2.0.3/v/list_type
+coordinates.`tuple[union[list[union[float,int]],tuple[union[float,int], ...]], ...]`.1.`tuple[union[float,int], ...]`
+  Input should be a valid tuple [type=tuple_type, input_value=&#39;2&#39;, input_type=str]
+    For further information visit https://errors.pydantic.dev/2.0.3/v/tuple_type
+coordinates.`tuple[union[list[union[float,int]],tuple[union[float,int], ...]], ...]`.2.list[union[float,int]]
+  Input should be a valid list [type=list_type, input_value=&#39;3&#39;, input_type=str]
+    For further information visit https://errors.pydantic.dev/2.0.3/v/list_type
+coordinates.`tuple[union[list[union[float,int]],tuple[union[float,int], ...]], ...]`.2.`tuple[union[float,int], ...]`
+  Input should be a valid tuple [type=tuple_type, input_value=&#39;3&#39;, input_type=str]
+    For further information visit https://errors.pydantic.dev/2.0.3/v/tuple_type
 </pre></div>
 </div>
 </div>
@@ -726,33 +751,41 @@ document.write(`
 </div>
 <p><em>pydantic</em> reads the type annotations assigned to the variables, and then validates the incoming arguments against those types. Because we made sure we were thorough enough with our type hints in the <a class="reference internal" href="ManualDataValidation.html#ch03"><span class="std std-ref">Manual Data Validation</span></a>, our type annotations correctly capture the correct data.</p>
 <p>We also now have simultaneous validation of multiple entries. In <a class="reference internal" href="ManualDataValidation.html#ch03"><span class="std std-ref">Manual Data Validation</span></a>, our validation code would throw the first error it found, without validating everything else. Here, <em>pydantic</em> is validating everything all at once, and raising it at the end.</p>
-<p>Reading the <code class="docutils literal notranslate"><span class="pre">ValidationError</span></code> output takes some getting used to, but can be understood wtih practice.</p>
+<p>Reading the <code class="docutils literal notranslate"><span class="pre">ValidationError</span></code> output takes some getting used to, but can be understood with practice.</p>
 <section id="reading-the-validation-error">
 <h3>Reading the Validation error<a class="headerlink" href="#reading-the-validation-error" title="Permalink to this heading">#</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">charge</span>
-  <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">a</span> <span class="n">valid</span> <span class="nb">float</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">type_error</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
-<span class="n">charge</span>
-  <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">a</span> <span class="n">valid</span> <span class="n">integer</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">type_error</span><span class="o">.</span><span class="n">integer</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">charge</span><span class="o">.</span><span class="n">float</span>
+  <span class="n">Input</span> <span class="n">should</span> <span class="n">be</span> <span class="n">a</span> <span class="n">valid</span> <span class="n">number</span> <span class="p">[</span><span class="nb">type</span><span class="o">=</span><span class="n">float_type</span><span class="p">,</span> <span class="n">input_value</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">input_type</span><span class="o">=</span><span class="nb">list</span><span class="p">]</span>
+    <span class="n">For</span> <span class="n">further</span> <span class="n">information</span> <span class="n">visit</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">errors</span><span class="o">.</span><span class="n">pydantic</span><span class="o">.</span><span class="n">dev</span><span class="o">/</span><span class="mf">2.0.3</span><span class="o">/</span><span class="n">v</span><span class="o">/</span><span class="n">float_type</span>
+<span class="n">charge</span><span class="o">.</span><span class="n">int</span>
+  <span class="n">Input</span> <span class="n">should</span> <span class="n">be</span> <span class="n">a</span> <span class="n">valid</span> <span class="n">integer</span> <span class="p">[</span><span class="nb">type</span><span class="o">=</span><span class="n">int_type</span><span class="p">,</span> <span class="n">input_value</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">input_type</span><span class="o">=</span><span class="nb">list</span><span class="p">]</span>
+    <span class="n">For</span> <span class="n">further</span> <span class="n">information</span> <span class="n">visit</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">errors</span><span class="o">.</span><span class="n">pydantic</span><span class="o">.</span><span class="n">dev</span><span class="o">/</span><span class="mf">2.0.3</span><span class="o">/</span><span class="n">v</span><span class="o">/</span><span class="n">int_type</span>
 </pre></div>
 </div>
-<p>Here <code class="docutils literal notranslate"><span class="pre">charge</span></code> is the attribute and its <code class="docutils literal notranslate"><span class="pre">value</span></code> is not a valid type of <code class="docutils literal notranslate"><span class="pre">float</span></code>. On the next line, <code class="docutils literal notranslate"><span class="pre">charge</span></code> is also an error because it’s not an <code class="docutils literal notranslate"><span class="pre">int</span></code>. <em>pydantic</em> treats <code class="docutils literal notranslate"><span class="pre">Union</span></code> types as an either or and validates them separately, accepting whichever one comes first.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">coordinates</span> <span class="o">-&gt;</span> <span class="mi">0</span>
-  <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">a</span> <span class="n">valid</span> <span class="nb">list</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">type_error</span><span class="o">.</span><span class="n">list</span><span class="p">)</span>
-<span class="n">coordinates</span> <span class="o">-&gt;</span> <span class="mi">1</span>
-  <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">a</span> <span class="n">valid</span> <span class="nb">list</span> <span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">type_error</span><span class="o">.</span><span class="n">list</span><span class="p">)</span>
+<p>Here <code class="docutils literal notranslate"><span class="pre">charge</span></code> is the attribute and its checking against its type <code class="docutils literal notranslate"><span class="pre">float</span></code>. Below that is information about the input it should be and what it was. Below that is a link to this particular validation type helper.</p>
+<p>On the next top line, <code class="docutils literal notranslate"><span class="pre">charge</span></code>’s second possible option of <code class="docutils literal notranslate"><span class="pre">int</span></code> is also not satisfied because it’s not an <code class="docutils literal notranslate"><span class="pre">int</span></code>. <em>pydantic</em> treats <code class="docutils literal notranslate"><span class="pre">Union</span></code> types as an either or and validates them separately, accepting whichever one comes first.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>coordinates.`list[union[list[union[float,int]],tuple[union[float,int], ...]]]`.0.list[union[float,int]]
+  Input should be a valid list [type=list_type, input_value=&#39;1&#39;, input_type=str]
+    For further information visit https://errors.pydantic.dev/2.0.3/v/list_type
+coordinates.`list[union[list[union[float,int]],tuple[union[float,int], ...]]]`.0.`tuple[union[float,int], ...]`
+  Input should be a valid tuple [type=tuple_type, input_value=&#39;1&#39;, input_type=str]
+    For further information visit https://errors.pydantic.dev/2.0.3/v/tuple_type
+coordinates.`list[union[list[union[float,int]],tuple[union[float,int], ...]]]`.1.list[union[float,int]]
+  Input should be a valid list [type=list_type, input_value=&#39;2&#39;, input_type=str]
+    For further information visit https://errors.pydantic.dev/2.0.3/v/list_type
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">coordinates</span></code> is the attribute that did not receive valid data. <code class="docutils literal notranslate"><span class="pre">-&gt;</span> <span class="pre">0</span></code> indicates that at index <code class="docutils literal notranslate"><span class="pre">0</span></code> of <code class="docutils literal notranslate"><span class="pre">coordinates</span></code>, the validator was expecting a <code class="docutils literal notranslate"><span class="pre">list</span></code> but did not get one. <code class="docutils literal notranslate"><span class="pre">-&gt;</span> <span class="pre">1</span></code> on the next entry specifies index <code class="docutils literal notranslate"><span class="pre">1</span></code> of <code class="docutils literal notranslate"><span class="pre">coordinates</span></code> was also not a <code class="docutils literal notranslate"><span class="pre">list</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">coordinates</span></code> is the attribute that did not receive valid data. <code class="docutils literal notranslate"><span class="pre">coordinates.{A</span> <span class="pre">Bunch</span> <span class="pre">of</span> <span class="pre">Type</span> <span class="pre">Info}.0</span></code> indicates that at index <code class="docutils literal notranslate"><span class="pre">0</span></code> of <code class="docutils literal notranslate"><span class="pre">coordinates</span></code>, the validator was expecting a <code class="docutils literal notranslate"><span class="pre">list</span></code> but did not get one. The second entry checks against the <code class="docutils literal notranslate"><span class="pre">tuple</span></code> option as well. The third entry of <code class="docutils literal notranslate"><span class="pre">coordinates.{A</span> <span class="pre">Bunch</span> <span class="pre">of</span> <span class="pre">Type</span> <span class="pre">Info}.1</span></code> specifies index <code class="docutils literal notranslate"><span class="pre">1</span></code> of <code class="docutils literal notranslate"><span class="pre">coordinates</span></code> was also not a <code class="docutils literal notranslate"><span class="pre">list</span></code>.</p>
 </section>
 </section>
 <section id="data-coercion">
 <h2>Data Coercion<a class="headerlink" href="#data-coercion" title="Permalink to this heading">#</a></h2>
 <p><em>pydantic</em> has already helped us simplify our code by providing type checking, but let’s simplify further by reducing our type annotation complexity and seeing what <em>pydantic</em> does to some invalid types.</p>
-<p>For starters, let’s assume <code class="docutils literal notranslate"><span class="pre">charge</span></code> can only be a float. Right now <code class="docutils literal notranslate"><span class="pre">charge</span></code> accepts <code class="docutils literal notranslate"><span class="pre">float</span></code> or <code class="docutils literal notranslate"><span class="pre">int</span></code>, and because it does, we can see that <em>pydantic</em> SHOULD show a different output depending on what type we give it.</p>
+<p>For starters, let’s assume <code class="docutils literal notranslate"><span class="pre">charge</span></code> can only be a float. Right now <code class="docutils literal notranslate"><span class="pre">charge</span></code> accepts <code class="docutils literal notranslate"><span class="pre">float</span></code> or <code class="docutils literal notranslate"><span class="pre">int</span></code>, and because it does, we can see that <em>pydantic</em> does show a different output depending on what type we give it.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">int_charge</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">mol_data</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s2">&quot;charge&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}}</span>
-<span class="n">float_charge</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">mol_data</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s2">&quot;charge&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">}}</span>  <span class="c1"># Value that can&#39;t be int.</span>
+<span class="n">float_charge</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">mol_data</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s2">&quot;charge&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">}}</span>  <span class="c1"># Value that can&#39;t be cast to int.</span>
 <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">int_charge</span><span class="p">[</span><span class="s2">&quot;charge&quot;</span><span class="p">]))</span>
 <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">float_charge</span><span class="p">[</span><span class="s2">&quot;charge&quot;</span><span class="p">]))</span>
 </pre></div>
@@ -775,14 +808,14 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Integer water has value 0.0 and type &lt;class &#39;float&#39;&gt;
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Integer water has value 0 and type &lt;class &#39;int&#39;&gt;
 Float water has value -1.5 and type &lt;class &#39;float&#39;&gt;
 </pre></div>
 </div>
 </div>
 </div>
-<p>Uh-oh. What happened? We expected to get an <code class="docutils literal notranslate"><span class="pre">int</span></code> out of the <code class="docutils literal notranslate"><span class="pre">int_water</span></code> object, but instead got a <code class="docutils literal notranslate"><span class="pre">float</span></code>. The reason for this is <em>pydantic</em> does what is called “data coercion” based on the type annotations you provide.</p>
-<p>Data coercion is the process of molding and shaping data to adhere to certain rules. In this case, the <code class="docutils literal notranslate"><span class="pre">int</span></code> was coerced by casting it to a <code class="docutils literal notranslate"><span class="pre">float</span></code> before being stored. The question you may ask is “why did <em>pydantic</em> do that if it can accept both <code class="docutils literal notranslate"><span class="pre">float</span></code> or <code class="docutils literal notranslate"><span class="pre">int</span></code>?” And the answer has to do with the <em>order</em> we provided the type annotations. Take a look at our first type helpers.</p>
+<p>You can see that <em>pydantic</em> preserved the correct types of data when that type was a valid type. Version 1.X of <em>pydantic</em> would automatically cast data to the first valid type that it could, which could result in unexpected behaviors.</p>
+<p>However, there may be a case where we <em>want</em> data to be cast to specific types. This process is called Data Coercion: the process of molding and shaping data to adhere to certain rules. To see what <em>pydantic</em> is doing under the hood, take a look at our first type helper.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Type Helpers</span>
@@ -791,16 +824,17 @@ Float water has value -1.5 and type &lt;class &#39;float&#39;&gt;
 </div>
 </div>
 </div>
-<p>We specified that <code class="docutils literal notranslate"><span class="pre">float</span></code> was first and <code class="docutils literal notranslate"><span class="pre">int</span></code> was second. From a pure set theory standpoint, order should not matter, but <em>pydantic</em> does respect the order of its types. Down at a code level, <em>pydantic</em> is doing a few things. Here is a simplified list</p>
+<p>We specified that <code class="docutils literal notranslate"><span class="pre">float</span></code> was first and <code class="docutils literal notranslate"><span class="pre">int</span></code> was second. From a pure set theory standpoint, order should not matter, and <em>pydantic</em> respects that rule. Down at a code level, <em>pydantic</em> is doing a few things. Here is a simplified list</p>
 <ol class="arabic simple">
 <li><p>Handle pre-validators (covered later <a class="reference internal" href="ValidatingDataBeyondTypes.html#ch05"><span class="std std-ref">Validating Data Beyond Types</span></a>)</p></li>
-<li><p>Attempt to coerce data through first type annotation encountered</p></li>
-<li><p>Accept coercion if no error is thrown</p></li>
-<li><p>Try next type annotation if present</p></li>
+<li><p>Attempt to coerce data through first type annotation encountered without loss</p></li>
+<li><p>Keep checking against all other types to see if there is a more exact type match</p></li>
+<li><p>If a more correct match is found, accept it and move to final step.</p></li>
+<li><p>If no more-correct match is found, accept earlier match with coercion</p></li>
 <li><p>Repeat 2-4 until resolved or error thrown with no resolution</p></li>
 <li><p>Handle user validators (covered later <a class="reference internal" href="ValidatingDataBeyondTypes.html#ch05"><span class="std std-ref">Validating Data Beyond Types</span></a>)</p></li>
 </ol>
-<p>Because we specified <code class="docutils literal notranslate"><span class="pre">float</span></code> first, the <code class="docutils literal notranslate"><span class="pre">int</span></code> was cast to a <code class="docutils literal notranslate"><span class="pre">float</span></code> and accepted. We could reverse the order and try again to see what happens:</p>
+<p>We could reverse the order and try again to prove the order does not matter:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">IntThenFloatMolecule</span><span class="p">(</span><span class="n">Molecule</span><span class="p">):</span>  <span class="c1"># Subclass our defined model to inherit attributes</span>
@@ -820,15 +854,100 @@ Float water has value -1.5 and type &lt;class &#39;float&#39;&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Integer water has value 0 and type &lt;class &#39;int&#39;&gt;
-Float water has value -1 and type &lt;class &#39;int&#39;&gt;
+Float water has value -1.5 and type &lt;class &#39;float&#39;&gt;
 </pre></div>
 </div>
 </div>
 </div>
-<p>We have now lost information from the coercion. However, <em>pydantic</em> did exactly what it was told. The lesson here is that it is better to be permissive where possible. Since <code class="docutils literal notranslate"><span class="pre">float</span></code> will ensure we don’t have data loss for a field which can accept both.</p>
+<p>So far we have not lost information, but data coercion is still quite important to prevent loss of data. For example, there may be some times where we want to coerce data, such as if someone gives us a count of something as a <code class="docutils literal notranslate"><span class="pre">float</span></code>, but we need it as an <code class="docutils literal notranslate"><span class="pre">int</span></code>; alternately, a value you expect to support fractional <code class="docutils literal notranslate"><span class="pre">float</span></code> values like partial charges but someone gave you an <code class="docutils literal notranslate"><span class="pre">int</span></code>. Pydantic can help us with that.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">FloatMolecule</span><span class="p">(</span><span class="n">Molecule</span><span class="p">):</span>  <span class="c1"># Subclass our defined model to inherit attributes</span>
+    <span class="n">charge</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>        <span class="c1"># Maybe you want to only have float based charges</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">int_water</span> <span class="o">=</span> <span class="n">FloatMolecule</span><span class="p">(</span><span class="o">**</span><span class="n">int_charge</span><span class="p">)</span>
+<span class="n">float_water</span> <span class="o">=</span> <span class="n">FloatMolecule</span><span class="p">(</span><span class="o">**</span><span class="n">float_charge</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Integer water has value </span><span class="si">{</span><span class="n">int_water</span><span class="o">.</span><span class="n">charge</span><span class="si">}</span><span class="s2"> and type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">int_water</span><span class="o">.</span><span class="n">charge</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Float water has value </span><span class="si">{</span><span class="n">float_water</span><span class="o">.</span><span class="n">charge</span><span class="si">}</span><span class="s2"> and type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">float_water</span><span class="o">.</span><span class="n">charge</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Integer water has value 0.0 and type &lt;class &#39;float&#39;&gt;
+Float water has value -1.5 and type &lt;class &#39;float&#39;&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<p>Here we have taken <code class="docutils literal notranslate"><span class="pre">int</span></code> from the <code class="docutils literal notranslate"><span class="pre">int_charge</span></code> values and coerced it into a <code class="docutils literal notranslate"><span class="pre">float</span></code> type. What happens if we do the reverse? Let’s also define an additional <code class="docutils literal notranslate"><span class="pre">float_charge</span></code>-like data into something to illustrate data coercion.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">IntMolecule</span><span class="p">(</span><span class="n">Molecule</span><span class="p">):</span>  <span class="c1"># Subclass our defined model to inherit attributes</span>
+    <span class="n">charge</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>        <span class="c1"># Maybe you want to only want whole charges?</span>
+        
+<span class="n">coercable_float_charge</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">mol_data</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s2">&quot;charge&quot;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">}}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">int_water</span> <span class="o">=</span> <span class="n">IntMolecule</span><span class="p">(</span><span class="o">**</span><span class="n">int_charge</span><span class="p">)</span>
+<span class="n">float_water</span> <span class="o">=</span> <span class="n">IntMolecule</span><span class="p">(</span><span class="o">**</span><span class="n">coercable_float_charge</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Integer water has value </span><span class="si">{</span><span class="n">int_water</span><span class="o">.</span><span class="n">charge</span><span class="si">}</span><span class="s2"> and type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">int_water</span><span class="o">.</span><span class="n">charge</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Float water has value </span><span class="si">{</span><span class="n">float_water</span><span class="o">.</span><span class="n">charge</span><span class="si">}</span><span class="s2"> and type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">float_water</span><span class="o">.</span><span class="n">charge</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Integer water has value 0 and type &lt;class &#39;int&#39;&gt;
+Float water has value 2 and type &lt;class &#39;int&#39;&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can see here the <code class="docutils literal notranslate"><span class="pre">2.0</span></code> was cast to an integer because there was no loss of data. You might be able to guess what will happen if we use a number which cannot be cast to <code class="docutils literal notranslate"><span class="pre">int</span></code> without loss of data, such as the <code class="docutils literal notranslate"><span class="pre">-1.5</span></code> of <code class="docutils literal notranslate"><span class="pre">float_charge</span></code>, but lets see what happens anyways.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">int_water</span> <span class="o">=</span> <span class="n">IntMolecule</span><span class="p">(</span><span class="o">**</span><span class="n">int_charge</span><span class="p">)</span>
+<span class="n">float_water</span> <span class="o">=</span> <span class="n">IntMolecule</span><span class="p">(</span><span class="o">**</span><span class="n">float_charge</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Integer water has value </span><span class="si">{</span><span class="n">int_water</span><span class="o">.</span><span class="n">charge</span><span class="si">}</span><span class="s2"> and type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">int_water</span><span class="o">.</span><span class="n">charge</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Float water has value </span><span class="si">{</span><span class="n">float_water</span><span class="o">.</span><span class="n">charge</span><span class="si">}</span><span class="s2"> and type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">float_water</span><span class="o">.</span><span class="n">charge</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ValidationError</span><span class="g g-Whitespace">                           </span>Traceback (most recent call last)
+<span class="nn">Input In [48],</span> in <span class="ni">&lt;cell line: 2&gt;</span><span class="nt">()</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">int_water</span> <span class="o">=</span> <span class="n">IntMolecule</span><span class="p">(</span><span class="o">**</span><span class="n">int_charge</span><span class="p">)</span>
+<span class="ne">----&gt; </span><span class="mi">2</span> <span class="n">float_water</span> <span class="o">=</span> <span class="n">IntMolecule</span><span class="p">(</span><span class="o">**</span><span class="n">float_charge</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Integer water has value </span><span class="si">{</span><span class="n">int_water</span><span class="o">.</span><span class="n">charge</span><span class="si">}</span><span class="s2"> and type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">int_water</span><span class="o">.</span><span class="n">charge</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Float water has value </span><span class="si">{</span><span class="n">float_water</span><span class="o">.</span><span class="n">charge</span><span class="si">}</span><span class="s2"> and type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">float_water</span><span class="o">.</span><span class="n">charge</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nn">File ~/miniconda3/envs/pyd-tut/lib/python3.10/site-packages/pydantic/main.py:150,</span> in <span class="ni">BaseModel.__init__</span><span class="nt">(__pydantic_self__, **data)</span>
+<span class="g g-Whitespace">    </span><span class="mi">148</span> <span class="c1"># `__tracebackhide__` tells pytest and some other tools to omit this function from tracebacks</span>
+<span class="g g-Whitespace">    </span><span class="mi">149</span> <span class="n">__tracebackhide__</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="ne">--&gt; </span><span class="mi">150</span> <span class="n">__pydantic_self__</span><span class="o">.</span><span class="n">__pydantic_validator__</span><span class="o">.</span><span class="n">validate_python</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">self_instance</span><span class="o">=</span><span class="n">__pydantic_self__</span><span class="p">)</span>
+
+<span class="ne">ValidationError</span>: 1 validation error for IntMolecule
+<span class="n">charge</span>
+  <span class="n">Input</span> <span class="n">should</span> <span class="n">be</span> <span class="n">a</span> <span class="n">valid</span> <span class="n">integer</span><span class="p">,</span> <span class="n">got</span> <span class="n">a</span> <span class="n">number</span> <span class="k">with</span> <span class="n">a</span> <span class="n">fractional</span> <span class="n">part</span> <span class="p">[</span><span class="nb">type</span><span class="o">=</span><span class="n">int_from_float</span><span class="p">,</span> <span class="n">input_value</span><span class="o">=-</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">input_type</span><span class="o">=</span><span class="nb">float</span><span class="p">]</span>
+    <span class="n">For</span> <span class="n">further</span> <span class="n">information</span> <span class="n">visit</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">errors</span><span class="o">.</span><span class="n">pydantic</span><span class="o">.</span><span class="n">dev</span><span class="o">/</span><span class="mf">2.0.3</span><span class="o">/</span><span class="n">v</span><span class="o">/</span><span class="n">int_from_float</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>In order to prevent loss of data, <code class="docutils literal notranslate"><span class="pre">pydantic</span></code> didn’t let us convert the <code class="docutils literal notranslate"><span class="pre">float</span></code> of <code class="docutils literal notranslate"><span class="pre">-1.5</span></code> to an <code class="docutils literal notranslate"><span class="pre">int</span></code> because the fractional value of the data would have been lost.</p>
+<p>The lesson here is that it is better to be permissive where possible. Since <code class="docutils literal notranslate"><span class="pre">float</span></code> will ensure we don’t have data loss or errors for a field which can accept both, we will simplify out types to make reading and error parsing easier.</p>
 <div class="note admonition">
 <p class="admonition-title">Don’t like something? Config it</p>
-<p>Pydantic’s BaseModels are highly configurable through a class you can create in any model called Config. Some configurations will be shown later, but you can always <a class="reference external" href="https://pydantic-docs.helpmanual.io/usage/model_config/">check the pydantic Config docs</a> for more things you can do. Changing this specific <code>Union</code> behavior is a setting called “Smart Union”.</p>
+<p>Pydantic’s BaseModels are highly configurable through a class attribute you can create in any model called model_config. Some configurations will be shown later, but you can always <a class="reference external" href="https://docs.pydantic.dev/latest/usage/model_config/">check the pydantic model_config docs</a> for more things you can do. Preventing coercion at all, for example, is a setting called “strict.”</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -861,19 +980,21 @@ Float water has value -1 and type &lt;class &#39;int&#39;&gt;
 <p>We’ve simplified some of our type hints now. One of the other changes we’ve made is setting <code class="docutils literal notranslate"><span class="pre">symbols</span></code> to a list of strings instead of accepting either <code class="docutils literal notranslate"><span class="pre">list</span></code> or <code class="docutils literal notranslate"><span class="pre">tuple</span></code>.</p>
 <div class="exercise">
 <p class="exercise-title"> Practice simplifying type annotations with coercion
-    <p>What would the simplified type annotation of <code>coordinates</code> be?</p>
+    <p>What would a simplified type annotation of <code>coordinates</code> be?</p>
 <div class="dropdown admonition">
 <p class="admonition-title">Solution:</p>
-<p>Either one of the following</p>
+<p>Any one of the following. Note: We’ll prefer list so we can change the coordinates in place if we need to later.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">coordinates</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span>
 <span class="n">coordinates</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span>
+<span class="n">coordinates</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span>
+<span class="n">coordinates</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span>
 </pre></div>
 </div>
 </div>
 <div class="dropdown admonition">
 <p class="admonition-title">Incorrect Answer:</p>
-<p>This option is wrong because it will cast floats to integers by default, which is bad unless you are on a discrete grid of coordinates.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">coordinates</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span>
+<p>This option is unstable because it will try to cast floats to integers by default, which is bad unless you are on a discrete grid of coordinates and throw an error on anything which can’t be cast to int.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">coordinates</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span>
 </pre></div>
 </div>
 </div>
