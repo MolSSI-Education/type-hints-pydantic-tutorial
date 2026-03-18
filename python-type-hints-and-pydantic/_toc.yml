@@ -1,10 +1,10 @@
 format: jb-book
-root: chapters/setup
+root: chapters/setup.ipynb
 chapters:
-- file: chapters/StartingCodeAndObjectives
-- file: chapters/TypeHintsInPython
-- file: chapters/DataclassInPython
-- file: chapters/ManualDataValidation
-- file: chapters/IntroToPydantic
-- file: chapters/ValidatingDataBeyondTypes
-- file: chapters/NestedDataModels
+  - file: chapters/StartingCodeAndObjectives.ipynb
+  - file: chapters/TypeHintsInPython.ipynb
+  - file: chapters/DataclassInPython.ipynb
+  - file: chapters/ManualDataValidation.ipynb
+  - file: chapters/IntroToPydantic.ipynb
+  - file: chapters/ValidatingDataBeyondTypes.ipynb
+  - file: chapters/NestedDataModels.ipynb
