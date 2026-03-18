@@ -30,7 +30,8 @@ jobs:
     - name: Build the book
       run: |
         jupyter-book build python-type-hints-and-pydantic --all
-
+    - name: Check build output
+      run: ls python-type-hints-and-pydantic/_build/html
     # Deploy the book's HTML to gh-pages branch
     - name: GitHub Pages action
       uses: peaceiris/actions-gh-pages@v3.6.1
