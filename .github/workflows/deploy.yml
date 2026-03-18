@@ -25,7 +25,12 @@ jobs:
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
-
+    # confirm what exist before building
+    - name: Show workspace contents
+      run: |
+        pwd
+        ls -la
+        find . -maxdepth 2 -type f -name "_config.yml" -o -name "_toc.yml"
     # Build the book - absolutely ridiculous attempted work around to get data files where i need them.
     - name: Build the book
       run: |
