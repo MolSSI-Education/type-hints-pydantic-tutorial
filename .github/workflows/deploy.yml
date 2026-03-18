@@ -25,18 +25,12 @@ jobs:
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
-    # confirm what exist before building
-    - name: Show workspace contents
-      run: |
-        pwd
-        ls -la
-        find . -maxdepth 2 -type f -name "_config.yml" -o -name "_toc.yml"
+    - name: Clean the book
+      run: jupyter-book clean python-type-hints-and-pydantic
     # Build the book - absolutely ridiculous attempted work around to get data files where i need them.
     - name: Build the book
       run: |
         jupyter-book build python-type-hints-and-pydantic --all
-    - name: Check build output
-      run: ls python-type-hints-and-pydantic/_build/html
     # Deploy the book's HTML to gh-pages branch
     - name: GitHub Pages action
       uses: peaceiris/actions-gh-pages@v3.6.1
